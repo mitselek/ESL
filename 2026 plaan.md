@@ -4,7 +4,7 @@ Eesmärk: võtta 2025 tagasiside aluseks ja parandada eeltööd, proovide kvalit
 
 > Legend ajamärgistele: T = kontserdipäev (16.08.2026); n = nädalat; p = päeva. Näited: T-10n = 10 nädalat enne, T-5p = 5 päeva enne, T+1n = 1 nädal pärast.
 
-## Tegevused, mis kindlasti muutmist vajavad (MUST CHANGE)
+## Tegevused, mis kindlasti muutmist vajavad
 
 - Noodid ja õppematerjalid varem kätte
 
