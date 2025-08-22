@@ -65,7 +65,7 @@ Eesmärk: võtta 2025 tagasiside aluseks ja parandada eeltööd, proovide kvalit
 ## Ajajoon ja tähtajad
 
 - August–September 2025 (**T-52n, 2025-08-17**…**T-46n, 2025-09-28**): alusta läbirääkimisi dirigentidega; kogu repertuaari ideid ja hinnanguid teose(te) sobivusele (koori tase, kestus, pillikoosseis, keele/häälduse keerukus).
-- Oktoober 2025 (**T-45n, 2025-10-05**…**T-41n, 2025-11-02**): kontrolli autorikaitse/õigused, partituuri/nootide saadavus, orkestri/solistide vajadused; saa [kavatsuskirjad dirigentidelt](Kavatsuskiri%20dirigendilt.md).
+- Oktoober 2025 (**T-45n, 2025-10-05**…**T-41n, 2025-11-02**): kontrolli autorikaitse/õigused, partituuri/nootide saadavus, orkestri/solistide vajadused; saa [kavatsuskirjad dirigentidelt](Kavatsuskiri%20dirigendilt%20-%20visand.md).
 - November 2025 (**T-40n, 2025-11-09**…**T-36n, 2025-12-07**): lepingute mustandid dirigentidele/koormeistrile/hääleseadjale; esmane tehniline plaan orkestri/klaveri osas.
 - Detsember 2025 (**T-33n, 2025-12-26**…**T-32n, 2026-01-02**): teoste lühinimekiri; nootide ja õiguste/õppematerjalide saadavuse kontroll.
 - Jaanuar: repertuaar ja juhendajad lukku; ruumide broneering.
