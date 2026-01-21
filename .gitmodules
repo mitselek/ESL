@@ -1,3 +1,6 @@
 [submodule "esl-www"]
 	path = esl-www
 	url = https://github.com/aivotoots/esl.git
+[submodule "Haapsalu-Suvekool"]
+	path = Haapsalu-Suvekool
+	url = https://github.com/mitselek/Haapsalu-Suvekool.git
