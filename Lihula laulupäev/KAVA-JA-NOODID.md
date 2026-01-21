@@ -96,12 +96,10 @@
 ## Kontaktid
 
 **Reeda Kreen** (Kunstiline juht)  
-Tel: 5569 9829  
 E-post: reedakreen@gmail.com
 
 **Noodigraafika:** Ilusa Noodi Instituut (¡n!)  
 Mihkel Putrinš  
-Tel: 5656 0978  
 E-post: mitselek@gmail.com
 
 **Registreerimine:**  

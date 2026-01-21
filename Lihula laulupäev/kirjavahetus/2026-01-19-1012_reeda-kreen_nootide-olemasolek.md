@@ -28,4 +28,3 @@ Kus maal oleme?
 
 Hääd  
 Reeda  
-55699829

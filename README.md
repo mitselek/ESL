@@ -1,10 +1,10 @@
 # Eesti Segakooride Liit
 
-Juhatuse dokumendid ja projektid.
+Dokumente ja projekte.
 
-## Struktuur
+## Projekte
 
-### 📁 Lihula laulupäev
+### Lihula laulupäev
 
 **Kuupäev:** 30. mai 2026  
 **Kunstiline juht:** Reeda Kreen  
@@ -16,24 +16,24 @@ Juhatuse dokumendid ja projektid.
 
 **Staatus:** 1/6 pulmalaulust valmis, 5 ülelugemises (tähtaeg 23.01)
 
-### 📁 Haapsalu 2026
+### Haapsalu 2026
 
-Haapsalu suvine laulupäev 2026 planeerimisdokumendid.
+Haapsalu suvekool 2026 planeerimisdokumendid.
 
-### 📁 esl-www
+### esl-www
 
 Eesti Segakooride Liidu koduleht (git submodule → [aivotoots/esl](https://github.com/aivotoots/esl))
 
 ## Kontaktid
 
 **Reeda Kreen** (Lihula laulupäev kunstiline juht)  
-Tel: 55699829 | reedakreen@gmail.com
+reedakreen@gmail.com
 
 **Mihkel Putrinš** (Noodigraafika - ¡n!)  
-Tel: 5656 0978 | mitselek@gmail.com
+mitselek@gmail.com
 
 **Kaire Siiner** (ESL tegevjuht)  
-Tel: 58052383
+kaire.siiner@gmail.com
 
 ## Registreerimine
 
