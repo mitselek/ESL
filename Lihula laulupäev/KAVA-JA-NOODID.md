@@ -27,7 +27,7 @@
 | 2   | [Sööge langud](noodivihik/Sööge,%20langud.pdf)                           | **Kihnu variant** | 📝 Ülelugemises |
 | 3   | [Petis peiu](noodivihik/Petis%20peiu.pdf)                                |                   | 📝 Ülelugemises |
 | 4   | [Palju veini](noodivihik/Palju%20veini.pdf)                              |                   | 📝 Ülelugemises |
-| 5   | [Ei või õnneta elada](noodivihik/Ei%20või%20õnneta%20elada.pdf)          | Kihnu             | 📝 Ülelugemises |
+| 5   | [Ei või õnneta elada](noodivihik/Ei%20või%20õnneta%20elada.pdf)          | Kihnu             | ✅ Valmis       |
 | 6   | [Kohus koju minna](noodivihik/Kohus%20koju%20minna.pdf)                  |                   | 📝 Ülelugemises |
 
 **Märkused:**
@@ -75,7 +75,7 @@
    - ~~Sööge langud (Kihnu)~~ (ülelugemises)
    - ~~Petis peiu~~ (ülelugemises)
    - ~~Palju veini~~ (ülelugemises)
-   - ~~Ei või õnneta elada~~ (ülelugemises)
+   - ✅ ~~Ei või õnneta elada~~ (valmis)
    - ~~Kohus koju minna~~ (ülelugemises)
 2. **Välja jätta:**
    - Sööge langud Lihula variant
@@ -95,13 +95,25 @@
 
 ## Kontaktid
 
-**Reeda Kreen**  
-Tel: 55699829  
+**Reeda Kreen** (Kunstiline juht)  
+Tel: 5569 9829  
 E-post: reedakreen@gmail.com
+
+**Noodigraafika:** Ilusa Noodi Instituut (¡n!)  
+Mihkel Putrinš  
+Tel: 5656 0978  
+E-post: mitselek@gmail.com
 
 **Registreerimine:**  
 https://forms.gle/CuEStNHhmTx8WEnT6
 
 ---
 
-**Viimati uuendatud:** 2026-01-20
+**Märkused:**
+
+- Kõik noodid küljendatakse värskes graafikas (¡n! standard)
+- Eesmärk: professionaalne, ühtne välimus kõigile nootidele
+
+---
+
+**Viimati uuendatud:** 2026-01-21
