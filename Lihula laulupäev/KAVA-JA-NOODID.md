@@ -21,14 +21,14 @@
 
 **⚡ PRIORITEET: Tähtaeg neljapäev 23.01 õhtuks (kooridele printimiseks)**
 
-| #   | Laulu nimi              | Allikas           | Noodi staatus           |
-| --- | ----------------------- | ----------------- | ----------------------- |
-| 1   | Millal meie sinna saame |                   | ✅ Pulmalaulude kaustas |
-| 2   | Sööge langud            | **Kihnu variant** | ✅ Pulmalaulude kaustas |
-| 3   | Petis peiu              |                   | ✅ Pulmalaulude kaustas |
-| 4   | Palju veini             |                   | ✅ Pulmalaulude kaustas |
-| 5   | Ei või õnneta elada     | Kihnu             | ✅ Pulmalaulude kaustas |
-| 6   | Kohus koju minna        |                   | ✅ Pulmalaulude kaustas |
+| #   | Laulu nimi              | Allikas           | Noodi staatus                      |
+| --- | ----------------------- | ----------------- | ---------------------------------- |
+| 1   | Millal meie sinna saame |                   | 📝 Ülelugemises                    |
+| 2   | Sööge langud            | **Kihnu variant** | 📝 Ülelugemises                    |
+| 3   | Petis peiu              |                   | 📝 Ülelugemises                    |
+| 4   | Palju veini             |                   | 📝 Ülelugemises                    |
+| 5   | Ei või õnneta elada     | Kihnu             | 📝 Ülelugemises                    |
+| 6   | Kohus koju minna        |                   | 📝 Ülelugemises                    |
 
 **Märkused:**
 
@@ -59,6 +59,7 @@
 ## Legendi seletus
 
 - ✅ **Olemas** - Noot on Google Drive'is või kinnitatud
+- 📝 **Ülelugemises** - Noot on valmis, käib kvaliteedikontroll
 - ❌ **Puudu** - Noot tuleb lisada
 - ⚠️ **Eriline tegevus vajalik** - Näiteks autoriõiguste küsimine
 - ⏳ **Kontrollida** - Staatus pole veel kinnitatud
@@ -69,7 +70,13 @@
 
 ### Prioriteet 1: Pulmalaulud (TÄHTAEG 23.01 õhtu)
 
-1. **Koostada pulmalaulude fail** õiges järjekorras (II OSA)
+1. **Küljendada pulmalaulud** üle (skaneeringud olemas):
+   - ~~Millal meie sinna saame~~ (ülelugemises)
+   - ~~Sööge langud (Kihnu)~~ (ülelugemises)
+   - ~~Petis peiu~~ (ülelugemises)
+   - ~~Palju veini~~ (ülelugemises)
+   - ~~Ei või õnneta elada~~ (ülelugemises)
+   - ~~Kohus koju minna~~ (ülelugemises)
 2. **Välja jätta:**
    - Sööge langud Lihula variant
    - Mõrsja väljakutsumise hakatus
