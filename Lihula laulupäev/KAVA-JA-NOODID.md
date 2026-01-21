@@ -21,14 +21,14 @@
 
 **⚡ PRIORITEET: Tähtaeg neljapäev 23.01 õhtuks (kooridele printimiseks)**
 
-| #   | Laulu nimi              | Allikas           | Noodi staatus                      |
-| --- | ----------------------- | ----------------- | ---------------------------------- |
-| 1   | Millal meie sinna saame |                   | 📝 Ülelugemises                    |
-| 2   | Sööge langud            | **Kihnu variant** | 📝 Ülelugemises                    |
-| 3   | Petis peiu              |                   | 📝 Ülelugemises                    |
-| 4   | Palju veini             |                   | 📝 Ülelugemises                    |
-| 5   | Ei või õnneta elada     | Kihnu             | 📝 Ülelugemises                    |
-| 6   | Kohus koju minna        |                   | 📝 Ülelugemises                    |
+| #   | Laulu nimi                                                               | Allikas           | Noodi staatus   |
+| --- | ------------------------------------------------------------------------ | ----------------- | --------------- |
+| 1   | [Millal meie sinna saame](noodivihik/Millal%20saame%20sinna%20maale.pdf) |                   | 📝 Ülelugemises |
+| 2   | [Sööge langud](noodivihik/Sööge,%20langud.pdf)                           | **Kihnu variant** | 📝 Ülelugemises |
+| 3   | [Petis peiu](noodivihik/Petis%20peiu.pdf)                                |                   | 📝 Ülelugemises |
+| 4   | [Palju veini](noodivihik/Palju%20veini.pdf)                              |                   | 📝 Ülelugemises |
+| 5   | [Ei või õnneta elada](noodivihik/Ei%20või%20õnneta%20elada.pdf)          | Kihnu             | 📝 Ülelugemises |
+| 6   | [Kohus koju minna](noodivihik/Kohus%20koju%20minna.pdf)                  |                   | 📝 Ülelugemises |
 
 **Märkused:**
 
