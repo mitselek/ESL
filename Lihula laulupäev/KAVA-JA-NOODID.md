@@ -52,7 +52,7 @@
 | 5   | Tuljak                       |            | ⏳ Kontrollida          |
 | 6   | Mesipuu                      |            | ⏳ Kontrollida          |
 | 7   | Mu isamaa                    | Ernesaks   | ⏳ Kontrollida          |
-| 8   | Sii meie seltsis selle aasta | Kihnu lugu | ❌ Puudu - Reeda saadab |
+| 8   | Sii meie seltsis selle aasta | Kihnu lugu | � Ülelugemises          |
 
 ---
 
