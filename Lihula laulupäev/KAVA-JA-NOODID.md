@@ -43,16 +43,16 @@
 
 ## IV OSA
 
-| #   | Laulu nimi                   | Helilooja  | Noodi staatus           |
-| --- | ---------------------------- | ---------- | ----------------------- |
-| 1   | Linakatkuja                  |            | ⏳ Kontrollida          |
-| 2   | Mu süda                      | Kreek      | ❌ Puudu - Reeda saadab |
-| 3   | Lenda üles kurbtusest        |            | ⏳ Kontrollida          |
-| 4   | Elukoor                      |            | ⏳ Kontrollida          |
-| 5   | Tuljak                       |            | ⏳ Kontrollida          |
-| 6   | Mesipuu                      |            | ⏳ Kontrollida          |
-| 7   | Mu isamaa                    | Ernesaks   | ⏳ Kontrollida          |
-| 8   | Sii meie seltsis selle aasta | Kihnu lugu | � Ülelugemises          |
+| #   | Laulu nimi                                                                           | Helilooja  | Noodi staatus           |
+| --- | ------------------------------------------------------------------------------------ | ---------- | ----------------------- |
+| 1   | Linakatkuja                                                                          |            | ⏳ Kontrollida          |
+| 2   | Mu süda                                                                              | Kreek      | ❌ Puudu - Reeda saadab |
+| 3   | Lenda üles kurbtusest                                                                |            | ⏳ Kontrollida          |
+| 4   | Elukoor                                                                              |            | ⏳ Kontrollida          |
+| 5   | Tuljak                                                                               |            | ⏳ Kontrollida          |
+| 6   | Mesipuu                                                                              |            | ⏳ Kontrollida          |
+| 7   | Mu isamaa                                                                            | Ernesaks   | ⏳ Kontrollida          |
+| 8   | [Sii meie seltsis selle aasta](noodivihik/Siin%20meie%20seltsis%20selle%20aasta.pdf) | Kihnu lugu | 📝 Ülelugemises         |
 
 ---
 
