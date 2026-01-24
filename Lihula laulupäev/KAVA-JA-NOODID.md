@@ -8,14 +8,14 @@
 
 ## I OSA
 
-| #   | Laulu nimi                        | Helilooja/Allikas              | Noodi staatus                      |
-| --- | --------------------------------- | ------------------------------ | ---------------------------------- |
-| 1   | Laulu võim (13 lüürilist, I laul) | Kui mina hakkan laulemaie      | ✅ Olemas                          |
-| 2   | Koit                              |                                | ⏳ Kontrollida                     |
-| 3   | Sind surmani                      | Kunileid                       | ⏳ Kontrollida                     |
-| 4   | Mis need ohjad                    | Saar                           | ⏳ Kontrollida                     |
-| 5   | Valgust                           | Uusberg (Noorte laulupeo 2023) | ⚠️ Küsida laulupeolt jagamisõigust |
-| 6   | Sa oled ainus                     | Ehala                          | ⏳ Kontrollida                     |
+| #   | Laulu nimi                        | Helilooja/Allikas              | Noodi staatus           |
+| --- | --------------------------------- | ------------------------------ | ----------------------- |
+| 1   | Laulu võim (13 lüürilist, I laul) | Kui mina hakkan laulemaie      | ✅ Olemas               |
+| 2   | Koit                              |                                | ⏳ Kontrollida          |
+| 3   | Sind surmani                      | Kunileid                       | ⏳ Kontrollida          |
+| 4   | Mis need ohjad                    | Saar                           | ⏳ Kontrollida          |
+| 5   | Valgust                           | Uusberg (Noorte laulupidu '23) | ❌ Puudu - ootan skanni |
+| 6   | Sa oled ainus                     | Ehala                          | ⏳ Kontrollida          |
 
 ## II OSA - Läänemaa ja saarte pulmalaulud
 
@@ -43,16 +43,16 @@
 
 ## IV OSA
 
-| #   | Laulu nimi                                                                           | Helilooja  | Noodi staatus           |
-| --- | ------------------------------------------------------------------------------------ | ---------- | ----------------------- |
-| 1   | Linakatkuja                                                                          |            | ⏳ Kontrollida          |
-| 2   | Mu süda                                                                              | Kreek      | ❌ Puudu - Reeda saadab |
-| 3   | Lenda üles kurbtusest                                                                |            | ⏳ Kontrollida          |
-| 4   | Elukoor                                                                              |            | ⏳ Kontrollida          |
-| 5   | Tuljak                                                                               |            | ⏳ Kontrollida          |
-| 6   | Mesipuu                                                                              |            | ⏳ Kontrollida          |
-| 7   | Mu isamaa                                                                            | Ernesaks   | ⏳ Kontrollida          |
-| 8   | [Sii meie seltsis selle aasta](noodivihik/Siin%20meie%20seltsis%20selle%20aasta.pdf) | Kihnu lugu | 📝 Ülelugemises         |
+| #   | Laulu nimi                                                                           | Helilooja  | Noodi staatus   |
+| --- | ------------------------------------------------------------------------------------ | ---------- | --------------- |
+| 1   | [Linakatkuja](noodivihik/Linakatkuja.pdf)                                            |            | ❌ Pole vaja    |
+| 2   | [Mu süda](noodivihik/Mu%20süda,%20ärka%20üles.pdf)                                   | Kreek      | 📝 Ülelugemises |
+| 3   | Lenda üles kurbtusest                                                                |            | ⏳ Kontrollida  |
+| 4   | Elukoor                                                                              |            | ⏳ Kontrollida  |
+| 5   | Tuljak                                                                               |            | ⏳ Kontrollida  |
+| 6   | Mesipuu                                                                              |            | ⏳ Kontrollida  |
+| 7   | Mu isamaa                                                                            | Ernesaks   | ⏳ Kontrollida  |
+| 8   | [Sii meie seltsis selle aasta](noodivihik/Siin%20meie%20seltsis%20selle%20aasta.pdf) | Kihnu lugu | 📝 Ülelugemises |
 
 ---
 
