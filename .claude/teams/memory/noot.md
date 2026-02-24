@@ -79,3 +79,9 @@ Mu süda ärka üles, Linakatkuja, pulmalaulud (koond)
 - [HOIATUS] Kutses puudub Linakatkuja (õige), aga KAVA-JA-NOODID.md IV osa nimekiri sisaldab seda veel (märgitud "Pole vaja")
 - Liisa Rahusoo on nõus noote üle lugema (Mihkli kiri 23.01)
 - Urve Uusberg kommenteeris eelarvet põhjalikult (19.02)
+
+### Sulgemisraport 2026-02-24
+
+- [EDASI_LÜKATUD] 10 nooti staatuses "kontrollida" — vajab Google Drive'i kontrolli (kasutaja). Valguse autoriõigused lahtised. KULKA eelarve pooleli.
+- [HOIATUS] KAVA-JA-NOODID.md "Viimati uuendatud" kuupäev on endiselt 2026-01-21 — uuendada järgmisel muudatusel.
+- [MUSTER] Pulmalaulud valmis Mihkli poolt tähtajaks (23.01), aga Reedalt pole tagasisidet noodi kvaliteedi osas.
