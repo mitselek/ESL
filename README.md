@@ -6,7 +6,7 @@ Dokumente ja projekte.
 
 ### Lihula laulupäev
 
-**Kuupäev:** 30. mai 2026  
+**Kuupäev:** 23. mai 2026  
 **Kunstiline juht:** Reeda Kreen  
 **Noodigraafika:** ¡lusa Noodi !nstituut (¡n!)
 

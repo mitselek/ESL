@@ -10,7 +10,7 @@
 Eesti Segakooride Liit (ESL) — Eesti segakooride katusorganisatsioon. Repo sisaldab:
 
 - **esl-www**: ESL-i koduleht (git submodule → aivotoots/esl)
-- **Lihula laulupäev**: Lihula laulupäeva 2026 koordineerimine (30. mai 2026)
+- **Lihula laulupäev**: Lihula laulupäeva 2026 koordineerimine (23. mai 2026)
 - **Haapsalu 2026**: Haapsalu suvekool 2026 planeerimisdokumendid
 - **Haapsalu-Suvekool**: Barokse koorimuusika uurimistööriistad (git submodule)
 - **tuljak**: XXV Tuljaku võistulaulmine

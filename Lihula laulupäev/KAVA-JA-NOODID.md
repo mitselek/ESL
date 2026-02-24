@@ -1,6 +1,6 @@
 # Lihula Laulupäev 2026 - Kava ja Noodid
 
-**Kuupäev:** 30. mai 2026  
+**Kuupäev:** 23. mai 2026  
 **Kunstiline juht:** Reeda Kreen  
 **Google Drive:** https://drive.google.com/drive/folders/1VCB2-BCqak1usLHb9rFo3RtZ9HXRAvzX
 
