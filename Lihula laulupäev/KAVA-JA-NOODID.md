@@ -6,63 +6,36 @@
 
 ---
 
-## I OSA
+## Olemasolevad küljendused
 
-| #   | Laulu nimi                        | Helilooja/Allikas              | Noodi staatus           |
-| --- | --------------------------------- | ------------------------------ | ----------------------- |
-| 1   | Laulu võim (13 lüürilist, I laul) | Kui mina hakkan laulemaie      | ✅ Olemas               |
-| 2   | Koit                              |                                | ⏳ Kontrollida          |
-| 3   | Sind surmani                      | Kunileid                       | ⏳ Kontrollida          |
-| 4   | Mis need ohjad                    | Saar                           | ⏳ Kontrollida          |
-| 5   | Valgust                           | Uusberg (Noorte laulupidu '23) | ❌ Puudu - ootan skanni |
-| 6   | Sa oled ainus                     | Ehala                          | ⏳ Kontrollida          |
+### I OSA
 
-## II OSA - Läänemaa ja saarte pulmalaulud
+| #   | Laul                 | Staatus                          |
+| --- | -------------------- | -------------------------------- |
+| 5   | Valgust (P. Uusberg) | Ülelugemises – ootan tagasisidet |
 
-**⚡ PRIORITEET: Tähtaeg neljapäev 23.01 õhtuks (kooridele printimiseks)**
+### II OSA – Pulmalaulud
 
-| #   | Laulu nimi                                                               | Allikas           | Noodi staatus   |
-| --- | ------------------------------------------------------------------------ | ----------------- | --------------- |
-| 1   | [Millal meie sinna saame](noodivihik/Millal%20saame%20sinna%20maale.pdf) |                   | 📝 Ülelugemises |
-| 2   | [Sööge langud](noodivihik/Sööge,%20langud.pdf)                           | **Kihnu variant** | 📝 Ülelugemises |
-| 3   | [Petis peiu](noodivihik/Petis%20peiu.pdf)                                |                   | 📝 Ülelugemises |
-| 4   | [Palju veini](noodivihik/Palju%20veini.pdf)                              |                   | 📝 Ülelugemises |
-| 5   | [Ei või õnneta elada](noodivihik/Ei%20või%20õnneta%20elada.pdf)          | Kihnu             | ✅ Valmis       |
-| 6   | [Kohus koju minna](noodivihik/Kohus%20koju%20minna.pdf)                  |                   | 📝 Ülelugemises |
+| #   | Laul                        | Staatus                          |
+| --- | --------------------------- | -------------------------------- |
+| 1   | Millal meie sinna saame     | Valmis                           |
+| 2   | Sööge langud (Kihnu)        | Ülelugemises – ootan tagasisidet |
+| 3   | Petis peiu                  | Ülelugemises – ootan tagasisidet |
+| 4   | Palju veini                 | Ülelugemises – ootan tagasisidet |
+| 5   | Ei või õnneta elada (Kihnu) | Valmis                           |
+| 6   | Kohus koju minna            | Ülelugemises – ootan tagasisidet |
+
+### IV OSA
+
+| #   | Laul                                   | Staatus                          |
+| --- | -------------------------------------- | -------------------------------- |
+| 1   | Mu süda, ärka üles (Kreek)             | Ülelugemises – ootan tagasisidet |
+| 2   | Siin meie seltsis selle aasta (Tormis) | Ülelugemises – ootan tagasisidet |
 
 **Märkused:**
 
 - Ei võta Lihula "Sööge langud" varianti - kasutame **Kihnu versiooni**
 - Pulmalaulude failist jäävad välja: "Sööge langud Lihula" ja "Mõrsja väljakutsumise hakatus"
-
-## III OSA
-
-| #   | Laulu nimi           | Helilooja | Noodi staatus  |
-| --- | -------------------- | --------- | -------------- |
-| 1   | ILUS MAA (tervikuna) |           | ⏳ Kontrollida |
-
-## IV OSA
-
-| #   | Laulu nimi                                                                           | Helilooja  | Noodi staatus   |
-| --- | ------------------------------------------------------------------------------------ | ---------- | --------------- |
-| 1   | [Linakatkuja](noodivihik/Linakatkuja.pdf)                                            |            | ❌ Pole vaja    |
-| 2   | [Mu süda](noodivihik/Mu%20süda,%20ärka%20üles.pdf)                                   | Kreek      | 📝 Ülelugemises |
-| 3   | Lenda üles kurbtusest                                                                |            | ⏳ Kontrollida  |
-| 4   | Elukoor                                                                              |            | ⏳ Kontrollida  |
-| 5   | Tuljak                                                                               |            | ⏳ Kontrollida  |
-| 6   | Mesipuu                                                                              |            | ⏳ Kontrollida  |
-| 7   | Mu isamaa                                                                            | Ernesaks   | ⏳ Kontrollida  |
-| 8   | [Sii meie seltsis selle aasta](noodivihik/Siin%20meie%20seltsis%20selle%20aasta.pdf) | Kihnu lugu | 📝 Ülelugemises |
-
----
-
-## Legendi seletus
-
-- ✅ **Olemas** - Noot on Google Drive'is või kinnitatud
-- 📝 **Ülelugemises** - Noot on valmis, käib kvaliteedikontroll
-- ❌ **Puudu** - Noot tuleb lisada
-- ⚠️ **Eriline tegevus vajalik** - Näiteks autoriõiguste küsimine
-- ⏳ **Kontrollida** - Staatus pole veel kinnitatud
 
 ---
 
@@ -71,7 +44,7 @@
 ### Prioriteet 1: Pulmalaulud (TÄHTAEG 23.01 õhtu)
 
 1. **Küljendada pulmalaulud** üle (skaneeringud olemas):
-   - ~~Millal meie sinna saame~~ (ülelugemises)
+   - ~~Millal meie sinna saame~~ (valmis)
    - ~~Sööge langud (Kihnu)~~ (ülelugemises)
    - ~~Petis peiu~~ (ülelugemises)
    - ~~Palju veini~~ (ülelugemises)
@@ -109,9 +82,9 @@ https://forms.gle/CuEStNHhmTx8WEnT6
 
 **Märkused:**
 
-- Kõik noodid küljendatakse värskes graafikas (¡n! standard)
+- Kõik noodid küljendatakse värskes graafikas (¡n! + Liisa Rahusoo)
 - Eesmärk: professionaalne, ühtne välimus kõigile nootidele
 
 ---
 
-**Viimati uuendatud:** 2026-01-21
+**Viimati uuendatud:** 2026-02-26
