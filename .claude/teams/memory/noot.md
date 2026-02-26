@@ -85,3 +85,41 @@ Mu süda ärka üles, Linakatkuja, pulmalaulud (koond)
 - [EDASI_LÜKATUD] 10 nooti staatuses "kontrollida" — vajab Google Drive'i kontrolli (kasutaja). Valguse autoriõigused lahtised. KULKA eelarve pooleli.
 - [HOIATUS] KAVA-JA-NOODID.md "Viimati uuendatud" kuupäev on endiselt 2026-01-21 — uuendada järgmisel muudatusel.
 - [MUSTER] Pulmalaulud valmis Mihkli poolt tähtajaks (23.01), aga Reedalt pole tagasisidet noodi kvaliteedi osas.
+
+---
+
+## Ülelugemise äpi nõuete arutelu — sessioon 2026-02-26
+
+[VAHEKOKKUVÕTE] 2026-02-26
+
+### Scope muudatused (kasutaja otsused)
+
+- [OTSUS] 2026-02-26 — Google Auth tuleb v1-sse (Cloudflare Access + Google IDP). Varasem "pole autentimist" tühistatud.
+- [OTSUS] 2026-02-26 — Eksport (CSV/XLSX) läheb v2-sse, pole v1 prioriteet.
+- [OTSUS] 2026-02-26 — Admin rolli äpis EI OLE. Admin-töö (kasutajad, kava, osad) tehakse Wrangler CLI + D1 kaudu.
+- [OTSUS] 2026-02-26 — Rollid on NOODI-PÕHISED, mitte kasutaja-põhised. `users.role` kaob, asemele `pieces.typesetter` + `pieces.reviewer` FK-d.
+- [OTSUS] 2026-02-26 — Share_token KAOB. Noodi URL on avalik (readonly ilma auth'ita, interaktiivne auth'iga). Sama URL, readonly prop sõltub auth'ist.
+- [OTSUS] 2026-02-26 — Vahestaatus "kontrollitud" lisatud elutsüklisse (korrektor on lõpetanud, tagasiside olemas, graafik pole veel parandanud).
+
+### Uuendatud elutsükkel (8 staatust + loop)
+
+```
+teos → lähtefail → küljendus → korrektuur → kontrollitud → parandatud → kinnitus → publitseeritud
+                                    ↑                                        |
+                                    └────────────────────────────────────────┘
+```
+
+### Minu panus arutelus
+
+- Kinnitasin: kõik kasutajad Gmailil (Liisa: liisa.rahusoo@gmail.com, Reeda: reedakreen@gmail.com, Mihkel: mitselek@gmail.com)
+- Soovitasin: jagatud link read-only ilma auth'ita, tagasiside vajab auth'i → kasutaja läks kaugemale: kogu äpp avalik readonly
+- Soovitasin "kontrollitud" vahestaatust → kinnitatud
+- Soovitasin kaks FK-d pieces tabelis (typesetter + reviewer) vs eraldi tabel → kinnitatud v1-ks
+- Küsisin reviews.status väärtuste eksplitsiitset loetlemist → vastus ootel
+- Soovitasin pieces.notes välja blokeerijate jälgimiseks → vastus ootel
+
+### Lahtised küsimused (vastamata)
+
+- [POOLELI] reviews.status väärtused — soovitasin: in_progress | submitted | approved | rejected
+- [POOLELI] pieces.notes väli blokeerijate jaoks (nt "Ootame Reedalt lähtefaili")
+- [POOLELI] otsused.md rida 34 kasutab vana terminoloogiat — vajab uuendamist

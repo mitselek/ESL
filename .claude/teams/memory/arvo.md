@@ -1,42 +1,89 @@
 # Arvo — Arhitektuuriülevaatuse märkmed
 
-## [VAHEKOKKUVÕTE] 2026-02-26
+## Kehtiv arhitektuur (2026-02-26)
 
-### Nootide ülelugemise äpp — arhitektuur esitatud
+### Andmemudel — 7 tabelit
 
-Analüüsisin Liisa CSV tagasisideformaati (`Lihula laulupäev/docs/Nootide kontrollimine.xlsx - Millal saame sinna maale.csv`).
+users (id, email, name, picture — ILMA globaalse rollita), pieces (+ typesetter_id FK, + reviewer_id FK, pdf_url=viimane versioon), voice_parts, param_templates, piece_params, reviews (pdf_url=konkreetne revision, ILMA share_token'ita), review_entries (remarks JSON).
 
-**Peamised avastused CSV-st:**
-- [MUSTER] CSV-l on kaks selget sektsiooni: per-voice parameetrid (S/A/T/B tulbad) ja whole-piece parameetrid (üks tulp "Kogu noodi kohta")
-- [MUSTER] Verdict väärtused: "õige"/"olemas" = ok, "Ettepanek: ..." = suggestion, "Vead: ..." = error, "-" = n/a
-- [MUSTER] Kommentaarid on pikad vabatekstiväljad koos konkreetsete taktiviidete ja selgitustega
+### Rollimudel — noodi-põhine
 
-**Arhitektuuriotsused esitatud:**
-- [OTSUS] 5 tabelit: pieces, voice_parts, review_params (scope: per_voice|whole_piece), reviews, review_entries
-- [OTSUS] Drizzle ORM (D1 natiivne tugi) > Prisma
-- [OTSUS] pdf.js split-view (desktop) / tabs (mobiil)
-- [OTSUS] Autosave debounce 1s, Svelte 5 $state rune'id
-- [OTSUS] Jagatud lingid (share_token), mitte auth — 2-3 kasutajat
-- [OTSUS] SheetJS eksport, staatiline PDF hosting alguses
+- Globaalset rolli pole. Kasutaja on identiteet, roll tuleneb noodist.
+- `pieces.typesetter_id` = selle noodi graafik
+- `pieces.reviewer_id` = selle noodi korrektor
+- Sama kasutaja võib olla ühe noodi graafik ja teise korrektor
+- Admin-töö (nootide lisamine, parameetrite mallid, kasutajad) tehakse Wrangler CLI kaudu
 
-**Team-lead'i vastused (2026-02-26):**
-- [OTSUS] 2026-02-26 — Eraldi repo (mitte ESL repo alamkaust). Põhjendus: ESL on sisu-repo, äpp on tarkvara, eraldi CI/CD.
-- [OTSUS] 2026-02-26 — Parameetrid peavad olema konfigureeritavad (admin-hallatavad). Põhjendus: barokmuusikas on teised parameetrid kui rahvalauludes.
-- [OTSUS] 2026-02-26 — Dashboard vaade on vajalik: nootide nimekiri staatustega (kontrollitud / pooleli / ootab).
-- [OTSUS] 2026-02-26 — ORM valik (Drizzle vs raw SQL) jääb Sveni otsustada implementatsiooni käigus.
-- [OTSUS] 2026-02-26 — `users` tabelit v1-s ei ole (YAGNI). 6 tabelit kokku.
-- [OTSUS] 2026-02-26 — 8-astmeline noodi elutsükkel `pieces.status` väljal (Noodi ettepanek). PDF versioonid ja teavitused v2.
-### Dashboard prototüübi analüüs (2026-02-26)
+### Elutsükkel — 8 staatust + loop + otsetee
 
-Fail: `Lihula laulupäev/lihula-dashboard.jsx` (React prototüüp)
+`teos → lähtefail → küljendus → korrektuur → kontrollitud → parandatud → kinnitus → publitseeritud`
+Loop: `kinnitus → korrektuur` (ei kinnita). Otsetee: `kontrollitud → kinnitus` (0 viga).
+Iga ring = uus review. `kontrollitud` lisatud, sest korrektuur→parandatud jättis vahele "tagasiside olemas, aga pole veel parandatud" faasi.
 
-**UX mustrid, mis tuleb SvelteKit äppi üle kanda:**
-- [MUSTER] Header: koondstatistika (küljendatud/total, kontrollitud/küljendatud, päevi tähtajani, tähtaeg)
-- [MUSTER] Progressiriba: segmenteeritud (valmis=roheline, ootab=kollane, küljendamata=hall, küsimus=punane)
-- [MUSTER] Laulud grupeeritud osade kaupa (I-IV), iga laul reana: StatusDot + pealkiri + helilooja + staatuse badge
-- [MUSTER] 5 staatust prototüübis: Valmis (#2D6A4F), Liisa kontrollinud (#52B788), Ootan tagasisidet (#E9C46A), Küljendamata (#ADB5BD), Küsimus (#E76F51)
-- [MUSTER] Visuaalne keel: Crimson Pro serif, JetBrains Mono monospace, soojad toonid (#FAF6F0 taust, #C9A96E aktsent)
+### Auth ja juurdepääs
 
-**Prototüübi 5 staatust vs 8-astmeline voog — harmoniseerida implementatsioonis.**
+- Cloudflare Access + Google IDP (login provider)
+- Cf Access: bypass kogu äpp (ei blokeeri)
+- Auth kontroll APP-TASEMEL: GET = alati lubatud, POST/PUT = nõuab JWT-d
+- Kogu äpp on avalikult loetav (dashboard, noodid, ülelugemised — read-only)
+- Auth vajalik ainult kirjutamiseks
 
-**[POOLELI]** Ootan team-lead'i luba implementatsiooni käivitamiseks. Nõuete ja arhitektuuri koondamine käib.
+### API pind (kehtiv)
+
+```
+GET  /api/me                          — kasutaja andmed (null kui pole auth'd)
+GET  /api/pieces                      — dashboard (avalik)
+GET  /api/pieces/[id]                 — detailvaade (avalik)
+PUT  /api/pieces/[id]/claim           — typesetter'iks hakkamine (auth)
+PUT  /api/pieces/[id]/assign-reviewer — korrektori määramine (auth)
+PUT  /api/pieces/[id]/status          — staatuse muutmine (auth)
+GET  /api/users                       — kasutajate nimekiri (auth? avalik?)
+POST /api/reviews                     — uus ülelugemine (auth)
+GET  /api/reviews/[id]                — review detailid (avalik)
+PUT  /api/reviews/[id]                — review staatuse uuendamine (auth)
+PUT  /api/reviews/[id]/entries        — bulk upsert / autosave (auth)
+```
+
+### Komponentide muster
+
+Üks URL, mitu olekut. `/pieces/[id]` vaade sõltub auth'ist:
+- user=null → readonly (PDF + tagasiside tabel)
+- user=typesetter → staatuse muutmine, korrektori määramine
+- user=reviewer → tagasiside vorm (interaktiivne)
+
+Komponentidel `readonly` prop, mis sõltub kasutaja kontekstist, mitte route'ist.
+
+---
+
+## Otsuste ajalugu (2026-02-26)
+
+### Kinnitatud otsused
+
+1. **Eksport → v2.** CSV/XLSX pole v1 prioriteet.
+2. **Google Auth → v1.** Cloudflare Access + Google IDP.
+3. **State machine:** 8 staatust + loop + otsetee. `kontrollitud` lisatud korrektuur ja parandatud vahele.
+4. **Rollimudel:** noodi-põhine (asendas globaalset admin/reviewer).
+5. **2 FK-d pieces tabelis** (asendas eraldi piece_assignments tabelit). YAGNI.
+6. **Remarks JSON:** `review_entries.remarks TEXT` — `[{"bars":"5-8","text":"..."}]`.
+7. **Share token KAOB.** Avalik read-only äpp asendab jagatud linke.
+8. **App-tasemel auth kontroll** (mitte Cf Access reeglid). Lihtsam konfig, testidega mockitav.
+9. **PDF revisionid:** `reviews.pdf_url` = konkreetne PDF versioon, `pieces.pdf_url` = viimane. Review = revision, eraldi tabelit pole vaja.
+
+### REQUIREMENTS.md review — avatud leitud (parandamata)
+
+1. otsused.md: aegunud staatuse nimed "ülelugemises"→"parandused esitatud" (peaks olema korrektuur→parandatud)
+2. otsused.md: ekspordi viide süvavaate kirjelduses
+3. REQUIREMENTS.md: automaatse ülemineku reegel puudub (review completed → korrektuur→parandatud)
+4. REQUIREMENTS.md: state reegli sõnastus (kinnitus→publitseeritud/korrektuur, mitte parandatud→kinnitus)
+
+### CSV analüüsi mustrid (stabiilsed)
+
+- [MUSTER] CSV: per-voice (S/A/T/B) + whole-piece sektsioonid, 16+7 parameetrit
+- [MUSTER] Verdict: "õige"/"olemas"=ok, "Ettepanek:..."=suggestion, "Vead:..."=error, "-"=na
+- [MUSTER] Dashboard prototüüp: Crimson Pro + JetBrains Mono, soojad toonid (#FAF6F0, #C9A96E)
+
+### Avatud küsimused (2026-02-26 sessiooni lõpp)
+
+1. REQUIREMENTS.md review 4 leidu — tõenäoliselt parandatud team-lead'i poolt, aga pole kinnitatud
+2. `kontrollitud` staatus — kas REQUIREMENTS.md-s juba uuendatud? Kontrollida järgmises sessioonis
+3. `GET /api/users` — avalik või auth? Pole otsustatud
