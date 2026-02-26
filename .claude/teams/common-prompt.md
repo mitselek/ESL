@@ -3,7 +3,7 @@
 ## Meeskond
 
 - **Meeskonna nimi:** `esl-dev`
-- **Liikmed:** team-lead, veeb (veebileht), noot (noodigraafika ja üritused), uurija (uurimistöö)
+- **Liikmed:** team-lead, veeb (veebileht), noot (noodigraafika ja üritused), finn (uurimistöö), sven (SvelteKit frontend), tess (testimine), arvo (arhitektuuriülevaatus), polly (tooteomanik)
 
 ## Projekt
 
@@ -37,6 +37,9 @@ Iga sõnum, mille saadad SendMessage kaudu, peab algama ajatempliga `[YYYY-MM-DD
 | Noodid | PDF (¡n! standard) | Ühtne küljendus Ilusa Noodi Instituudilt |
 | Uurimistöö | Bash + Gemini API | bach-research.sh, bach-session.sh |
 | MCP server | TypeScript + Node.js | F001-youtube-mcp-server (YouTube playlistid) |
+| Ülelugemise äpp | SvelteKit 2 + Svelte 5 | Cloudflare Pages/Workers, D1, Tailwind v4 |
+| Testimine | Vitest + Playwright | Ühik- ja E2E testid |
+| Paketihaldur | pnpm | ALATI pnpm, mitte npm |
 
 ## Veebilehe ehitus
 
@@ -103,7 +106,11 @@ Enne esimest tegevust:
    - **Kõik rollid**: `otsused.md`
    - **veeb**: `sisu-juhised.md`
    - **noot**: `otsused.md` (ürituste otsused)
-   - **uurija**: kõik jagatud failid (uurimise kontekst)
+   - **sven**: `otsused.md` (äpi arhitektuur)
+   - **tess**: `otsused.md` (testimise kontekst)
+   - **arvo**: `otsused.md` (ülevaatuse kalibratsioon)
+   - **polly**: `otsused.md` (nõuete kontekst)
+   - **finn**: kõik jagatud failid (uurimise kontekst)
 3. Saada tutvustussõnum `team-lead`'ile, et oled valmis
 
 ### Millal salvestada
