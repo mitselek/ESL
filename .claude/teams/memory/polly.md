@@ -3,6 +3,7 @@
 ## Kehtiv seisu kokkuvõte (2026-02-26)
 
 [OTSUS] 2026-02-26 — v1 scope'i viimane seis:
+
 - Google Auth (Cloudflare Access + Google IDP)
 - Eksport (CSV/XLSX) v2-s
 - Rollid on NOODI-PÕHISED (typesetter/reviewer per noot), mitte globaalsed. `users.role` KAOTATUD.
@@ -16,6 +17,7 @@ Loop: kinnitus → tagasi korrektuur. Iga ring = uus reviews kirje.
 NB: "ootab_parandust" on uus staatus (minu soovitus, ootab kinnitust) — täidab lünga korrektuur ja parandatud vahel.
 
 [OTSUS] 2026-02-26 — Kasutajalood (viimane seis, US-d ümber nummerdatud):
+
 - US-01: Graafikuks hakkamine (claim)
 - US-02: Korrektori määramine (assign-reviewer)
 - US-03: Per-voice tagasiside (16 parameetrit)
@@ -29,6 +31,7 @@ NB: "ootab_parandust" on uus staatus (minu soovitus, ootab kinnitust) — täida
 ## Andmemudel
 
 [OTSUS] 2026-02-26 — 7 tabelit: users, pieces, voice_parts, param_templates, piece_params, reviews, review_entries
+
 - pieces: typesetter_id + reviewer_id (FK users), mitte created_by
 - reviews: share_token KAOTATUD (ootab eemaldamist REQUIREMENTS.md-st)
 - review_entries.remarks: JSON [{"bars":"5-8","text":"..."}]
@@ -36,14 +39,15 @@ NB: "ootab_parandust" on uus staatus (minu soovitus, ootab kinnitust) — täida
 
 ## Pooleliolevad teemad
 
-[POOLELI] 2026-02-26 — REQUIREMENTS.md-s share_token jäänukid: US-08 rida 168-172, reviews.share_token rida 285, /r/[share_token] rida 330-331, r/[token] route rida 345-346. Kõik tuleb eemaldada.
+[LAHENDATUD] 2026-02-27 — share_token jäänukid EEMALDATUD REQUIREMENTS.md-st (kinnitatud failist lugedes).
 
-[POOLELI] 2026-02-26 — "ootab_parandust" staatus ootab kasutaja kinnitust. Kui kinnitatakse, siis 8 staatust + loop. Soovitasin värve: ootab_parandust=#E76F51 oranž, parandatud=#457B9D sinine.
+[LAHENDATUD] 2026-02-27 — Elutsükkel kinnitatud: 8 staatust kasutab "kontrollitud" (mitte "ootab_parandust"). Värvid: kontrollitud=#E76F51 oranž, paranduses=#E76F51 oranž (sama). REQUIREMENTS.md-s sees.
 
 ## Mustrid
 
 [MUSTER] 2026-02-26 — CSV struktuur: rida=parameeter, veerg=häälerühm (S/A/T/B). Tulemused: "õige", "Ettepanek: ...", "Viga: ...", tühi=ei kohaldu (-).
 
 [MUSTER] 2026-02-26 — Parameetrid kahes scope'is:
+
 1. Per-voice (16 tk): noodikõrgused, pausid, rütmid, sõnad, strihhid jne
 2. Kogu noodi (7 tk): pealkiri, helilooja, tempo jne

@@ -1,4 +1,4 @@
-# Noot -- isiklikud märkmed
+# Partita -- isiklikud märkmed
 
 ## Lihula laulupäev 2026 -- hetkeülevaade
 
@@ -103,10 +103,11 @@ Mu süda ärka üles, Linakatkuja, pulmalaulud (koond)
 
 ### Uuendatud elutsükkel (8 staatust + loop)
 
-```
-teos → lähtefail → küljendus → korrektuur → kontrollitud → parandatud → kinnitus → publitseeritud
-                                    ↑                                        |
-                                    └────────────────────────────────────────┘
+```text
+teos → lähtefail → küljenduses → korrektuuris → kontrollitud → paranduses → kinnitatud → publitseeritud
+                                      ↑                                   |
+                                      └───────────────────────────────────┘
+                                                      (uuesti korrektuuris)
 ```
 
 ### Minu panus arutelus
@@ -116,10 +117,10 @@ teos → lähtefail → küljendus → korrektuur → kontrollitud → parandatu
 - Soovitasin "kontrollitud" vahestaatust → kinnitatud
 - Soovitasin kaks FK-d pieces tabelis (typesetter + reviewer) vs eraldi tabel → kinnitatud v1-ks
 - Küsisin reviews.status väärtuste eksplitsiitset loetlemist → vastus ootel
-- Soovitasin pieces.notes välja blokeerijate jälgimiseks → vastus ootel
+- Soovitasin pieces.notes välja blokeerijate jälgimiseks → kinnitatud (on juba skeemas)
 
-### Lahtised küsimused (vastamata)
+### Lahtised küsimused — LAHENDATUD 2026-02-27
 
-- [POOLELI] reviews.status väärtused — soovitasin: in_progress | submitted | approved | rejected
-- [POOLELI] pieces.notes väli blokeerijate jaoks (nt "Ootame Reedalt lähtefaili")
-- [POOLELI] otsused.md rida 34 kasutab vana terminoloogiat — vajab uuendamist
+- [OTSUS] reviews.status = `in_progress | completed`. Submitted/approved/rejected on üleliigne — piece state machine haldab seda loogikat.
+- [OTSUS] pieces.notes on juba skeemas (blokeerijate jälgimiseks).
+- [OTSUS] otsused.md terminoloogia uuendatud — 8-astmeline elutsükkel, "kontrollitud" vaheetapp korrektselt sisse.

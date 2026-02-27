@@ -27,11 +27,11 @@ Formaat: `[OTSUS] YYYY-MM-DD — Otsus. Põhjendus.`
 
 [OTSUS] 2026-02-26 — ~~`users` tabelit v1-s EI OLE~~ TÜHISTATUD. `users` tabel on tagasi (Google Auth). 7 tabelit kokku.
 
-[OTSUS] 2026-02-26 — Noodi elutsükkel on 7-astmeline + loop: teos → lähtefail → küljendus → korrektuur → parandatud → kinnitus → publitseeritud. Kinnitus saab minna tagasi korrektuuriks. Iga korrektuuriring loob uue `reviews` kirje. PDF versioonid ja teavitused jäävad v2-sse.
+[OTSUS] 2026-02-26 — Noodi elutsükkel on 8-astmeline + loop: teos → lähtefail → küljenduses → korrektuuris → kontrollitud → paranduses → kinnitatud → publitseeritud. Loop: paranduses → korrektuuris (uus korrektuuriring = uus reviews kirje). Otsetee: kontrollitud → kinnitatud (0 viga). PDF versioonid ja teavitused jäävad v2-sse.
 
 [OTSUS] 2026-02-26 — Äpp on üks, kaks põhivaadet: (1) Dashboard — nootide nimekiri + progressiriba + staatused; (2) Noodi süvavaade — PDF + tagasiside vorm. Üks andmemudel, üks deployment.
 
-[OTSUS] 2026-02-26 — Ülelugemise lõpetamine (review.status → completed) uuendab noodi staatuse automaatselt: "korrektuur" → "parandatud".
+[OTSUS] 2026-02-26 — Ülelugemise lõpetamine (review.status → completed) uuendab noodi staatuse automaatselt: "korrektuuris" → "kontrollitud".
 
 [OTSUS] 2026-02-26 — Kirjavahetuse ajajoon ja kirjamustandid (prototüübi 1. ja 3. vaade) on v1-st VÄLJAS. Prototüübist võetakse ainult "Laulude seis" vaade dashboardi aluseks.
 

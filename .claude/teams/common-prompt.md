@@ -3,7 +3,7 @@
 ## Meeskond
 
 - **Meeskonna nimi:** `esl-dev`
-- **Liikmed:** team-lead, veeb (veebileht), noot (noodigraafika ja üritused), finn (uurimistöö), sven (SvelteKit frontend), tess (testimine), arvo (arhitektuuriülevaatus), polly (tooteomanik)
+- **Liikmed:** team-lead, veeb (veebileht), partita (noodigraafika ja üritused), finn (uurimistöö), sven (SvelteKit frontend), tess (testimine), arvo (arhitektuuriülevaatus), polly (tooteomanik)
 
 ## Projekt
 
@@ -29,17 +29,17 @@ Iga sõnum, mille saadad SendMessage kaudu, peab algama ajatempliga `[YYYY-MM-DD
 
 ## Tehnoloogiad
 
-| Komponent | Tehnoloogia | Märkused |
-|-----------|-------------|----------|
-| Veebileht | Entu-SSG + Pug + YAML | Staatiline leht, kakskeelne (et/en) |
-| CSS | Stylus | Kompileeritakse build'il |
-| Sisu | YAML + Markdown | Sisu-andmete eraldamine (data.yaml) |
-| Noodid | PDF (¡n! standard) | Ühtne küljendus Ilusa Noodi Instituudilt |
-| Uurimistöö | Bash + Gemini API | bach-research.sh, bach-session.sh |
-| MCP server | TypeScript + Node.js | F001-youtube-mcp-server (YouTube playlistid) |
-| Ülelugemise äpp | SvelteKit 2 + Svelte 5 | Cloudflare Pages/Workers, D1, Tailwind v4 |
-| Testimine | Vitest + Playwright | Ühik- ja E2E testid |
-| Paketihaldur | pnpm | ALATI pnpm, mitte npm |
+| Komponent       | Tehnoloogia            | Märkused                                     |
+| --------------- | ---------------------- | -------------------------------------------- |
+| Veebileht       | Entu-SSG + Pug + YAML  | Staatiline leht, kakskeelne (et/en)          |
+| CSS             | Stylus                 | Kompileeritakse build'il                     |
+| Sisu            | YAML + Markdown        | Sisu-andmete eraldamine (data.yaml)          |
+| Noodid          | PDF (¡n! standard)     | Ühtne küljendus Ilusa Noodi Instituudilt     |
+| Uurimistöö      | Bash + Gemini API      | bach-research.sh, bach-session.sh            |
+| MCP server      | TypeScript + Node.js   | F001-youtube-mcp-server (YouTube playlistid) |
+| Ülelugemise äpp | SvelteKit 2 + Svelte 5 | Cloudflare Pages/Workers, D1, Tailwind v4    |
+| Testimine       | Vitest + Playwright    | Ühik- ja E2E testid                          |
+| Paketihaldur    | pnpm                   | ALATI pnpm, mitte npm                        |
 
 ## Veebilehe ehitus
 
@@ -105,7 +105,7 @@ Enne esimest tegevust:
 2. Loe oma rollile olulised jagatud failid:
    - **Kõik rollid**: `otsused.md`
    - **veeb**: `sisu-juhised.md`
-   - **noot**: `otsused.md` (ürituste otsused)
+   - **partita**: `otsused.md` (ürituste otsused)
    - **sven**: `otsused.md` (äpi arhitektuur)
    - **tess**: `otsused.md` (testimise kontekst)
    - **arvo**: `otsused.md` (ülevaatuse kalibratsioon)

@@ -30,7 +30,7 @@ Iga ring = uus review. `kontrollitud` lisatud, sest korrektuur→parandatud jät
 
 ### API pind (kehtiv)
 
-```
+```text
 GET  /api/me                          — kasutaja andmed (null kui pole auth'd)
 GET  /api/pieces                      — dashboard (avalik)
 GET  /api/pieces/[id]                 — detailvaade (avalik)
@@ -47,6 +47,7 @@ PUT  /api/reviews/[id]/entries        — bulk upsert / autosave (auth)
 ### Komponentide muster
 
 Üks URL, mitu olekut. `/pieces/[id]` vaade sõltub auth'ist:
+
 - user=null → readonly (PDF + tagasiside tabel)
 - user=typesetter → staatuse muutmine, korrektori määramine
 - user=reviewer → tagasiside vorm (interaktiivne)
@@ -86,4 +87,4 @@ Komponentidel `readonly` prop, mis sõltub kasutaja kontekstist, mitte route'ist
 
 1. REQUIREMENTS.md review 4 leidu — tõenäoliselt parandatud team-lead'i poolt, aga pole kinnitatud
 2. `kontrollitud` staatus — kas REQUIREMENTS.md-s juba uuendatud? Kontrollida järgmises sessioonis
-3. `GET /api/users` — avalik või auth? Pole otsustatud
+3. ~~`GET /api/users` — avalik või auth?~~ **LAHENDATUD 2026-02-27: auth nõutav.** Põhjus: sisselogimata kasutajal pole dropdowni vaja, korrektori määramine on kirjutusoperatsioon. REQUIREMENTS.md uuendatud.

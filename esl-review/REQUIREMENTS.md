@@ -316,7 +316,7 @@ CREATE TABLE review_entries (
 ```text
 -- Kasutaja (Cloudflare Access haldab auth'i)
 GET  /api/me                          — praeguse kasutaja andmed (JWT + D1)
-GET  /api/users                       — kasutajate nimekiri (korrektori valimise dropdown)
+GET  /api/users                       — kasutajate nimekiri (korrektori valimise dropdown, auth nõutav)
 
 -- Noodid
 GET  /api/pieces                      — nootide nimekiri (dashboard)
@@ -331,7 +331,7 @@ GET  /api/reviews/[id]                — ülelugemine koos entry'dega
 PUT  /api/reviews/[id]                — uuenda staatust (completed)
 PUT  /api/reviews/[id]/entries        — bulk upsert (autosave)
 
--- Kõik GET endpointid on avalikud (read-only ilma auth'ita)
+-- Kõik GET endpointid on avalikud (read-only ilma auth'ita), v.a GET /api/users (auth nõutav)
 -- POST/PUT endpointid nõuavad auth'i + noodi-põhist rolli
 ```
 
