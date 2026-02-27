@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+	--bg: #FAF6F0;
+	--text: #2C2416;
+	--accent: #C9A96E;
+	--border: #E8DDD0;
+	--selection: #E8D5B7;
+}
+
+body {
+	background-color: var(--bg);
+	color: var(--text);
+	font-family: 'Crimson Pro', Georgia, serif;
+}
+
+code, .mono {
+	font-family: 'JetBrains Mono', monospace;
+}
