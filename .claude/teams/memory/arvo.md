@@ -37,7 +37,7 @@ GET  /api/pieces/[id]                 — detailvaade (avalik)
 PUT  /api/pieces/[id]/claim           — typesetter'iks hakkamine (auth)
 PUT  /api/pieces/[id]/assign-reviewer — korrektori määramine (auth)
 PUT  /api/pieces/[id]/status          — staatuse muutmine (auth)
-GET  /api/users                       — kasutajate nimekiri (auth? avalik?)
+GET  /api/users                       — kasutajate nimekiri (auth nõutav — KINNITATUD)
 POST /api/reviews                     — uus ülelugemine (auth)
 GET  /api/reviews/[id]                — review detailid (avalik)
 PUT  /api/reviews/[id]                — review staatuse uuendamine (auth)
@@ -83,8 +83,24 @@ Komponentidel `readonly` prop, mis sõltub kasutaja kontekstist, mitte route'ist
 - [MUSTER] Verdict: "õige"/"olemas"=ok, "Ettepanek:..."=suggestion, "Vead:..."=error, "-"=na
 - [MUSTER] Dashboard prototüüp: Crimson Pro + JetBrains Mono, soojad toonid (#FAF6F0, #C9A96E)
 
+### Implementatsioon — VALMIS (2026-02-27)
+
+Kõik 10 endpointi implementeeritud, üle vaadatud, 107/107 testi rohelised.
+
+**Süsteemsed YELLOW-d (lahendamata, ei blokeeri v1):**
+
+- `request.json()` ilma try/catch-ita kõigis PUT endpointides → vigane body → 500
+- Array elementide valideerimine `review-entries` endpointis puudub → latentne andmekorruptsioon
+- `review-complete.ts` kaks eraldi `await` → pole atomaarne (v2: `db.batch()`)
+
+**Arhitektuurilised mustrid:**
+
+- `piece-status.ts` TRANSITIONS tabel — parim muster staatuste haldamiseks
+- `review-entries.ts` `db.batch()` — ainus atomaarne kirjutusoperatsioon
+- `GET /api/reviews/[id]` avalik (auth eemaldatud ülevaatuse käigus)
+
 ### Avatud küsimused (2026-02-26 sessiooni lõpp)
 
 1. REQUIREMENTS.md review 4 leidu — tõenäoliselt parandatud team-lead'i poolt, aga pole kinnitatud
-2. `kontrollitud` staatus — kas REQUIREMENTS.md-s juba uuendatud? Kontrollida järgmises sessioonis
-3. ~~`GET /api/users` — avalik või auth?~~ **LAHENDATUD 2026-02-27: auth nõutav.** Põhjus: sisselogimata kasutajal pole dropdowni vaja, korrektori määramine on kirjutusoperatsioon. REQUIREMENTS.md uuendatud.
+2. `kontrollitud` staatus — REQUIREMENTS.md-s uuendatud (kontrollitud 2026-02-27)
+3. ~~`GET /api/users` — avalik või auth?~~ **LAHENDATUD 2026-02-27: auth nõutav.**

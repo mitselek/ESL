@@ -39,7 +39,32 @@ pnpm remove @sveltejs/adapter-auto
 - TODO.md (mitte GitHub Issues)
 - `git push main` → auto CF Pages deploy; D1 migratsioonid käsitsi
 
+## API mustrid (kõigis endpoint'ides järgitud)
+
+[MUSTER] Iga API fail: `getFoo(db: DatabaseSync, ...)` (sünkroonne, testid) + `getFooD1(db: D1Db, ...)` (asünkroonne, route). D1Db on lokaalne minimaalne interface igas failis.
+
+[MUSTER] Route standard: `platform?.env.DB ?? null` → 503 kui null. Auth nõutavatel: `locals.user` → 401 enne DB checkki.
+
+[MUSTER] SQLite ülakomad TS stringides: kasuta template literal backtick-iga: `` `datetime('now')` `` mitte `'datetime(\'now\')'`.
+
+[MUSTER] D1 atomaarne bulk upsert: `db.batch([deleteStmt, ...insertStmts])` — D1PreparedBound[] tüüp.
+
+[MUSTER] node:sqlite `.all()` cast: `as unknown as T[]` (ei toeta generics).
+
+## Valmis endpointid (107/107 testi rohelised, 2026-02-27)
+
+- GET /api/pieces — `pieces.ts` + `getPieces`/`getPiecesD1`
+- GET /api/me — `me.ts` + `getMeResponse`
+- GET /api/users — `users.ts` + `getUsers`/`getUsersD1` (auth nõutav)
+- GET /api/pieces/[id] — `piece.ts` + `getPiece`/`getPieceD1`
+- PUT /api/pieces/[id]/claim — `claim.ts` + `claimPiece`/`claimPieceD1`
+- PUT /api/pieces/[id]/assign-reviewer — `assign-reviewer.ts`
+- PUT /api/pieces/[id]/status — `piece-status.ts` + TRANSITIONS tabel
+- POST /api/reviews — `review-create.ts`
+- GET /api/reviews/[id] — `review-get.ts`
+- PUT /api/reviews/[id] — `review-complete.ts` (sama fail kui GET)
+- PUT /api/reviews/[id]/entries — `review-entries.ts` + D1 batch
+
 ## Avatud küsimused
 
-[EDASI_LÜKATUD] 2026-02-27 — `GET /api/users` avalik vai auth? Korrektori dropdown vajab. Privaatsusküsimus, otsus puudub.
 [EDASI_LÜKATUD] 2026-02-27 — `wrangler.toml` database_id on placeholder. Kasutaja peab looma D1 andmebaasi CF dashboardis ja asendama.

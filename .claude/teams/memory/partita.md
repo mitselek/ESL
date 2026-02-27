@@ -124,3 +124,11 @@ teos → lähtefail → küljenduses → korrektuuris → kontrollitud → paran
 - [OTSUS] reviews.status = `in_progress | completed`. Submitted/approved/rejected on üleliigne — piece state machine haldab seda loogikat.
 - [OTSUS] pieces.notes on juba skeemas (blokeerijate jälgimiseks).
 - [OTSUS] otsused.md terminoloogia uuendatud — 8-astmeline elutsükkel, "kontrollitud" vaheetapp korrektselt sisse.
+
+## Sessioon 2026-02-27 — seed-andmed
+
+[VAHEKOKKUVÕTE] 2026-02-27
+
+- [MUSTER] KAVA-JA-NOODID.md on hõre — ainult 9 laulu kirjas (need millel küljendus olemas). Täielik 21 laulu nimekiri elab partita.md-s.
+- [POOLELI] Linakatkuja seed'i küsimus — soovitasin panna sisse (näitab "pole vaja" staatust), vastust pole.
+- [POOLELI] I osa heliloojad enamasti teadmata — seed.sql-is "?" või NULL.
