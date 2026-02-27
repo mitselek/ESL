@@ -8,7 +8,12 @@ export const PUT: RequestHandler = async ({ params, locals, platform, request })
 	const db = platform?.env.DB;
 	if (!db) return json({ error: 'Database not available' }, { status: 503 });
 
-	const body = await request.json() as Record<string, unknown>;
+	let body: Record<string, unknown>;
+	try {
+		body = await request.json() as Record<string, unknown>;
+	} catch {
+		return json({ error: 'Invalid JSON' }, { status: 400 });
+	}
 	const reviewer_id = body?.reviewer_id;
 	if (!reviewer_id || typeof reviewer_id !== 'string') {
 		return json({ error: 'reviewer_id is required' }, { status: 400 });

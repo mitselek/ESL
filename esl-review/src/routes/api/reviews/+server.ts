@@ -8,7 +8,12 @@ export const POST: RequestHandler = async ({ locals, platform, request }) => {
 	const db = platform?.env.DB;
 	if (!db) return json({ error: 'Database not available' }, { status: 503 });
 
-	const body = await request.json() as Record<string, unknown>;
+	let body: Record<string, unknown>;
+	try {
+		body = await request.json() as Record<string, unknown>;
+	} catch {
+		return json({ error: 'Invalid JSON' }, { status: 400 });
+	}
 	const piece_id = body?.piece_id;
 	if (!piece_id || typeof piece_id !== 'string') {
 		return json({ error: 'piece_id is required' }, { status: 400 });

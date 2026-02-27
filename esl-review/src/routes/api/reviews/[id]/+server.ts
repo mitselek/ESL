@@ -19,7 +19,12 @@ export const PUT: RequestHandler = async ({ params, locals, platform, request })
 	const db = platform?.env.DB;
 	if (!db) return json({ error: 'Database not available' }, { status: 503 });
 
-	const body = await request.json() as Record<string, unknown>;
+	let body: Record<string, unknown>;
+	try {
+		body = await request.json() as Record<string, unknown>;
+	} catch {
+		return json({ error: 'Invalid JSON' }, { status: 400 });
+	}
 	if (body?.status !== 'completed') {
 		return json({ error: 'status must be "completed"' }, { status: 400 });
 	}
