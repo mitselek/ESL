@@ -77,7 +77,7 @@
 						<div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #888;" class="text-right hidden sm:block">
 							{#if piece.typesetter}
 								<div>{piece.typesetter.name}</div>
-							{:else if user}
+							{:else if user && ['teos', 'lähtefail'].includes(piece.status)}
 								<button
 									onclick={() => claim(piece.id)}
 									style="background: #C9A96E; color: white; border: none; border-radius: 4px; padding: 2px 8px; cursor: pointer; font-size: 0.7rem;"

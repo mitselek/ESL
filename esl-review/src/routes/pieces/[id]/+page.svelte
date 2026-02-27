@@ -163,7 +163,7 @@
 
 <!-- Toimingud -->
 <div class="flex gap-3 mb-6 flex-wrap">
-	{#if user && !piece.typesetter}
+	{#if user && !piece.typesetter && ['teos', 'lähtefail'].includes(piece.status)}
 		<button onclick={claim} style="background: #C9A96E; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Võta küljendada
 		</button>

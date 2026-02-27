@@ -16,7 +16,7 @@
 		ESL ülelugemine
 	</a>
 	{#if user}
-		<span class="text-sm opacity-75">{user.name}</span>
+		<span class="text-sm opacity-75">{user.name ?? user.email}</span>
 	{/if}
 </header>
 
