@@ -119,6 +119,15 @@ describe('PUT /api/pieces/[id]/status', () => {
 		expect(row.status).toBe('paranduses');
 	});
 
+	it('typesetter saab paranduses → korrektuuris koos uue pdf_url-iga', () => {
+		setPieceState(db, pieceId, 'paranduses', TYPESETTER_USER.id, REVIEWER_USER.id);
+		const result = updatePieceStatus(db, pieceId, 'korrektuuris', TYPESETTER_USER, '/pdf/v2.pdf');
+		expect(result).toEqual({ ok: true });
+		const row = db.prepare('SELECT status, pdf_url FROM pieces WHERE id = ?').get(pieceId) as { status: string; pdf_url: string };
+		expect(row.status).toBe('korrektuuris');
+		expect(row.pdf_url).toBe('/pdf/v2.pdf');
+	});
+
 	it('lisab redaktsiooni kui pdf_url on antud (paranduses→korrektuuris)', () => {
 		// setup: piece paranduses staatuses, olemasolev v1 redaction
 		setPieceState(db, pieceId, 'paranduses', TYPESETTER_USER.id, REVIEWER_USER.id);

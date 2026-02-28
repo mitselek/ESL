@@ -67,6 +67,8 @@ export function updatePieceStatus(
 			`UPDATE pieces SET status = ?, pdf_url = ?, updated_at = datetime('now') WHERE id = ?`
 		).run(newStatus, pdfUrl, pieceId);
 
+		// TODO: label race condition — kui kaks samaaegset päringut, saavad sama COUNT.
+		// D1 ei toeta transaktsioone, aga praktikas äärmiselt ebatõenäoline.
 		const countRow = db.prepare('SELECT COUNT(*) as cnt FROM piece_redactions WHERE piece_id = ?').get(pieceId) as unknown as { cnt: number };
 		const label = `v${countRow.cnt + 1}`;
 		db.prepare('INSERT INTO piece_redactions (id, piece_id, url, label) VALUES (?, ?, ?, ?)').run(
