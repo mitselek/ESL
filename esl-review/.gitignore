@@ -26,3 +26,6 @@ test-results
 
 # PDF.js worker (copied by postinstall)
 static/pdf.worker.min.mjs
+
+# Source PDFs (uploaded to R2, not committed)
+source-pdfs/

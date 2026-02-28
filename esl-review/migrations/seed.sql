@@ -31,12 +31,12 @@ INSERT INTO pieces (id, title, composer, section, status, notes) VALUES
 
 -- II OSA (pulmalaulud)
 INSERT INTO pieces (id, title, composer, section, status) VALUES
-  ('p-07', 'Millal meie sinna saame', NULL,        'II', 'teos'),
-  ('p-08', 'Sööge langud',            'rahvaviis', 'II', 'teos'),
-  ('p-09', 'Petis peiu',              NULL,        'II', 'teos'),
-  ('p-10', 'Palju veini',             NULL,        'II', 'teos'),
-  ('p-11', 'Ei või õnneta elada',     'rahvaviis', 'II', 'teos'),
-  ('p-12', 'Kohus koju minna',        NULL,        'II', 'teos');
+  ('p-07', 'Millal meie sinna saame', 'Veljo Tormis', 'II', 'teos'),
+  ('p-08', 'Sööge langud',            'rahvaviis',    'II', 'teos'),
+  ('p-09', 'Petis peiu',              NULL,           'II', 'teos'),
+  ('p-10', 'Palju veini',             NULL,           'II', 'teos'),
+  ('p-11', 'Ei või õnneta elada',     'rahvaviis',    'II', 'teos'),
+  ('p-12', 'Kohus koju minna',        NULL,           'II', 'teos');
 
 -- III OSA
 INSERT INTO pieces (id, title, composer, section, status, notes) VALUES
