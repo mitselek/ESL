@@ -359,10 +359,6 @@
 				style="background: #E8DDD0; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">
 				&#x21C4;
 			</button>
-			<label style="font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; color: #888; display: flex; align-items: center; gap: 3px; cursor: pointer; white-space: nowrap;">
-				<input type="checkbox" bind:checked={scrollLinked} style="margin: 0;" />
-				Linka
-			</label>
 		</div>
 
 		<div class="dual-pdf-right" style="flex: 1; min-width: 0;">
