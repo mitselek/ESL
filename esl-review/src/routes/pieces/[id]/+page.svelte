@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import type { ReviewEntry } from '$lib/server/api/review-get';
 
 	let { data } = $props();
@@ -269,6 +270,7 @@
 	// --- Voice parts ---
 	let newVoicePartName = $state('');
 	let vpLoading = $state(false);
+	let vpInput: HTMLInputElement | undefined = $state(undefined);
 
 	async function addVoicePart() {
 		const name = newVoicePartName.trim();
@@ -280,14 +282,18 @@
 			body: JSON.stringify({ name }),
 		});
 		vpLoading = false;
-		if (res.ok) { newVoicePartName = ''; window.location.reload(); }
+		if (res.ok) {
+			newVoicePartName = '';
+			await invalidateAll();
+			vpInput?.focus();
+		}
 		else statusMsg = (await res.json()).error;
 	}
 
 	async function deleteVoicePart(vpId: string, vpName: string) {
-		if (!confirm(`Kustuta häälerühm "${vpName}"?`)) return;
+		if (!confirm(`Kustuta "${vpName}"?`)) return;
 		const res = await fetch(`/api/pieces/${piece.id}/voice-parts/${vpId}`, { method: 'DELETE' });
-		if (res.ok) window.location.reload();
+		if (res.ok) await invalidateAll();
 		else statusMsg = (await res.json()).error;
 	}
 
@@ -350,7 +356,7 @@
 {#if piece.voice_parts.length > 0 || (actingAsTypesetter && piece.status === 'küljenduses')}
 	<div style="margin-bottom: 1rem;">
 		<h3 style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #C9A96E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px;">
-			H&auml;&auml;ler&uuml;hmad
+			H&auml;&auml;ler&uuml;hmad / instrumendid
 		</h3>
 		<div class="flex gap-2 flex-wrap items-center" style="font-size: 0.8rem;">
 			{#each piece.voice_parts as vp}
@@ -358,7 +364,7 @@
 					{vp.name}
 					{#if actingAsTypesetter && piece.status === 'küljenduses'}
 						<button onclick={() => deleteVoicePart(vp.id, vp.name)}
-							title="Kustuta häälerühm"
+							title="Kustuta"
 							style="background: none; border: none; cursor: pointer; color: #E76F51; font-size: 0.7rem; padding: 0 2px; line-height: 1;">
 							&times;
 						</button>
@@ -368,8 +374,9 @@
 			{#if actingAsTypesetter && piece.status === 'küljenduses'}
 				<form onsubmit={e => { e.preventDefault(); addVoicePart(); }} style="display: inline-flex; gap: 4px; align-items: center;">
 					<input
+						bind:this={vpInput}
 						bind:value={newVoicePartName}
-						placeholder="Uus h&auml;&auml;ler&uuml;hm..."
+						placeholder="Lisa..."
 						style="border: 1px solid #E8DDD0; border-radius: 4px; padding: 2px 8px; font-size: 0.8rem; width: 120px;"
 					/>
 					<button type="submit" disabled={vpLoading || !newVoicePartName.trim()}
