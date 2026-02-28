@@ -71,6 +71,9 @@
 							{#if piece.composer}
 								<span class="text-sm opacity-60 ml-2">{piece.composer}</span>
 							{/if}
+							{#if piece.source_pdf_url}
+								<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: #ADB5BD; margin-left: 6px;" title="Lähtefail olemas">&#x25A0; pdf</span>
+							{/if}
 						</div>
 
 						<!-- Graafik / korrektor -->
@@ -86,7 +89,7 @@
 						</div>
 
 						<!-- Võta küljendada -->
-						{#if piece.status === 'teos' && !piece.typesetter}
+						{#if ['teos', 'lähtefail'].includes(piece.status) && !piece.typesetter}
 							<button
 								onclick={(e: MouseEvent) => { e.stopPropagation(); e.preventDefault(); claim(piece.id); }}
 								style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; background: #E8DDD0; color: #2C2416; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; white-space: nowrap; transition: background 0.15s;"
@@ -96,8 +99,8 @@
 							</button>
 						{/if}
 
-						<!-- Staatus (peida "teos") -->
-						{#if piece.status !== 'teos'}
+						<!-- Staatus (peida teos/lähtefail) -->
+						{#if !['teos', 'lähtefail'].includes(piece.status)}
 							<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: {STATUS_COLORS[piece.status] ?? '#ccc'}; white-space: nowrap;" class="hidden md:block">
 								{piece.status}
 							</span>
