@@ -8,11 +8,15 @@
 		height = '60vh',
 		syncRatio = undefined,
 		onScroll = undefined,
+		active = undefined,
+		onActivate = undefined,
 	}: {
 		url: string;
 		height?: string;
 		syncRatio?: number | undefined;
 		onScroll?: ((ratio: number) => void) | undefined;
+		active?: boolean | undefined;
+		onActivate?: (() => void) | undefined;
 	} = $props();
 
 	let pdfjsLib: typeof import('pdfjs-dist') | null = $state(null);
@@ -264,9 +268,11 @@
 		dispatchKey(e.key);
 	}
 
-	// Window-level keydown — works when hovering without click-focus
+	// Window-level keydown — when active prop is set, use it; otherwise fall back to hover
+	const useWindowKeys = $derived(active !== undefined ? !!active : hovered);
+
 	$effect(() => {
-		if (!browser || !hovered) return;
+		if (!browser || !useWindowKeys) return;
 		function onWindowKey(e: KeyboardEvent) {
 			if (!NAV_KEYS.has(e.key)) return;
 			e.preventDefault();
@@ -286,7 +292,7 @@
 	style="height: {height};"
 	onscroll={handleScroll}
 	onkeydown={handleKeydown}
-	onmouseenter={() => { hovered = true; }}
+	onmouseenter={() => { hovered = true; onActivate?.(); }}
 	onmouseleave={() => { hovered = false; }}
 >
 	{#if !browser || loading}

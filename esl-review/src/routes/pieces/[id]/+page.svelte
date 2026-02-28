@@ -289,20 +289,34 @@
 		else statusMsg = (await res.json()).error;
 	}
 
+	// Expanded view — hides header, maximises PDF area
+	let expanded = $state(false);
+
 	// Does split-view have review content below?
 	const showsReviewBelowSplit = $derived(
-		hasDualPdf && (
+		hasDualPdf && !expanded && (
 			(!isLatestRedaction && !!selectedRedactionReview) ||
 			(!!activeReviewId && actingAsReviewer && isLatestRedaction) ||
 			(isLatestRedaction && !!selectedRedactionReview)
 		)
 	);
-	const splitPdfHeight = $derived(showsReviewBelowSplit ? '60vh' : 'calc(100vh - 12rem)');
+	const splitPdfHeight = $derived(
+		expanded
+			? 'calc(100vh - 3rem)'
+			: showsReviewBelowSplit
+				? '60vh'
+				: 'calc(100vh - 12rem)'
+	);
 
 	// Mobile tabs for dual view
 	let mobileTab: 'draft' | 'source' = $state('draft');
 </script>
 
+<svelte:window onkeydown={e => {
+	if (e.key === 'Escape') expanded = !expanded;
+}} />
+
+{#if !expanded}
 <div class="mb-4">
 	<a href="/" style="color: #C9A96E; font-size: 0.875rem;">&larr; Tagasi</a>
 </div>
@@ -520,6 +534,7 @@
 		{@render readonlyReview(latestReview)}
 	</div>
 {/if}
+{/if}<!-- /expanded -->
 
 <!-- Split-vaade -->
 {#if hasDualPdf}
@@ -572,6 +587,11 @@
 					&#x1F517;
 				</button>
 			{/if}
+			<button onclick={() => { expanded = !expanded; }}
+				title={expanded ? 'Näita päist (Esc)' : 'Laienda vaade (Esc)'}
+				style="background: {expanded ? '#2C2416' : '#E8DDD0'}; color: {expanded ? 'white' : '#2C2416'}; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;">
+				{#if expanded}&#x2715;{:else}&#x26F6;{/if}
+			</button>
 		</div>
 
 		<div class="dual-pdf-right" style="flex: 1; min-width: 0;">
@@ -608,34 +628,39 @@
 	</div>
 
 	<!-- Review: editable vorm praegusele redaktsioonile, readonly vanemale -->
-	{#if !isLatestRedaction && selectedRedactionReview}
-		<!-- Vanema redaktsiooni readonly review -->
-		<div style="margin-top: 1rem;">
-			{@render readonlyReview(selectedRedactionReview)}
-		</div>
-	{:else if activeReviewId && actingAsReviewer && isLatestRedaction}
-		<!-- Praeguse redaktsiooni editable vorm -->
-		<div style="margin-top: 1rem; max-height: 60vh; overflow-y: auto;">
-			{@render reviewForm()}
-		</div>
-	{:else if isLatestRedaction && selectedRedactionReview}
-		<!-- Viimase redaktsiooni completed review (kontrollitud/paranduses) -->
-		<div style="margin-top: 1rem;">
-			{@render readonlyReview(selectedRedactionReview)}
-		</div>
+	{#if !expanded}
+		{#if !isLatestRedaction && selectedRedactionReview}
+			<!-- Vanema redaktsiooni readonly review -->
+			<div style="margin-top: 1rem;">
+				{@render readonlyReview(selectedRedactionReview)}
+			</div>
+		{:else if activeReviewId && actingAsReviewer && isLatestRedaction}
+			<!-- Praeguse redaktsiooni editable vorm -->
+			<div style="margin-top: 1rem; max-height: 60vh; overflow-y: auto;">
+				{@render reviewForm()}
+			</div>
+		{:else if isLatestRedaction && selectedRedactionReview}
+			<!-- Viimase redaktsiooni completed review (kontrollitud/paranduses) -->
+			<div style="margin-top: 1rem;">
+				{@render readonlyReview(selectedRedactionReview)}
+			</div>
+		{/if}
 	{/if}
 
 {:else}
 	<!-- SINGLE PDF + REVIEW (original layout) -->
+	{@const singlePdfHeight = expanded ? 'calc(100vh - 3rem)' : '70vh'}
 	<div class="flex gap-6" style="align-items: flex-start; flex-wrap: wrap;">
 
 		<!-- Vasak: PDF -->
 		<div style="flex: 1; min-width: 300px;">
 			{#if piece.pdf_url}
-				<PdfViewer url={piece.pdf_url} height="70vh" />
+				<PdfViewer url={piece.pdf_url} height={singlePdfHeight} />
 			{:else if piece.source_pdf_url}
-				<PdfViewer url={piece.source_pdf_url} height="70vh" />
-				<p style="font-size: 0.75rem; color: #888; margin-top: 4px; text-align: center;">Algnoot (k&uuml;ljenduse PDF puudub)</p>
+				<PdfViewer url={piece.source_pdf_url} height={singlePdfHeight} />
+				{#if !expanded}
+					<p style="font-size: 0.75rem; color: #888; margin-top: 4px; text-align: center;">Algnoot (k&uuml;ljenduse PDF puudub)</p>
+				{/if}
 			{:else}
 				<div style="border: 2px dashed #E8DDD0; border-radius: 6px; height: 200px; display: flex; align-items: center; justify-content: center; color: #aaa;">
 					PDF puudub
@@ -644,7 +669,7 @@
 		</div>
 
 		<!-- Parem: Review vorm (ainult korrektorile) -->
-		{#if activeReviewId && actingAsReviewer}
+		{#if !expanded && activeReviewId && actingAsReviewer}
 			<div style="flex: 1; min-width: 320px; max-height: 70vh; overflow-y: auto;">
 				{@render reviewForm()}
 			</div>
