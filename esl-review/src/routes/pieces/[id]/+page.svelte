@@ -204,8 +204,18 @@
 		(!!activeReviewId || ['kontrollitud', 'paranduses'].includes(piece.status))
 	);
 	let swapped = $state(false);
-	const leftUrl = $derived(swapped ? piece.source_pdf_url : piece.pdf_url);
-	const rightUrl = $derived(swapped ? piece.pdf_url : piece.source_pdf_url);
+
+	// Redaktsioonide vahetamine — vaikimisi viimane
+	const redactions = $derived(piece.redactions ?? []);
+	let selectedRedactionIdx = $state(-1); // -1 = viimane
+	const activeRedactionUrl = $derived(
+		redactions.length > 0
+			? redactions[selectedRedactionIdx < 0 ? redactions.length - 1 : selectedRedactionIdx]?.url ?? piece.pdf_url
+			: piece.pdf_url
+	);
+
+	const leftUrl = $derived(swapped ? piece.source_pdf_url : activeRedactionUrl);
+	const rightUrl = $derived(swapped ? activeRedactionUrl : piece.source_pdf_url);
 
 	let scrollLinked = $state(data.piece.pageflow_matched === 1);
 	let leftIframe: HTMLIFrameElement | undefined = $state(undefined);
@@ -444,8 +454,24 @@
 	<!-- Desktop dual PDF row -->
 	<div class="dual-pdf-row">
 		<div class="dual-pdf-left" style="flex: 1; min-width: 0;">
-			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">
-				{swapped ? 'Algnoot' : 'K\u00fcljendus'}
+			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+				{#if swapped}
+					Algnoot
+				{:else if redactions.length > 1}
+					<select
+						value={selectedRedactionIdx < 0 ? String(redactions.length - 1) : String(selectedRedactionIdx)}
+						onchange={e => { selectedRedactionIdx = Number((e.target as HTMLSelectElement).value); }}
+						style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border: 1px solid #E8DDD0; border-radius: 4px; padding: 1px 4px; background: white; color: #888; text-transform: uppercase;"
+					>
+						{#each redactions as r, i}
+							<option value={String(i)}>
+								{r.label ?? `v${i + 1}`} — {new Date(r.created_at).toLocaleDateString('et-EE')}
+							</option>
+						{/each}
+					</select>
+				{:else}
+					K&uuml;ljendus
+				{/if}
 			</div>
 			<iframe
 				bind:this={leftIframe}
@@ -465,8 +491,24 @@
 		</div>
 
 		<div class="dual-pdf-right" style="flex: 1; min-width: 0;">
-			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">
-				{swapped ? 'K\u00fcljendus' : 'Algnoot'}
+			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+				{#if !swapped}
+					Algnoot
+				{:else if redactions.length > 1}
+					<select
+						value={selectedRedactionIdx < 0 ? String(redactions.length - 1) : String(selectedRedactionIdx)}
+						onchange={e => { selectedRedactionIdx = Number((e.target as HTMLSelectElement).value); }}
+						style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border: 1px solid #E8DDD0; border-radius: 4px; padding: 1px 4px; background: white; color: #888; text-transform: uppercase;"
+					>
+						{#each redactions as r, i}
+							<option value={String(i)}>
+								{r.label ?? `v${i + 1}`} — {new Date(r.created_at).toLocaleDateString('et-EE')}
+							</option>
+						{/each}
+					</select>
+				{:else}
+					K&uuml;ljendus
+				{/if}
 			</div>
 			<iframe
 				bind:this={rightIframe}
@@ -481,8 +523,23 @@
 	<!-- Mobile: single PDF view based on tab -->
 	<div class="dual-mobile-view">
 		{#if mobileTab === 'draft'}
+			{#if redactions.length > 1}
+				<div style="margin-bottom: 6px;">
+					<select
+						value={selectedRedactionIdx < 0 ? String(redactions.length - 1) : String(selectedRedactionIdx)}
+						onchange={e => { selectedRedactionIdx = Number((e.target as HTMLSelectElement).value); }}
+						style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; border: 1px solid #E8DDD0; border-radius: 4px; padding: 4px 6px; background: white; width: 100%;"
+					>
+						{#each redactions as r, i}
+							<option value={String(i)}>
+								{r.label ?? `v${i + 1}`} — {new Date(r.created_at).toLocaleDateString('et-EE')}
+							</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
 			<iframe
-				src={piece.pdf_url}
+				src={activeRedactionUrl}
 				style="width: 100%; height: 60vh; border: 1px solid #E8DDD0; border-radius: 6px;"
 				title="Küljendus"
 			></iframe>
