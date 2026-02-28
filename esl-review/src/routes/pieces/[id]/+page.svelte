@@ -412,29 +412,31 @@
 		})}
 	{/if}
 
-	<!-- 2. Määra korrektor — küljenduses staatuses -->
-	{#if actingAsTypesetter && piece.status === 'küljenduses' && users.length > 0}
+	<!-- 2. Küljenduses: esmalt draft PDF, siis korrektori valik -->
+	{#if actingAsTypesetter && piece.status === 'küljenduses'}
 		<div style="display: flex; flex-direction: column; gap: 6px;">
-			<span style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #888; text-transform: uppercase; letter-spacing: 0.05em;">
-				M&auml;&auml;ra korrektor
-			</span>
-			<div class="flex gap-2 items-center flex-wrap">
-				<select bind:value={selectedReviewer} style="border: 1px solid #E8DDD0; border-radius: 6px; padding: 6px 10px; background: white;">
-					<option value="">Vali korrektor&hellip;</option>
-					{#each users as u}
-						<option value={u.id}>{u.name ?? u.email}</option>
-					{/each}
-				</select>
-				<label class="flex items-center gap-1" style="font-size: 0.8rem; cursor: pointer; white-space: nowrap;">
-					<input type="checkbox" bind:checked={pageflowMatched} />
-					1:1 pageflow
-				</label>
-			</div>
 			{@render dropZone(draftFile ? draftFile.name : 'Küljenduse PDF', (file) => { draftFile = file; })}
-			<button onclick={assignReviewer} disabled={uploading || !selectedReviewer || !draftFile}
-				style="background: #2C2416; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; opacity: {uploading || !selectedReviewer || !draftFile ? 0.5 : 1};">
-				{uploading ? 'Laen...' : 'M\u00e4\u00e4ra korrektor'}
-			</button>
+			{#if draftFile && users.length > 0}
+				<span style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #888; text-transform: uppercase; letter-spacing: 0.05em;">
+					M&auml;&auml;ra korrektor
+				</span>
+				<div class="flex gap-2 items-center flex-wrap">
+					<select bind:value={selectedReviewer} style="border: 1px solid #E8DDD0; border-radius: 6px; padding: 6px 10px; background: white;">
+						<option value="">Vali korrektor&hellip;</option>
+						{#each users as u}
+							<option value={u.id}>{u.name ?? u.email}</option>
+						{/each}
+					</select>
+					<label class="flex items-center gap-1" style="font-size: 0.8rem; cursor: pointer; white-space: nowrap;">
+						<input type="checkbox" bind:checked={pageflowMatched} />
+						1:1 pageflow
+					</label>
+				</div>
+				<button onclick={assignReviewer} disabled={uploading || !selectedReviewer}
+					style="background: #2C2416; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; opacity: {uploading || !selectedReviewer ? 0.5 : 1};">
+					{uploading ? 'Laen...' : 'M\u00e4\u00e4ra korrektor'}
+				</button>
+			{/if}
 		</div>
 	{/if}
 
