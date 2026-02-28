@@ -179,6 +179,10 @@
 		else statusMsg = (await res.json()).error;
 	}
 
+	const hasProblems = $derived(
+		(data.activeReview?.entries ?? []).some((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')
+	);
+
 	// --- 3. Dual split-view (korrektuuris) ---
 	const hasDualPdf = $derived(!!piece.pdf_url && !!piece.source_pdf_url && !!activeReviewId);
 	let swapped = $state(false);
@@ -327,8 +331,9 @@
 			Parandan
 		</button>
 		<button onclick={() => setStatus('kinnitatud')}
-			title="Noot vastab nõuetele. Kinnitan ilma parandusteta."
-			style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+			disabled={hasProblems}
+			title={hasProblems ? 'Korrektuuris on vigasid või ettepanekuid — enne kinnitamist paranda.' : 'Noot vastab nõuetele. Kinnitan ilma parandusteta.'}
+			style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: {hasProblems ? 'not-allowed' : 'pointer'}; opacity: {hasProblems ? 0.4 : 1};">
 			Kinnita
 		</button>
 	{/if}
