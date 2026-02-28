@@ -9,13 +9,27 @@ INSERT INTO voice_parts (id, piece_id, name, sort_order) VALUES ('vp-p-07-a', 'p
 INSERT INTO voice_parts (id, piece_id, name, sort_order) VALUES ('vp-p-07-t', 'p-07', 'T', 3);
 INSERT INTO voice_parts (id, piece_id, name, sort_order) VALUES ('vp-p-07-b', 'p-07', 'B', 4);
 
--- Review
+-- Redaktsioonid (küljenduse versioonid)
+DELETE FROM piece_redactions WHERE piece_id = 'p-07';
+INSERT INTO piece_redactions (id, piece_id, url, label, created_at)
+  VALUES ('red-p-07-v1', 'p-07', '/pdf/millal-saame-sinna-maale-proof.pdf', 'v1', '2026-02-28T15:58:23Z');
+INSERT INTO piece_redactions (id, piece_id, url, label, created_at)
+  VALUES ('red-p-07-v2', 'p-07', '/pdf/millal-saame-sinna-maale-v2.pdf', 'v2', '2026-02-28T16:53:35Z');
+
+-- Uuenda noodi: typesetter, reviewer, pdf_url, staatus
+UPDATE pieces SET
+  typesetter_id = 'u-mihkel',
+  reviewer_id = 'u-liisa',
+  pdf_url = '/pdf/millal-saame-sinna-maale-v2.pdf',
+  status = 'korrektuuris'
+WHERE id = 'p-07';
+
+-- Review (seotud v1 redaktsiooniga, completed)
 DELETE FROM review_entries WHERE review_id = 'rev-p-07-mihkel';
 DELETE FROM reviews WHERE id = 'rev-p-07-mihkel';
 INSERT INTO reviews (id, piece_id, reviewer, status, pdf_url, redaction_id)
-  SELECT 'rev-p-07-mihkel', 'p-07', 'u-mihkel', 'in_progress',
-    COALESCE((SELECT url FROM piece_redactions WHERE piece_id = 'p-07' LIMIT 1), '/pdf/missing'),
-    (SELECT id FROM piece_redactions WHERE piece_id = 'p-07' LIMIT 1);
+  VALUES ('rev-p-07-mihkel', 'p-07', 'u-mihkel', 'completed',
+    '/pdf/millal-saame-sinna-maale-proof.pdf', 'red-p-07-v1');
 
 -- Review entries (per_voice)
 INSERT INTO review_entries (id, review_id, param_id, voice_part_id, verdict, remarks)
