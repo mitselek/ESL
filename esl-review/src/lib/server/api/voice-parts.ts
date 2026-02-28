@@ -61,19 +61,6 @@ export function addVoicePart(
 		sortOrder
 	);
 
-	// Lisa piece_params kõigi is_default=1 param_templates jaoks
-	const templates = db
-		.prepare('SELECT id FROM param_templates WHERE is_default = 1')
-		.all() as unknown as { id: string }[];
-
-	for (const tmpl of templates) {
-		db.prepare('INSERT INTO piece_params (id, piece_id, template_id) VALUES (?, ?, ?)').run(
-			crypto.randomUUID(),
-			pieceId,
-			tmpl.id
-		);
-	}
-
 	return { id };
 }
 
@@ -131,18 +118,6 @@ export async function addVoicePartD1(
 		.prepare('INSERT INTO voice_parts (id, piece_id, name, sort_order) VALUES (?, ?, ?, ?)')
 		.bind(id, pieceId, name, sortOrder)
 		.run();
-
-	const { results: templates } = await db
-		.prepare('SELECT id FROM param_templates WHERE is_default = 1')
-		.bind()
-		.all<{ id: string }>();
-
-	for (const tmpl of templates) {
-		await db
-			.prepare('INSERT INTO piece_params (id, piece_id, template_id) VALUES (?, ?, ?)')
-			.bind(crypto.randomUUID(), pieceId, tmpl.id)
-			.run();
-	}
 
 	return { id };
 }
