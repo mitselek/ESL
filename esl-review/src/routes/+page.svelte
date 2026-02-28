@@ -59,15 +59,15 @@
 			</h2>
 			<div class="space-y-2">
 				{#each group.pieces as piece}
-					<div style="background: white; border: 1px solid #E8DDD0; border-radius: 6px;" class="p-3 flex items-center gap-3">
+					<a href="/pieces/{piece.id}" style="background: white; border: 1px solid #E8DDD0; border-radius: 6px; text-decoration: none; color: inherit; transition: border-color 0.15s;" class="p-3 flex items-center gap-3 hover:border-[#C9A96E]">
 						<!-- Staatuse punkt -->
 						<span style="width: 10px; height: 10px; border-radius: 50%; background: {STATUS_COLORS[piece.status] ?? '#ccc'}; flex-shrink: 0; display: inline-block;"></span>
 
 						<!-- Pealkiri + helilooja -->
 						<div class="flex-1 min-w-0">
-							<a href="/pieces/{piece.id}" class="font-semibold hover:underline" style="color: #2C2416;">
+							<span class="font-semibold" style="color: #2C2416;">
 								{piece.title}
-							</a>
+							</span>
 							{#if piece.composer}
 								<span class="text-sm opacity-60 ml-2">{piece.composer}</span>
 							{/if}
@@ -77,28 +77,39 @@
 						<div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #888;" class="text-right hidden sm:block">
 							{#if piece.typesetter}
 								<div>{piece.typesetter.name ?? piece.typesetter.email}</div>
-							{:else if user && ['teos', 'lähtefail'].includes(piece.status)}
-								<button
-									onclick={() => claim(piece.id)}
-									style="background: #C9A96E; color: white; border: none; border-radius: 4px; padding: 2px 8px; cursor: pointer; font-size: 0.7rem;"
-								>
-									Võta küljendada
-								</button>
 							{:else}
-								<span style="color: #ADB5BD;">—</span>
+								<span style="color: #ADB5BD;">&mdash;</span>
 							{/if}
 							{#if piece.reviewer}
 								<div style="color: #52B788;">{piece.reviewer.name ?? piece.reviewer.email}</div>
 							{/if}
 						</div>
 
+						<!-- Võta küljendada -->
+						{#if piece.status === 'teos' && !piece.typesetter}
+							<button
+								onclick={(e: MouseEvent) => { e.stopPropagation(); e.preventDefault(); claim(piece.id); }}
+								style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; background: #E8DDD0; color: #2C2416; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; white-space: nowrap; transition: background 0.15s;"
+								class="claim-btn"
+							>
+								Võta küljendada
+							</button>
+						{/if}
+
 						<!-- Staatus -->
 						<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: {STATUS_COLORS[piece.status] ?? '#ccc'}; white-space: nowrap;" class="hidden md:block">
 							{piece.status}
 						</span>
-					</div>
+					</a>
 				{/each}
 			</div>
 		</section>
 	{/each}
 </div>
+
+<style>
+	.claim-btn:hover {
+		background: #C9A96E !important;
+		color: white !important;
+	}
+</style>
