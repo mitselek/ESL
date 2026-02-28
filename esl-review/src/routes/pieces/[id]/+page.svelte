@@ -731,11 +731,15 @@
 	{/if}
 
 	<!-- Lõpeta -->
+	{@const currentProblems = Object.values(entries).some(e => e.verdict === 'viga' || e.verdict === 'ettepanek')}
 	<button
 		onclick={completeReview}
-		style="width: 100%; background: #52B788; color: white; border: none; border-radius: 6px; padding: 10px; cursor: pointer; font-size: 1rem; margin-top: 0.5rem;"
+		title={currentProblems
+			? 'Lõpeta ülelugemine. Graafik näeb sinu märkusi ja saab parandada.'
+			: 'Noodis ei ole vigu ega ettepanekuid. Graafik saab noodi kinnitada.'}
+		style="width: 100%; background: {currentProblems ? '#E9C46A' : '#52B788'}; color: {currentProblems ? '#2C2416' : 'white'}; border: none; border-radius: 6px; padding: 10px; cursor: pointer; font-size: 1rem; margin-top: 0.5rem;"
 	>
-		L&otilde;peta &uuml;lelugemine
+		{currentProblems ? 'L\u00f5peta \u00fclelugemine' : 'Noot korras'}
 	</button>
 {/snippet}
 
