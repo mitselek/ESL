@@ -291,6 +291,20 @@
 
 	// Expanded view — hides header, maximises PDF area
 	let expanded = $state(false);
+	let savedReviewScroll = 0;
+	let reviewPanelEl: HTMLDivElement | undefined = $state(undefined);
+
+	function toggleExpanded() {
+		if (!expanded && reviewPanelEl) {
+			savedReviewScroll = reviewPanelEl.scrollTop;
+		}
+		expanded = !expanded;
+		if (!expanded) {
+			requestAnimationFrame(() => {
+				if (reviewPanelEl) reviewPanelEl.scrollTop = savedReviewScroll;
+			});
+		}
+	}
 
 	// Does split-view have review content below?
 	const showsReviewBelowSplit = $derived(
@@ -318,14 +332,16 @@
 <svelte:window onkeydown={e => {
 	const tag = (e.target as HTMLElement)?.tagName;
 	const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-	if (e.key === 'Escape') expanded = !expanded;
+	if (e.key === 'Escape') toggleExpanded();
 	if (hasDualPdf && e.key === 'ArrowLeft') activeSide = 'left';
 	if (hasDualPdf && e.key === 'ArrowRight') activeSide = 'right';
 	if (!inInput && hasDualPdf && e.key === 'x') swapped = !swapped;
 	if (!inInput && hasDualPdf && e.key === 's' && piece.pageflow_matched === 1) scrollLinked = !scrollLinked;
 }} />
 
+<div class="piece-page">
 {#if !expanded}
+<div class="piece-header">
 <div class="mb-4">
 	<a href="/" style="color: #C9A96E; font-size: 0.875rem;">&larr; Tagasi</a>
 </div>
@@ -543,8 +559,10 @@
 		{@render readonlyReview(latestReview)}
 	</div>
 {/if}
+</div><!-- /piece-header -->
 {/if}<!-- /expanded -->
 
+<div class="piece-content">
 <!-- Split-vaade -->
 {#if hasDualPdf}
 	<!-- DUAL SPLIT-VIEW: korrektuuris + mõlemad PDF-id olemas -->
@@ -565,8 +583,8 @@
 
 	<!-- Desktop dual PDF row -->
 	<div class="dual-pdf-row">
-		<div class="dual-pdf-left" style="flex: 1; min-width: 0; border-top: 3px solid {activeSide === 'left' ? '#C9A96E' : 'transparent'}; transition: border-color 0.15s; padding-top: 4px;">
-			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+		<div class="dual-pdf-left" style="flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; border-top: 3px solid {activeSide === 'left' ? '#C9A96E' : 'transparent'}; transition: border-color 0.15s; padding-top: 4px;">
+			<div style="flex: none; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
 				{#if swapped}
 					Algnoot
 				{:else if redactions.length > 1}
@@ -575,14 +593,16 @@
 					K&uuml;ljendus
 				{/if}
 			</div>
-			<PdfViewer
-				url={leftUrl}
-				height={splitPdfHeight}
-				syncRatio={scrollLinked ? rightRatio : undefined}
-				onScroll={onLeftScroll}
-				active={activeSide === 'left'}
-				onActivate={() => { activeSide = 'left'; }}
-			/>
+			<div style="flex: 1; min-height: 0;">
+				<PdfViewer
+					url={leftUrl}
+					height="100%"
+					syncRatio={scrollLinked ? rightRatio : undefined}
+					onScroll={onLeftScroll}
+					active={activeSide === 'left'}
+					onActivate={() => { activeSide = 'left'; }}
+				/>
+			</div>
 		</div>
 
 		<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 4px; align-self: center;">
@@ -598,15 +618,15 @@
 					&#x1F517;
 				</button>
 			{/if}
-			<button onclick={() => { expanded = !expanded; }}
+			<button onclick={() => { toggleExpanded(); }}
 				title={expanded ? 'Näita päist (Esc)' : 'Laienda (Esc)'}
 				style="background: {expanded ? '#2C2416' : '#E8DDD0'}; color: {expanded ? 'white' : '#2C2416'}; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;">
 				{#if expanded}&#x2715;{:else}&#x26F6;{/if}
 			</button>
 		</div>
 
-		<div class="dual-pdf-right" style="flex: 1; min-width: 0; border-top: 3px solid {activeSide === 'right' ? '#C9A96E' : 'transparent'}; transition: border-color 0.15s; padding-top: 4px;">
-			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+		<div class="dual-pdf-right" style="flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; border-top: 3px solid {activeSide === 'right' ? '#C9A96E' : 'transparent'}; transition: border-color 0.15s; padding-top: 4px;">
+			<div style="flex: none; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
 				{#if !swapped}
 					Algnoot
 				{:else if redactions.length > 1}
@@ -615,14 +635,16 @@
 					K&uuml;ljendus
 				{/if}
 			</div>
-			<PdfViewer
-				url={rightUrl}
-				height={splitPdfHeight}
-				syncRatio={scrollLinked ? leftRatio : undefined}
-				onScroll={onRightScroll}
-				active={activeSide === 'right'}
-				onActivate={() => { activeSide = 'right'; }}
-			/>
+			<div style="flex: 1; min-height: 0;">
+				<PdfViewer
+					url={rightUrl}
+					height="100%"
+					syncRatio={scrollLinked ? leftRatio : undefined}
+					onScroll={onRightScroll}
+					active={activeSide === 'right'}
+					onActivate={() => { activeSide = 'right'; }}
+				/>
+			</div>
 		</div>
 	</div>
 
@@ -642,16 +664,13 @@
 
 	<!-- Review: editable vorm praegusele redaktsioonile, readonly vanemale -->
 	{#if !expanded}
+		<div class="review-panel" bind:this={reviewPanelEl}>
 		{#if !isLatestRedaction && selectedRedactionReview}
 			<!-- Vanema redaktsiooni readonly review -->
-			<div style="margin-top: 1rem;">
-				{@render readonlyReview(selectedRedactionReview)}
-			</div>
+			{@render readonlyReview(selectedRedactionReview)}
 		{:else if activeReviewId && actingAsReviewer && isLatestRedaction}
 			<!-- Praeguse redaktsiooni editable vorm -->
-			<div style="margin-top: 1rem; max-height: 60vh; overflow-y: auto;">
-				{@render reviewForm()}
-			</div>
+			{@render reviewForm()}
 			{#if selectedRedactionReview}
 				<!-- Eelmise korrektuuri referents -->
 				<div style="margin-top: 1rem;">
@@ -660,10 +679,9 @@
 			{/if}
 		{:else if isLatestRedaction && selectedRedactionReview}
 			<!-- Viimase redaktsiooni completed review (kontrollitud/paranduses) -->
-			<div style="margin-top: 1rem;">
-				{@render readonlyReview(selectedRedactionReview)}
-			</div>
+			{@render readonlyReview(selectedRedactionReview)}
 		{/if}
+		</div>
 	{/if}
 
 {:else}
@@ -695,6 +713,8 @@
 		{/if}
 	</div>
 {/if}
+</div><!-- /piece-content -->
+</div><!-- /piece-page -->
 
 <!-- Review form snippet (shared by both layouts) -->
 {#snippet dropZone(label: string, onFile: (file: File) => void)}
@@ -873,23 +893,50 @@
 {/snippet}
 
 <style>
+	/* Viewport-filling flex layout */
+	.piece-page {
+		height: calc(100vh - 4rem);
+		display: flex;
+		flex-direction: column;
+	}
+	.piece-header {
+		flex: none;
+	}
+	.piece-content {
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
 	/* Desktop: show dual row, hide mobile tabs/view */
 	.dual-pdf-row {
 		display: flex;
 		gap: 8px;
-		align-items: flex-start;
+		align-items: stretch;
+		flex: 1;
+		min-height: 0;
 		margin-left: calc(50% - 50vw);
 		width: 100vw;
 		padding: 0 1rem;
 		box-sizing: border-box;
+	}
+	.review-panel {
+		flex: none;
+		max-height: 25vh;
+		overflow-y: auto;
+		padding: 0.5rem 0;
 	}
 	.dual-mobile-tabs { display: none; }
 	.dual-mobile-view { display: none; }
 
 	/* Mobile (<640px): hide dual row, show tabs + single view */
 	@media (max-width: 639px) {
+		.piece-page { height: auto; overflow: visible; }
+		.piece-content { overflow: visible; }
 		.dual-pdf-row { display: none; }
 		.dual-mobile-tabs { display: flex; margin-bottom: 8px; }
 		.dual-mobile-view { display: block; }
+		.review-panel { max-height: none; }
 	}
 </style>
