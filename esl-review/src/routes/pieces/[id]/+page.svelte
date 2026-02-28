@@ -344,7 +344,9 @@
 	{/if}
 
 	{#if actingAsReviewer && piece.status === 'korrektuuris' && !activeReviewId}
-		<button onclick={startReview} style="background: #E9C46A; color: #2C2416; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+		<button onclick={startReview}
+			title="Avab ülelugemise vormi, kus saad iga parameetri kohta verdikti ja märkused sisestada."
+			style="background: #E9C46A; color: #2C2416; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Alusta &uuml;lelugemist
 		</button>
 	{/if}
