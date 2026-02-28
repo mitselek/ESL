@@ -100,6 +100,18 @@
 	let selectedReviewer = $state('');
 	let statusMsg = $state('');
 	let uploading = $state(false);
+	let dragover = $state(false);
+
+	function getPdfFromDrop(e: DragEvent): File | null {
+		e.preventDefault();
+		dragover = false;
+		const file = e.dataTransfer?.files?.[0];
+		if (!file || file.type !== 'application/pdf') {
+			statusMsg = 'Ainult PDF failid';
+			return null;
+		}
+		return file;
+	}
 
 	// --- Upload helper ---
 	async function uploadFile(file: File): Promise<string | null> {
@@ -123,11 +135,6 @@
 	// --- 2. Määra korrektor (küljenduses) ---
 	let draftFile: File | null = $state(null);
 	let pageflowMatched = $state(false);
-
-	function onDraftFileChange(e: Event) {
-		const input = e.target as HTMLInputElement;
-		draftFile = input.files?.[0] ?? null;
-	}
 
 	async function assignReviewer() {
 		if (!selectedReviewer) { statusMsg = 'Vali korrektor'; return; }
@@ -297,31 +304,17 @@
 
 	<!-- 1. Lisa lähtefail — teos staatuses -->
 	{#if user && piece.status === 'teos'}
-		<div style="display: flex; flex-direction: column; gap: 6px;">
-			<span style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #888; text-transform: uppercase; letter-spacing: 0.05em;">
-				Lisa l&auml;htefail
-			</span>
-			<div class="flex gap-2 items-center">
-				<input type="file" accept=".pdf"
-					onchange={async (e: Event) => {
-						const file = (e.target as HTMLInputElement).files?.[0];
-						if (!file) return;
-						const url = await uploadFile(file);
-						if (!url) return;
-						const res = await fetch(`/api/pieces/${piece.id}/source-pdf`, {
-							method: 'PUT',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ source_pdf_url: url }),
-						});
-						if (res.ok) window.location.reload();
-						else statusMsg = (await res.json()).error;
-					}}
-					disabled={uploading}
-					style="font-size: 0.8rem; max-width: 220px; cursor: pointer; opacity: {uploading ? 0.5 : 1};"
-				/>
-				{#if uploading}<span style="font-size: 0.75rem; color: #888;">Laen &uuml;les...</span>{/if}
-			</div>
-		</div>
+		{@render dropZone('Lisa lähtefail', async (file) => {
+			const url = await uploadFile(file);
+			if (!url) return;
+			const res = await fetch(`/api/pieces/${piece.id}/source-pdf`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ source_pdf_url: url }),
+			});
+			if (res.ok) window.location.reload();
+			else statusMsg = (await res.json()).error;
+		})}
 	{/if}
 
 	<!-- 2. Määra korrektor — küljenduses staatuses -->
@@ -337,17 +330,16 @@
 						<option value={u.id}>{u.name ?? u.email}</option>
 					{/each}
 				</select>
-				<input type="file" accept=".pdf" onchange={onDraftFileChange}
-					style="font-size: 0.8rem; max-width: 220px;" />
 				<label class="flex items-center gap-1" style="font-size: 0.8rem; cursor: pointer; white-space: nowrap;">
 					<input type="checkbox" bind:checked={pageflowMatched} />
 					1:1 pageflow
 				</label>
-				<button onclick={assignReviewer} disabled={uploading}
-					style="background: #2C2416; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; opacity: {uploading ? 0.5 : 1};">
-					{uploading ? 'Laen...' : 'M\u00e4\u00e4ra korrektor'}
-				</button>
 			</div>
+			{@render dropZone(draftFile ? draftFile.name : 'Küljenduse PDF', (file) => { draftFile = file; })}
+			<button onclick={assignReviewer} disabled={uploading || !selectedReviewer || !draftFile}
+				style="background: #2C2416; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; opacity: {uploading || !selectedReviewer || !draftFile ? 0.5 : 1};">
+				{uploading ? 'Laen...' : 'M\u00e4\u00e4ra korrektor'}
+			</button>
 		</div>
 	{/if}
 
@@ -372,31 +364,17 @@
 	{/if}
 
 	{#if actingAsTypesetter && piece.status === 'paranduses'}
-		<div style="display: flex; flex-direction: column; gap: 6px;">
-			<span style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #888; text-transform: uppercase; letter-spacing: 0.05em;">
-				Lae &uuml;les parandatud redaktsioon
-			</span>
-			<div class="flex gap-2 items-center">
-				<input type="file" accept=".pdf"
-					onchange={async (e: Event) => {
-						const file = (e.target as HTMLInputElement).files?.[0];
-						if (!file) return;
-						const url = await uploadFile(file);
-						if (!url) return;
-						const res = await fetch(`/api/pieces/${piece.id}/status`, {
-							method: 'PUT',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ status: 'korrektuuris', pdf_url: url }),
-						});
-						if (res.ok) window.location.reload();
-						else statusMsg = (await res.json()).error;
-					}}
-					disabled={uploading}
-					style="font-size: 0.8rem; max-width: 220px; cursor: pointer; opacity: {uploading ? 0.5 : 1};"
-				/>
-				{#if uploading}<span style="font-size: 0.75rem; color: #888;">Laen &uuml;les...</span>{/if}
-			</div>
-		</div>
+		{@render dropZone('Lae üles parandatud redaktsioon', async (file) => {
+			const url = await uploadFile(file);
+			if (!url) return;
+			const res = await fetch(`/api/pieces/${piece.id}/status`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status: 'korrektuuris', pdf_url: url }),
+			});
+			if (res.ok) window.location.reload();
+			else statusMsg = (await res.json()).error;
+		})}
 	{/if}
 
 	{#if actingAsReviewer && piece.status === 'paranduses'}
@@ -558,6 +536,35 @@
 {/if}
 
 <!-- Review form snippet (shared by both layouts) -->
+{#snippet dropZone(label: string, onFile: (file: File) => void)}
+	{@const inputId = `drop-${label.replace(/\s/g, '-')}`}
+	<div
+		role="button"
+		tabindex="0"
+		ondragover={e => { e.preventDefault(); dragover = true; }}
+		ondragleave={() => { dragover = false; }}
+		ondrop={e => { const f = getPdfFromDrop(e); if (f) onFile(f); }}
+		onclick={() => { if (!uploading) document.getElementById(inputId)?.click(); }}
+		onkeydown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById(inputId)?.click(); } }}
+		style="border: 2px dashed {dragover ? '#C9A96E' : '#E8DDD0'}; border-radius: 8px; padding: 16px; text-align: center; cursor: {uploading ? 'wait' : 'pointer'}; background: {dragover ? '#FAF6F0' : 'transparent'}; transition: border-color 0.15s, background 0.15s; opacity: {uploading ? 0.5 : 1};"
+	>
+		<input id={inputId} type="file" accept=".pdf"
+			onchange={e => { const f = (e.target as HTMLInputElement).files?.[0]; if (f) onFile(f); }}
+			style="display: none;"
+		/>
+		<div style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: {dragover ? '#C9A96E' : '#888'}; text-transform: uppercase; letter-spacing: 0.05em;">
+			{#if uploading}
+				Laen &uuml;les...
+			{:else}
+				{label}
+			{/if}
+		</div>
+		{#if !uploading}
+			<div style="font-size: 0.7rem; color: #bbb; margin-top: 4px;">Lohista PDF siia v&otilde;i kl&otilde;psa</div>
+		{/if}
+	</div>
+{/snippet}
+
 {#snippet reviewForm()}
 	<!-- Whole-piece parameetrid -->
 	{#if wholePieceParams.length > 0}
