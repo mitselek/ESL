@@ -31,7 +31,10 @@ teos → lähtefail → küljenduses → korrektuuris → kontrollitud → kinni
   - [Küljenduses](#küljenduses)
   - [Korrektuuris](#korrektuuris)
     - [Korrektor: redaktsioonide vahel vahetamine split-view's](#korrektor-redaktsioonide-vahel-vahetamine-split-views)
+    - [Korrektor: redaktsiooniga seotud märkused](#korrektor-redaktsiooniga-seotud-märkused)
   - [Kontrollitud](#kontrollitud)
+    - [Graafik: korrektori märkusi pole — kinnitan noodi](#graafik-korrektori-märkusi-pole--kinnitan-noodi)
+    - [Graafik: korrektori märkused olemas — vaatan üle ja parandan](#graafik-korrektori-märkused-olemas--vaatan-üle-ja-parandan)
   - [Paranduses](#paranduses)
     - [Graafik: uue redaktsiooni üleslaadimine](#graafik-uue-redaktsiooni-üleslaadimine)
     - [Korrektor: readonly split-view koos ettepanekutega](#korrektor-readonly-split-view-koos-ettepanekutega)
@@ -72,13 +75,27 @@ _Graafik on draft PDF üles laadinud ja korrektor loeb üle._
 ### Korrektor: redaktsiooniga seotud märkused
 
 **Kes:** korrektor
-**Millal:** vahetab redaktsiooni dropdownist
+**Millal:** vahetab redaktsiooni _picker_'ist
 **Tahan:** näha selle redaktsiooniga seotud korrektuurimärkusi — vanematel readonly, praegusel täidetav vorm
 **Tulemus:** saan jälgida, milliseid vigu iga versioon sisaldas ja kuidas parandused on edenenud
 
 ## Kontrollitud
 
 _Korrektor on ülelugemise lõpetanud. Graafik vaatab märkused üle._
+
+### Graafik: korrektori märkusi pole — kinnitan noodi
+
+**Kes:** graafik
+**Millal:** noot on `kontrollitud` staatuses, korrektori ülelugemine ei sisalda vigu ega ettepanekuid
+**Tahan:** näha selget signaali, et noot on korras, ja kinnitada ühe nupuvajutusega
+**Tulemus:** noot läheb `kinnitatud` staatusesse
+
+### Graafik: korrektori märkused olemas — vaatan üle ja parandan
+
+**Kes:** graafik
+**Millal:** noot on `kontrollitud` staatuses, korrektori ülelugemine sisaldab vigu ja/või ettepanekuid
+**Tahan:** näha korrektori märkuste kokkuvõtet ja otsustada: parandan (→ `paranduses`) või kinnitan vaatamata (→ `kinnitatud`, keelatud kui vigu)
+**Tulemus:** kas lähen parandama (staatus `paranduses`) või kinnitan (staatus `kinnitatud`)
 
 ## Paranduses
 
