@@ -247,20 +247,28 @@
 		<div class="flex gap-4 mt-2 text-sm flex-wrap items-center">
 			{#if piece.typesetter}
 				{#if isBothRoles}
-					<button onclick={() => activeRole = 'typesetter'}
-						style="border: none; background: none; padding: 0; cursor: pointer; font-size: inherit; text-decoration: {activeRole !== 'typesetter' ? 'underline' : 'none'}; color: {activeRole === 'typesetter' ? 'inherit' : '#888'};">
-						Graafik: <strong style="font-weight: {activeRole === 'typesetter' ? '700' : '400'};">{piece.typesetter.name ?? piece.typesetter.email}</strong>
-					</button>
+					{#if activeRole === 'typesetter'}
+						<span>Graafik: <strong>{piece.typesetter.name ?? piece.typesetter.email}</strong></span>
+					{:else}
+						<button onclick={() => activeRole = 'typesetter'}
+							style="border: 1px solid #E8DDD0; background: #FAF6F0; border-radius: 6px; padding: 2px 10px; cursor: pointer; font-size: inherit; color: #666;">
+							Graafik: {piece.typesetter.name ?? piece.typesetter.email}
+						</button>
+					{/if}
 				{:else}
 					<span>Graafik: <strong>{piece.typesetter.name ?? piece.typesetter.email}</strong></span>
 				{/if}
 			{/if}
 			{#if piece.reviewer}
 				{#if isBothRoles}
-					<button onclick={() => activeRole = 'reviewer'}
-						style="border: none; background: none; padding: 0; cursor: pointer; font-size: inherit; text-decoration: {activeRole !== 'reviewer' ? 'underline' : 'none'}; color: {activeRole === 'reviewer' ? 'inherit' : '#888'};">
-						Korrektor: <strong style="font-weight: {activeRole === 'reviewer' ? '700' : '400'};">{piece.reviewer.name ?? piece.reviewer.email}</strong>
-					</button>
+					{#if activeRole === 'reviewer'}
+						<span>Korrektor: <strong>{piece.reviewer.name ?? piece.reviewer.email}</strong></span>
+					{:else}
+						<button onclick={() => activeRole = 'reviewer'}
+							style="border: 1px solid #E8DDD0; background: #FAF6F0; border-radius: 6px; padding: 2px 10px; cursor: pointer; font-size: inherit; color: #666;">
+							Korrektor: {piece.reviewer.name ?? piece.reviewer.email}
+						</button>
+					{/if}
 				{:else}
 					<span>Korrektor: <strong>{piece.reviewer.name ?? piece.reviewer.email}</strong></span>
 				{/if}
