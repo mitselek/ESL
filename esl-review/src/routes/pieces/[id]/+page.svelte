@@ -6,8 +6,16 @@
 	const user = $derived(data.user);
 	const users = $derived(data.users ?? []);
 
-	const isTypesetter = $derived(user && piece.typesetter?.id === user.id);
-	const isReviewer = $derived(user && piece.reviewer?.id === user.id);
+	const isTypesetter = $derived(!!(user && piece.typesetter?.id === user.id));
+	const isReviewer = $derived(!!(user && piece.reviewer?.id === user.id));
+	const isBothRoles = $derived(isTypesetter && isReviewer);
+
+	// Aktiivne roll — kui mõlemad, saab vahetada
+	let activeRole = $state<'typesetter' | 'reviewer'>(
+		data.piece.typesetter?.id === data.user?.id ? 'typesetter' : 'reviewer'
+	);
+	const actingAsTypesetter = $derived(isTypesetter && (!isBothRoles || activeRole === 'typesetter'));
+	const actingAsReviewer = $derived(isReviewer && (!isBothRoles || activeRole === 'reviewer'));
 
 	const STATUS_COLORS: Record<string, string> = {
 		'teos': '#ADB5BD', 'lähtefail': '#ADB5BD',
@@ -236,12 +244,32 @@
 		{#if piece.composer}
 			<p style="color: #888; font-size: 1rem;">{piece.composer}</p>
 		{/if}
-		<div class="flex gap-4 mt-2 text-sm flex-wrap">
+		<div class="flex gap-4 mt-2 text-sm flex-wrap items-center">
 			{#if piece.typesetter}
-				<span>Graafik: <strong>{piece.typesetter.name ?? piece.typesetter.email}</strong></span>
+				<span>Graafik: <strong>{piece.typesetter.name ?? piece.typesetter.email}</strong>
+					{#if isTypesetter && !isBothRoles}<span style="font-size: 0.65rem; background: #C9A96E; color: white; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">sina</span>{/if}
+					{#if isBothRoles}<span style="font-size: 0.65rem; background: {activeRole === 'typesetter' ? '#C9A96E' : '#E8DDD0'}; color: {activeRole === 'typesetter' ? 'white' : '#888'}; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">{activeRole === 'typesetter' ? 'sina (aktiivne)' : 'sina'}</span>{/if}
+				</span>
 			{/if}
 			{#if piece.reviewer}
-				<span>Korrektor: <strong>{piece.reviewer.name ?? piece.reviewer.email}</strong></span>
+				<span>Korrektor: <strong>{piece.reviewer.name ?? piece.reviewer.email}</strong>
+					{#if isReviewer && !isBothRoles}<span style="font-size: 0.65rem; background: #C9A96E; color: white; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">sina</span>{/if}
+					{#if isBothRoles}<span style="font-size: 0.65rem; background: {activeRole === 'reviewer' ? '#C9A96E' : '#E8DDD0'}; color: {activeRole === 'reviewer' ? 'white' : '#888'}; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">{activeRole === 'reviewer' ? 'sina (aktiivne)' : 'sina'}</span>{/if}
+				</span>
+			{/if}
+			{#if isBothRoles}
+				<div style="display: flex; gap: 2px; border: 1px solid #E8DDD0; border-radius: 6px; padding: 2px; font-size: 0.75rem;">
+					<button onclick={() => activeRole = 'typesetter'}
+						title="Tegutse graafikuna"
+						style="padding: 3px 10px; border: none; border-radius: 4px; cursor: pointer; background: {activeRole === 'typesetter' ? '#2C2416' : 'transparent'}; color: {activeRole === 'typesetter' ? 'white' : '#666'};">
+						Graafik
+					</button>
+					<button onclick={() => activeRole = 'reviewer'}
+						title="Tegutse korrektorina"
+						style="padding: 3px 10px; border: none; border-radius: 4px; cursor: pointer; background: {activeRole === 'reviewer' ? '#2C2416' : 'transparent'}; color: {activeRole === 'reviewer' ? 'white' : '#666'};">
+						Korrektor
+					</button>
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -292,7 +320,7 @@
 	{/if}
 
 	<!-- 2. Määra korrektor — küljenduses staatuses -->
-	{#if isTypesetter && piece.status === 'küljenduses' && users.length > 0}
+	{#if actingAsTypesetter && piece.status === 'küljenduses' && users.length > 0}
 		<div style="display: flex; flex-direction: column; gap: 6px;">
 			<span style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #888; text-transform: uppercase; letter-spacing: 0.05em;">
 				M&auml;&auml;ra korrektor
@@ -318,13 +346,13 @@
 		</div>
 	{/if}
 
-	{#if isReviewer && piece.status === 'korrektuuris' && !activeReviewId}
+	{#if actingAsReviewer && piece.status === 'korrektuuris' && !activeReviewId}
 		<button onclick={startReview} style="background: #E9C46A; color: #2C2416; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Alusta &uuml;lelugemist
 		</button>
 	{/if}
 
-	{#if isTypesetter && piece.status === 'kontrollitud'}
+	{#if actingAsTypesetter && piece.status === 'kontrollitud'}
 		<button onclick={() => setStatus('paranduses')}
 			title="Korrektori märkused vajavad parandamist. Noot läheb tagasi küljendamisele."
 			style="background: #E76F51; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
@@ -338,7 +366,7 @@
 		</button>
 	{/if}
 
-	{#if isReviewer && piece.status === 'paranduses'}
+	{#if actingAsReviewer && piece.status === 'paranduses'}
 		<button onclick={() => setStatus('korrektuuris')}
 			title="Parandused on tehtud, aga vajavad uut ülelugemist."
 			style="background: #E9C46A; color: #2C2416; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
@@ -351,7 +379,7 @@
 		</button>
 	{/if}
 
-	{#if isTypesetter && piece.status === 'kinnitatud'}
+	{#if actingAsTypesetter && piece.status === 'kinnitatud'}
 		<button onclick={() => setStatus('publitseeritud')}
 			title="Noot on valmis avaldamiseks."
 			style="background: #2D6A4F; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
