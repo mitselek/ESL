@@ -5,9 +5,9 @@ export type UpdateStatusResult = { ok: true } | { error: string; status: number 
 
 type Role = 'typesetter' | 'reviewer';
 
-const TRANSITIONS: Record<string, Record<string, Role>> = {
+const TRANSITIONS: Record<string, Record<string, Role | Role[]>> = {
 	kontrollitud: { paranduses: 'typesetter', kinnitatud: 'typesetter' },
-	paranduses: { kinnitatud: 'reviewer', korrektuuris: 'reviewer' },
+	paranduses: { kinnitatud: 'reviewer', korrektuuris: ['typesetter', 'reviewer'] },
 	kinnitatud: { publitseeritud: 'typesetter' }
 };
 
@@ -35,13 +35,13 @@ function checkTransition(
 	if (!allowed || !(newStatus in allowed)) {
 		return { error: 'Invalid status transition', status: 409 };
 	}
-	const role = allowed[newStatus];
-	if (role === 'typesetter' && piece.typesetter_id !== user.id) {
-		return { error: 'Forbidden', status: 403 };
-	}
-	if (role === 'reviewer' && piece.reviewer_id !== user.id) {
-		return { error: 'Forbidden', status: 403 };
-	}
+	const roles = Array.isArray(allowed[newStatus]) ? allowed[newStatus] : [allowed[newStatus]];
+	const hasRole = roles.some((role) => {
+		if (role === 'typesetter') return piece.typesetter_id === user.id;
+		if (role === 'reviewer') return piece.reviewer_id === user.id;
+		return false;
+	});
+	if (!hasRole) return { error: 'Forbidden', status: 403 };
 	return null;
 }
 
@@ -50,7 +50,8 @@ export function updatePieceStatus(
 	db: DatabaseSync,
 	pieceId: string,
 	newStatus: string,
-	user: User
+	user: User,
+	pdfUrl?: string
 ): UpdateStatusResult {
 	const piece = db
 		.prepare('SELECT typesetter_id, reviewer_id, status FROM pieces WHERE id = ?')
@@ -61,9 +62,15 @@ export function updatePieceStatus(
 	const err = checkTransition(piece, newStatus, user);
 	if (err) return err;
 
-	db.prepare(
-		`UPDATE pieces SET status = ?, updated_at = datetime('now') WHERE id = ?`
-	).run(newStatus, pieceId);
+	if (pdfUrl) {
+		db.prepare(
+			`UPDATE pieces SET status = ?, pdf_url = ?, updated_at = datetime('now') WHERE id = ?`
+		).run(newStatus, pdfUrl, pieceId);
+	} else {
+		db.prepare(
+			`UPDATE pieces SET status = ?, updated_at = datetime('now') WHERE id = ?`
+		).run(newStatus, pieceId);
+	}
 
 	return { ok: true };
 }
@@ -73,7 +80,8 @@ export async function updatePieceStatusD1(
 	db: D1Db,
 	pieceId: string,
 	newStatus: string,
-	user: User
+	user: User,
+	pdfUrl?: string
 ): Promise<UpdateStatusResult> {
 	const piece = await db
 		.prepare('SELECT typesetter_id, reviewer_id, status FROM pieces WHERE id = ?')
@@ -85,10 +93,17 @@ export async function updatePieceStatusD1(
 	const err = checkTransition(piece, newStatus, user);
 	if (err) return err;
 
-	await db
-		.prepare(`UPDATE pieces SET status = ?, updated_at = datetime('now') WHERE id = ?`)
-		.bind(newStatus, pieceId)
-		.run();
+	if (pdfUrl) {
+		await db
+			.prepare(`UPDATE pieces SET status = ?, pdf_url = ?, updated_at = datetime('now') WHERE id = ?`)
+			.bind(newStatus, pdfUrl, pieceId)
+			.run();
+	} else {
+		await db
+			.prepare(`UPDATE pieces SET status = ?, updated_at = datetime('now') WHERE id = ?`)
+			.bind(newStatus, pieceId)
+			.run();
+	}
 
 	return { ok: true };
 }

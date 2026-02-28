@@ -191,8 +191,11 @@
 		(data.activeReview?.entries ?? []).some((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')
 	);
 
-	// --- 3. Dual split-view (korrektuuris) ---
-	const hasDualPdf = $derived(!!piece.pdf_url && !!piece.source_pdf_url && !!activeReviewId);
+	// --- 3. Dual split-view (korrektuuris / paranduses) ---
+	const hasDualPdf = $derived(
+		!!piece.pdf_url && !!piece.source_pdf_url &&
+		(!!activeReviewId || ['kontrollitud', 'paranduses'].includes(piece.status))
+	);
 	let swapped = $state(false);
 	const leftUrl = $derived(swapped ? piece.source_pdf_url : piece.pdf_url);
 	const rightUrl = $derived(swapped ? piece.pdf_url : piece.source_pdf_url);
@@ -368,6 +371,34 @@
 		</button>
 	{/if}
 
+	{#if actingAsTypesetter && piece.status === 'paranduses'}
+		<div style="display: flex; flex-direction: column; gap: 6px;">
+			<span style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #888; text-transform: uppercase; letter-spacing: 0.05em;">
+				Lae &uuml;les parandatud redaktsioon
+			</span>
+			<div class="flex gap-2 items-center">
+				<input type="file" accept=".pdf"
+					onchange={async (e: Event) => {
+						const file = (e.target as HTMLInputElement).files?.[0];
+						if (!file) return;
+						const url = await uploadFile(file);
+						if (!url) return;
+						const res = await fetch(`/api/pieces/${piece.id}/status`, {
+							method: 'PUT',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ status: 'korrektuuris', pdf_url: url }),
+						});
+						if (res.ok) window.location.reload();
+						else statusMsg = (await res.json()).error;
+					}}
+					disabled={uploading}
+					style="font-size: 0.8rem; max-width: 220px; cursor: pointer; opacity: {uploading ? 0.5 : 1};"
+				/>
+				{#if uploading}<span style="font-size: 0.75rem; color: #888;">Laen &uuml;les...</span>{/if}
+			</div>
+		</div>
+	{/if}
+
 	{#if actingAsReviewer && piece.status === 'paranduses'}
 		<button onclick={() => setStatus('korrektuuris')}
 			title="Parandused on tehtud, aga vajavad uut ülelugemist."
@@ -390,7 +421,7 @@
 	{/if}
 </div>
 
-{#if piece.status === 'kontrollitud' && data.activeReview?.entries?.length}
+{#if ['kontrollitud', 'paranduses'].includes(piece.status) && data.activeReview?.entries?.length}
 	{@const problems = data.activeReview.entries.filter((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')}
 	<div style="background: #FAF6F0; border: 1px solid #E8DDD0; border-radius: 6px; padding: 12px; margin-bottom: 1rem;">
 		<h3 style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #C9A96E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Korrektori m&auml;rkused</h3>

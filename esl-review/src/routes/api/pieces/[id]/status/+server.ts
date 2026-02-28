@@ -19,7 +19,8 @@ export const PUT: RequestHandler = async ({ params, locals, platform, request })
 		return json({ error: 'status is required' }, { status: 400 });
 	}
 
-	const result = await updatePieceStatusD1(db, params.id, newStatus, locals.user);
+	const pdfUrl = typeof body.pdf_url === 'string' ? body.pdf_url : undefined;
+	const result = await updatePieceStatusD1(db, params.id, newStatus, locals.user, pdfUrl);
 	if ('error' in result) return json({ error: result.error }, { status: result.status });
 
 	return json({ ok: true });

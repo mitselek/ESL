@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ params, platform, locals }) => {
 			.bind(params.id)
 			.first<{ id: string }>();
 		if (row) activeReview = await getReviewD1(db, row.id);
-	} else if (piece.status === 'kontrollitud') {
+	} else if (['kontrollitud', 'paranduses'].includes(piece.status)) {
 		const row = await db
 			.prepare("SELECT id FROM reviews WHERE piece_id = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1")
 			.bind(params.id)
