@@ -46,6 +46,10 @@ export function assignReviewer(
 		`UPDATE pieces SET reviewer_id = ?, pdf_url = ?, pageflow_matched = ?, status = 'korrektuuris', updated_at = datetime('now') WHERE id = ?`
 	).run(reviewerId, pdfUrl, pageflowMatched ? 1 : 0, pieceId);
 
+	db.prepare('INSERT INTO piece_redactions (id, piece_id, url, label) VALUES (?, ?, ?, ?)').run(
+		crypto.randomUUID(), pieceId, pdfUrl, 'v1'
+	);
+
 	return { ok: true };
 }
 
@@ -81,6 +85,10 @@ export async function assignReviewerD1(
 			`UPDATE pieces SET reviewer_id = ?, pdf_url = ?, pageflow_matched = ?, status = 'korrektuuris', updated_at = datetime('now') WHERE id = ?`
 		)
 		.bind(reviewerId, pdfUrl, pageflowMatched ? 1 : 0, pieceId)
+		.run();
+
+	await db.prepare('INSERT INTO piece_redactions (id, piece_id, url, label) VALUES (?, ?, ?, ?)')
+		.bind(crypto.randomUUID(), pieceId, pdfUrl, 'v1')
 		.run();
 
 	return { ok: true };

@@ -18,6 +18,7 @@ function openSeededDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0003_piece_redactions.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, 'seed.sql'), 'utf-8'));
 	return db;
 }
@@ -138,6 +139,26 @@ describe('GET /api/pieces/[id]', () => {
 				expect(pp).toHaveProperty('param_name');
 				expect(pp).toHaveProperty('scope');
 			}
+		});
+	});
+
+	describe('redactions', () => {
+		it('tagastab piece redactions', () => {
+			// lisa 2 redaction rida
+			db.prepare('INSERT INTO piece_redactions (id, piece_id, url, label, created_at) VALUES (?, ?, ?, ?, ?)').run(
+				'red-1', firstPieceId, '/pdf/v1.pdf', 'v1', '2026-01-01T10:00:00'
+			);
+			db.prepare('INSERT INTO piece_redactions (id, piece_id, url, label, created_at) VALUES (?, ?, ?, ?, ?)').run(
+				'red-2', firstPieceId, '/pdf/v2.pdf', 'v2', '2026-01-02T10:00:00'
+			);
+
+			const result = getPiece(db, firstPieceId)!;
+			expect(result.redactions).toHaveLength(2);
+			// sorteeritud created_at ASC
+			expect(result.redactions[0].label).toBe('v1');
+			expect(result.redactions[0].url).toBe('/pdf/v1.pdf');
+			expect(result.redactions[1].label).toBe('v2');
+			expect(result.redactions[1].url).toBe('/pdf/v2.pdf');
 		});
 	});
 });

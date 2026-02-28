@@ -21,15 +21,16 @@ teos → lähtefail → küljenduses → korrektuuris → kontrollitud → kinni
 | `paranduses` → `kinnitatud`        | korrektor | "Kinnita"                           |
 | `kinnitatud` → `publitseeritud`    | graafik   | "Publitseeri"                       |
 
-### Sisukord
+## Sisukord
 
 - [User Stories](#user-stories)
   - [State machine](#state-machine)
-    - [Sisukord](#sisukord)
+  - [Sisukord](#sisukord)
   - [Teos](#teos)
   - [Lähtefail](#lähtefail)
   - [Küljenduses](#küljenduses)
   - [Korrektuuris](#korrektuuris)
+    - [Korrektor: redaktsioonide vahel vahetamine split-view's](#korrektor-redaktsioonide-vahel-vahetamine-split-views)
   - [Kontrollitud](#kontrollitud)
   - [Paranduses](#paranduses)
     - [Graafik: uue redaktsiooni üleslaadimine](#graafik-uue-redaktsiooni-üleslaadimine)
@@ -54,6 +55,20 @@ _Graafik on noodi endale võtnud ja töötab küljendusega._
 ## Korrektuuris
 
 _Graafik on draft PDF üles laadinud ja korrektor loeb üle._
+
+### Korrektor: redaktsioonide vahel vahetamine split-view's
+
+**Kes:** korrektor
+**Millal:** noot on `korrektuuris` staatuses, on mitu redaktsiooni
+**Tahan:** split-view vasakul poolel näha vaikimisi viimast redaktsiooni, aga saama vahetada ka varasematele
+**Tulemus:** saan võrrelda erinevaid versioone algnoodiga
+
+**Tehniline:**
+
+- Uus tabel `piece_redactions (id, piece_id, url, label, created_at)`
+- Iga PDF upload (assign-reviewer, paranduses resubmit) lisab rea
+- `pieces.pdf_url` jääb viitama viimasele (tagasiühilduvus)
+- Frontend: dropdown redaktsioonide vahetamiseks küljenduse iframe kohal
 
 ## Kontrollitud
 

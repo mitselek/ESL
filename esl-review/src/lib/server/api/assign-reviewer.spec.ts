@@ -39,6 +39,7 @@ function openSeededDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0003_piece_redactions.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, 'seed.sql'), 'utf-8'));
 	db.prepare('INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)').run(
 		TYPESETTER.id, TYPESETTER.email, TYPESETTER.name, TYPESETTER.picture
@@ -154,5 +155,17 @@ describe('PUT /api/pieces/[id]/assign-reviewer', () => {
 				.get(pieceId) as { pageflow_matched: number };
 			expect(row.pageflow_matched).toBe(0);
 		});
+	});
+
+	it('lisab redaktsiooni piece_redactions tabelisse', () => {
+		const pieceId = setupPiece(db);
+		const pdfUrl = 'https://example.com/v1.pdf';
+		assignReviewer(db, pieceId, REVIEWER_USER.id, pdfUrl, false, TYPESETTER);
+		const rows = db
+			.prepare('SELECT * FROM piece_redactions WHERE piece_id = ?')
+			.all(pieceId) as Array<{ id: string; piece_id: string; url: string; label: string; created_at: string }>;
+		expect(rows).toHaveLength(1);
+		expect(rows[0].label).toBe('v1');
+		expect(rows[0].url).toBe(pdfUrl);
 	});
 });

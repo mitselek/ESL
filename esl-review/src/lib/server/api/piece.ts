@@ -15,6 +15,13 @@ export interface PieceParam {
 	is_active: number;
 }
 
+export interface PieceRedaction {
+	id: string;
+	url: string;
+	label: string | null;
+	created_at: string;
+}
+
 export interface PieceDetail {
 	id: string;
 	title: string;
@@ -32,6 +39,7 @@ export interface PieceDetail {
 	updated_at: string;
 	voice_parts: VoicePart[];
 	piece_params: PieceParam[];
+	redactions: PieceRedaction[];
 }
 
 interface PieceRow {
@@ -94,6 +102,10 @@ export function getPiece(db: DatabaseSync, id: string): PieceDetail | null {
 		)
 		.all(id) as unknown as PieceParam[];
 
+	const redactions = db
+		.prepare('SELECT id, url, label, created_at FROM piece_redactions WHERE piece_id = ? ORDER BY created_at ASC')
+		.all(id) as unknown as PieceRedaction[];
+
 	return {
 		id: row.id,
 		title: row.title,
@@ -110,7 +122,8 @@ export function getPiece(db: DatabaseSync, id: string): PieceDetail | null {
 		created_at: row.created_at,
 		updated_at: row.updated_at,
 		voice_parts,
-		piece_params
+		piece_params,
+		redactions
 	};
 }
 
@@ -149,6 +162,11 @@ export async function getPieceD1(db: D1Db, id: string): Promise<PieceDetail | nu
 		.bind(id)
 		.all<PieceParam>();
 
+	const { results: redactions } = await db
+		.prepare('SELECT id, url, label, created_at FROM piece_redactions WHERE piece_id = ? ORDER BY created_at ASC')
+		.bind(id)
+		.all<PieceRedaction>();
+
 	return {
 		id: row.id,
 		title: row.title,
@@ -165,6 +183,7 @@ export async function getPieceD1(db: D1Db, id: string): Promise<PieceDetail | nu
 		created_at: row.created_at,
 		updated_at: row.updated_at,
 		voice_parts,
-		piece_params
+		piece_params,
+		redactions
 	};
 }

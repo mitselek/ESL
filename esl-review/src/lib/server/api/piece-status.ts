@@ -66,6 +66,12 @@ export function updatePieceStatus(
 		db.prepare(
 			`UPDATE pieces SET status = ?, pdf_url = ?, updated_at = datetime('now') WHERE id = ?`
 		).run(newStatus, pdfUrl, pieceId);
+
+		const countRow = db.prepare('SELECT COUNT(*) as cnt FROM piece_redactions WHERE piece_id = ?').get(pieceId) as unknown as { cnt: number };
+		const label = `v${countRow.cnt + 1}`;
+		db.prepare('INSERT INTO piece_redactions (id, piece_id, url, label) VALUES (?, ?, ?, ?)').run(
+			crypto.randomUUID(), pieceId, pdfUrl, label
+		);
 	} else {
 		db.prepare(
 			`UPDATE pieces SET status = ?, updated_at = datetime('now') WHERE id = ?`
@@ -97,6 +103,14 @@ export async function updatePieceStatusD1(
 		await db
 			.prepare(`UPDATE pieces SET status = ?, pdf_url = ?, updated_at = datetime('now') WHERE id = ?`)
 			.bind(newStatus, pdfUrl, pieceId)
+			.run();
+
+		const countRow = await db.prepare('SELECT COUNT(*) as cnt FROM piece_redactions WHERE piece_id = ?')
+			.bind(pieceId)
+			.first<{ cnt: number }>();
+		const label = `v${(countRow?.cnt ?? 0) + 1}`;
+		await db.prepare('INSERT INTO piece_redactions (id, piece_id, url, label) VALUES (?, ?, ?, ?)')
+			.bind(crypto.randomUUID(), pieceId, pdfUrl, label)
 			.run();
 	} else {
 		await db
