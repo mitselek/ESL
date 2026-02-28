@@ -266,6 +266,31 @@
 		}
 	}
 
+	// --- Voice parts ---
+	let newVoicePartName = $state('');
+	let vpLoading = $state(false);
+
+	async function addVoicePart() {
+		const name = newVoicePartName.trim();
+		if (!name) return;
+		vpLoading = true;
+		const res = await fetch(`/api/pieces/${piece.id}/voice-parts`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name }),
+		});
+		vpLoading = false;
+		if (res.ok) { newVoicePartName = ''; window.location.reload(); }
+		else statusMsg = (await res.json()).error;
+	}
+
+	async function deleteVoicePart(vpId: string, vpName: string) {
+		if (!confirm(`Kustuta häälerühm "${vpName}"?`)) return;
+		const res = await fetch(`/api/pieces/${piece.id}/voice-parts/${vpId}`, { method: 'DELETE' });
+		if (res.ok) window.location.reload();
+		else statusMsg = (await res.json()).error;
+	}
+
 	// Mobile tabs for dual view
 	let mobileTab: 'draft' | 'source' = $state('draft');
 </script>
@@ -319,6 +344,42 @@
 
 {#if statusMsg}
 	<p style="color: #E76F51; margin-bottom: 1rem; font-size: 0.875rem;">{statusMsg}</p>
+{/if}
+
+<!-- Häälerühmad -->
+{#if piece.voice_parts.length > 0 || (actingAsTypesetter && piece.status === 'küljenduses')}
+	<div style="margin-bottom: 1rem;">
+		<h3 style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #C9A96E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px;">
+			H&auml;&auml;ler&uuml;hmad
+		</h3>
+		<div class="flex gap-2 flex-wrap items-center" style="font-size: 0.8rem;">
+			{#each piece.voice_parts as vp}
+				<span style="background: #FAF6F0; border: 1px solid #E8DDD0; border-radius: 4px; padding: 2px 8px; display: inline-flex; align-items: center; gap: 4px;">
+					{vp.name}
+					{#if actingAsTypesetter && piece.status === 'küljenduses'}
+						<button onclick={() => deleteVoicePart(vp.id, vp.name)}
+							title="Kustuta häälerühm"
+							style="background: none; border: none; cursor: pointer; color: #E76F51; font-size: 0.7rem; padding: 0 2px; line-height: 1;">
+							&times;
+						</button>
+					{/if}
+				</span>
+			{/each}
+			{#if actingAsTypesetter && piece.status === 'küljenduses'}
+				<form onsubmit={e => { e.preventDefault(); addVoicePart(); }} style="display: inline-flex; gap: 4px; align-items: center;">
+					<input
+						bind:value={newVoicePartName}
+						placeholder="Uus h&auml;&auml;ler&uuml;hm..."
+						style="border: 1px solid #E8DDD0; border-radius: 4px; padding: 2px 8px; font-size: 0.8rem; width: 120px;"
+					/>
+					<button type="submit" disabled={vpLoading || !newVoicePartName.trim()}
+						style="background: #C9A96E; color: white; border: none; border-radius: 4px; padding: 2px 8px; cursor: pointer; font-size: 0.75rem; opacity: {vpLoading || !newVoicePartName.trim() ? 0.5 : 1};">
+						+
+					</button>
+				</form>
+			{/if}
+		</div>
+	</div>
 {/if}
 
 <!-- Toimingud -->
