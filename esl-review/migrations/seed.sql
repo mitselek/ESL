@@ -14,29 +14,29 @@ DELETE FROM users;
 
 -- Kasutajad
 INSERT INTO users (id, email, name) VALUES
-  ('u-mihkel',  'mitselek@gmail.com',         'Mihkel'),
+  ('u-mihkel',  'mitselek@gmail.com',          'Mihkel'),
   ('u-august',  'august.putrinsh@gmail.com',   'August'),
   ('u-liisa',   'vesiliiv@gmail.com',          'Liisa');
 
 -- I OSA
 INSERT INTO pieces (id, title, composer, section, status) VALUES
-  ('p-01', 'Laulu võim',    NULL,                  'I', 'kinnitatud'),
+  ('p-01', 'Laulu võim',     NULL,                  'I', 'teos'),
   ('p-02', 'Koit',           NULL,                  'I', 'teos'),
   ('p-03', 'Sind surmani',   NULL,                  'I', 'teos'),
   ('p-04', 'Mis need ohjad', NULL,                  'I', 'teos'),
   ('p-05', 'Sa oled ainus',  NULL,                  'I', 'teos');
 
 INSERT INTO pieces (id, title, composer, section, status, notes) VALUES
-  ('p-06', 'Valgust', 'Pärt Uusberg', 'I', 'korrektuuris', 'Autoriõiguste küsimus laulupeolt lahendamata');
+  ('p-06', 'Valgust', 'Pärt Uusberg', 'I', 'teos', 'Autoriõiguste küsimus laulupeolt lahendamata');
 
 -- II OSA (pulmalaulud)
 INSERT INTO pieces (id, title, composer, section, status) VALUES
-  ('p-07', 'Millal meie sinna saame', NULL,        'II', 'kinnitatud'),
-  ('p-08', 'Sööge langud',            'rahvaviis', 'II', 'korrektuuris'),
-  ('p-09', 'Petis peiu',              NULL,        'II', 'korrektuuris'),
-  ('p-10', 'Palju veini',             NULL,        'II', 'korrektuuris'),
-  ('p-11', 'Ei või õnneta elada',     'rahvaviis', 'II', 'kinnitatud'),
-  ('p-12', 'Kohus koju minna',        NULL,        'II', 'korrektuuris');
+  ('p-07', 'Millal meie sinna saame', NULL,        'II', 'teos'),
+  ('p-08', 'Sööge langud',            'rahvaviis', 'II', 'teos'),
+  ('p-09', 'Petis peiu',              NULL,        'II', 'teos'),
+  ('p-10', 'Palju veini',             NULL,        'II', 'teos'),
+  ('p-11', 'Ei või õnneta elada',     'rahvaviis', 'II', 'teos'),
+  ('p-12', 'Kohus koju minna',        NULL,        'II', 'teos');
 
 -- III OSA
 INSERT INTO pieces (id, title, composer, section, status, notes) VALUES
@@ -44,17 +44,17 @@ INSERT INTO pieces (id, title, composer, section, status, notes) VALUES
 
 -- IV OSA
 INSERT INTO pieces (id, title, composer, section, status) VALUES
-  ('p-14', 'Mu süda, ärka üles',           'Cyrillus Kreek',            'IV', 'korrektuuris'),
+  ('p-14', 'Mu süda, ärka üles',            'Cyrillus Kreek',            'IV', 'teos'),
   ('p-15', 'Lenda üles kurbtusest',         'Tõnu Kõrvits',              'IV', 'teos'),
   ('p-16', 'Elukoor',                       'Mari Kalkun / Raho Puur',   'IV', 'teos'),
   ('p-17', 'Tuljak',                        'Aleksander Härma',          'IV', 'teos'),
   ('p-18', 'Mesipuu',                       'Juhan Sarapik',             'IV', 'teos'),
   ('p-19', 'Mu isamaa',                     'Gustav Ernesaks',           'IV', 'teos'),
-  ('p-20', 'Siin meie seltsis selle aasta', 'Veljo Tormis',              'IV', 'korrektuuris');
+  ('p-20', 'Siin meie seltsis selle aasta', 'Veljo Tormis',              'IV', 'teos');
 
 -- param_templates: per_voice (16 tk)
 INSERT INTO param_templates (id, name, scope, sort_order, is_default) VALUES
-  ('t-pv01', 'Noodikõrgused',                          'per_voice', 1,  1),
+  ('t-pv01', 'Noodikõrgused',                           'per_voice', 1,  1),
   ('t-pv02', 'Pausid',                                  'per_voice', 2,  1),
   ('t-pv03', 'Rütmid',                                  'per_voice', 3,  1),
   ('t-pv04', 'Sõnad (tekst)',                           'per_voice', 4,  1),
