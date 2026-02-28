@@ -49,10 +49,21 @@ export async function getUser(db: D1Db, jwtHeader: string | null): Promise<User 
 
 	const id = existing?.id ?? crypto.randomUUID();
 
+	if (existing) {
+		// Uuenda ainult picture JWT-st, ära kirjuta üle kasutaja enda seatud nime
+		await db
+			.prepare('UPDATE users SET picture = ? WHERE id = ?')
+			.bind(picture, existing.id)
+			.run();
+		const row = await db
+			.prepare('SELECT id, email, name, picture FROM users WHERE id = ?')
+			.bind(existing.id)
+			.first<User>();
+		return row ?? null;
+	}
+
 	await db
-		.prepare(
-			'INSERT OR REPLACE INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)'
-		)
+		.prepare('INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)')
 		.bind(id, email, name, picture)
 		.run();
 

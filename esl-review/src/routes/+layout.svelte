@@ -16,7 +16,7 @@
 		ESL ülelugemine
 	</a>
 	{#if user}
-		<span class="text-sm opacity-75">{user.name ?? user.email}</span>
+		<a href="/profile" class="text-sm opacity-75 hover:opacity-100" style="color: #FAF6F0;">{user.name ?? user.email}</a>
 	{/if}
 </header>
 

@@ -245,10 +245,10 @@
 		{/if}
 		<div class="flex gap-4 mt-2 text-sm flex-wrap">
 			{#if piece.typesetter}
-				<span>Graafik: <strong>{piece.typesetter.name}</strong></span>
+				<span>Graafik: <strong>{piece.typesetter.name ?? piece.typesetter.email}</strong></span>
 			{/if}
 			{#if piece.reviewer}
-				<span>Korrektor: <strong>{piece.reviewer.name}</strong></span>
+				<span>Korrektor: <strong>{piece.reviewer.name ?? piece.reviewer.email}</strong></span>
 			{/if}
 		</div>
 	</div>
@@ -296,7 +296,7 @@
 				<select bind:value={selectedReviewer} style="border: 1px solid #E8DDD0; border-radius: 6px; padding: 6px 10px; background: white;">
 					<option value="">Vali korrektor&hellip;</option>
 					{#each users as u}
-						<option value={u.id}>{u.name}</option>
+						<option value={u.id}>{u.name ?? u.email}</option>
 					{/each}
 				</select>
 				<input type="file" accept=".pdf" onchange={onDraftFileChange}

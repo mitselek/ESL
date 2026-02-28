@@ -76,7 +76,7 @@
 						<!-- Graafik / korrektor -->
 						<div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #888;" class="text-right hidden sm:block">
 							{#if piece.typesetter}
-								<div>{piece.typesetter.name}</div>
+								<div>{piece.typesetter.name ?? piece.typesetter.email}</div>
 							{:else if user && ['teos', 'lähtefail'].includes(piece.status)}
 								<button
 									onclick={() => claim(piece.id)}
@@ -88,7 +88,7 @@
 								<span style="color: #ADB5BD;">—</span>
 							{/if}
 							{#if piece.reviewer}
-								<div style="color: #52B788;">{piece.reviewer.name}</div>
+								<div style="color: #52B788;">{piece.reviewer.name ?? piece.reviewer.email}</div>
 							{/if}
 						</div>
 
