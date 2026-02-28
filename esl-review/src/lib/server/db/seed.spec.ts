@@ -18,6 +18,7 @@ const SEED_PATH = join(MIGRATIONS_DIR, 'seed.sql');
 function openSeededDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(SCHEMA_PATH, 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	db.exec(readFileSync(SEED_PATH, 'utf-8'));
 	return db;
 }

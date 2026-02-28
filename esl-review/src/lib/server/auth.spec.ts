@@ -49,6 +49,7 @@ function makeMockJwt(payload: Record<string, unknown>): string {
 function openDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	return db;
 }
 

@@ -22,6 +22,7 @@ const TEST_USER: User = {
 function openSeededDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, 'seed.sql'), 'utf-8'));
 	return db;
 }
@@ -29,6 +30,7 @@ function openSeededDb(): DatabaseSync {
 function openEmptyDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	return db;
 }
 

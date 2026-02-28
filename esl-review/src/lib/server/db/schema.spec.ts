@@ -11,18 +11,17 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it, expect, beforeEach } from 'vitest';
 
-// Migratsioonifail, mida testime — pole veel loodud
-const MIGRATION_PATH = join(
+// Migratsioonifailid, mida testime
+const MIGRATIONS_DIR = join(
 	import.meta.dirname,
 	'../../../..',  // esl-review/
-	'migrations',
-	'0001_initial.sql'
+	'migrations'
 );
 
 function openDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
-	const sql = readFileSync(MIGRATION_PATH, 'utf-8');
-	db.exec(sql);
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	return db;
 }
 
@@ -115,6 +114,22 @@ describe('DB schema', () => {
 			const cols = getColumnNames(db, 'param_templates');
 			expect(cols).toContain('scope');
 			expect(cols).toContain('sort_order');
+		});
+	});
+
+	describe('0002_source_pdf migratsiooni veerud', () => {
+		it('pieces: source_pdf_url', () => {
+			const cols = getColumnNames(db, 'pieces');
+			expect(cols).toContain('source_pdf_url');
+		});
+
+		it('pieces: pageflow_matched vaikeväärtusega 0', () => {
+			const cols = getColumnNames(db, 'pieces');
+			expect(cols).toContain('pageflow_matched');
+			// Kontrolli vaikeväärtust: lisa rida ja vaata tulemust
+			db.prepare("INSERT INTO pieces (id, title) VALUES ('test-default', 'Test')").run();
+			const row = db.prepare("SELECT pageflow_matched FROM pieces WHERE id = 'test-default'").get() as { pageflow_matched: number };
+			expect(row.pageflow_matched).toBe(0);
 		});
 	});
 });

@@ -17,6 +17,7 @@ const MIGRATIONS_DIR = join(import.meta.dirname, '../../../..', 'migrations');
 function openSeededDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, 'seed.sql'), 'utf-8'));
 	return db;
 }
@@ -49,6 +50,22 @@ describe('GET /api/pieces', () => {
 			expect(piece).toHaveProperty('notes');
 			expect(piece).toHaveProperty('typesetter');
 			expect(piece).toHaveProperty('reviewer');
+		}
+	});
+
+	it('iga noot sisaldab source_pdf_url ja pageflow_matched väljad', () => {
+		const result = getPieces(db, {});
+		for (const piece of result) {
+			expect(piece).toHaveProperty('source_pdf_url');
+			expect(piece).toHaveProperty('pageflow_matched');
+		}
+	});
+
+	it('seed andmetes source_pdf_url on null ja pageflow_matched on 0', () => {
+		const result = getPieces(db, {});
+		for (const piece of result) {
+			expect(piece.source_pdf_url).toBeNull();
+			expect(piece.pageflow_matched).toBe(0);
 		}
 	});
 
