@@ -57,6 +57,13 @@ _Algnoot (source PDF) on üles laetud._
 
 _Graafik on noodi endale võtnud ja töötab küljendusega._
 
+### Graafik: häälerühmade/instrumentide haldamine
+
+**Kes:** graafik
+**Millal:** noot on `küljenduses` staatuses
+**Tahan:** lisada ja eemaldada häälerühmi/instrumente, et korrektor saaks hiljem iga häälerühma kohta eraldi verdikti anda
+**Tulemus:** häälerühmad salvestuvad kohe (ilma lehe taaslaadimiseta), fookus jääb sisestusväljale
+
 ## Korrektuuris
 
 _Graafik on draft PDF üles laadinud ja korrektor loeb üle._
