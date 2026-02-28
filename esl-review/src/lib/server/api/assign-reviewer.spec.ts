@@ -38,6 +38,7 @@ const OTHER_USER: User = {
 function openSeededDb(): DatabaseSync {
 	const db = new DatabaseSync(':memory:');
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, 'seed.sql'), 'utf-8'));
 	db.prepare('INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)').run(
 		TYPESETTER.id, TYPESETTER.email, TYPESETTER.name, TYPESETTER.picture
@@ -68,14 +69,14 @@ describe('PUT /api/pieces/[id]/assign-reviewer', () => {
 	});
 
 	it('olematu noot → { error, status: 404 }', () => {
-		const result = assignReviewer(db, 'olematu-id', REVIEWER_USER.id, TYPESETTER);
+		const result = assignReviewer(db, 'olematu-id', REVIEWER_USER.id, 'https://example.com/test.pdf', false, TYPESETTER);
 		expect(result).toHaveProperty('error');
 		expect((result as { error: string; status: number }).status).toBe(404);
 	});
 
 	it('kasutaja pole graafik → { error, status: 403 }', () => {
 		const pieceId = setupPiece(db);
-		const result = assignReviewer(db, pieceId, REVIEWER_USER.id, OTHER_USER);
+		const result = assignReviewer(db, pieceId, REVIEWER_USER.id, 'https://example.com/test.pdf', false, OTHER_USER);
 		expect(result).toHaveProperty('error');
 		expect((result as { error: string; status: number }).status).toBe(403);
 	});
@@ -86,31 +87,72 @@ describe('PUT /api/pieces/[id]/assign-reviewer', () => {
 		db.prepare("UPDATE pieces SET typesetter_id = ?, status = 'teos' WHERE id = ?").run(
 			TYPESETTER.id, row.id
 		);
-		const result = assignReviewer(db, row.id, REVIEWER_USER.id, TYPESETTER);
+		const result = assignReviewer(db, row.id, REVIEWER_USER.id, 'https://example.com/test.pdf', false, TYPESETTER);
 		expect(result).toHaveProperty('error');
 		expect((result as { error: string; status: number }).status).toBe(409);
 	});
 
 	it('reviewer_id pole kasutajate tabelis → { error, status: 400 }', () => {
 		const pieceId = setupPiece(db);
-		const result = assignReviewer(db, pieceId, 'olematu-kasutaja-id', TYPESETTER);
+		const result = assignReviewer(db, pieceId, 'olematu-kasutaja-id', 'https://example.com/test.pdf', false, TYPESETTER);
 		expect(result).toHaveProperty('error');
 		expect((result as { error: string; status: number }).status).toBe(400);
 	});
 
 	it('kõik korras → { ok: true }', () => {
 		const pieceId = setupPiece(db);
-		const result = assignReviewer(db, pieceId, REVIEWER_USER.id, TYPESETTER);
+		const result = assignReviewer(db, pieceId, REVIEWER_USER.id, 'https://example.com/test.pdf', false, TYPESETTER);
 		expect(result).toEqual({ ok: true });
 	});
 
 	it('pärast assigni: DB-s reviewer_id ja status = korrektuuris', () => {
 		const pieceId = setupPiece(db);
-		assignReviewer(db, pieceId, REVIEWER_USER.id, TYPESETTER);
+		assignReviewer(db, pieceId, REVIEWER_USER.id, 'https://example.com/test.pdf', false, TYPESETTER);
 		const row = db
 			.prepare('SELECT reviewer_id, status FROM pieces WHERE id = ?')
 			.get(pieceId) as { reviewer_id: string; status: string };
 		expect(row.reviewer_id).toBe(REVIEWER_USER.id);
 		expect(row.status).toBe('korrektuuris');
+	});
+
+	describe('pdf_url ja pageflow_matched parameetrid', () => {
+		const TEST_PDF_URL = 'https://example.com/review.pdf';
+
+		it('pdf_url parameetriga → { ok: true }, DB-s pdf_url uuendatud', () => {
+			const pieceId = setupPiece(db);
+			const result = assignReviewer(db, pieceId, REVIEWER_USER.id, TEST_PDF_URL, false, TYPESETTER);
+			expect(result).toEqual({ ok: true });
+			const row = db
+				.prepare('SELECT pdf_url FROM pieces WHERE id = ?')
+				.get(pieceId) as { pdf_url: string };
+			expect(row.pdf_url).toBe(TEST_PDF_URL);
+		});
+
+		it('pdf_url puudu → { error, status: 400 }', () => {
+			const pieceId = setupPiece(db);
+			const result = assignReviewer(db, pieceId, REVIEWER_USER.id, '', false, TYPESETTER);
+			expect(result).toHaveProperty('error');
+			expect((result as { error: string; status: number }).status).toBe(400);
+		});
+
+		it('pageflow_matched = true → DB-s pageflow_matched = 1', () => {
+			const pieceId = setupPiece(db);
+			const result = assignReviewer(db, pieceId, REVIEWER_USER.id, TEST_PDF_URL, true, TYPESETTER);
+			expect(result).toEqual({ ok: true });
+			const row = db
+				.prepare('SELECT pageflow_matched FROM pieces WHERE id = ?')
+				.get(pieceId) as { pageflow_matched: number };
+			expect(row.pageflow_matched).toBe(1);
+		});
+
+		it('pageflow_matched puudu → DB-s pageflow_matched = 0 (default)', () => {
+			const pieceId = setupPiece(db);
+			const result = assignReviewer(db, pieceId, REVIEWER_USER.id, TEST_PDF_URL, undefined, TYPESETTER);
+			expect(result).toEqual({ ok: true });
+			const row = db
+				.prepare('SELECT pageflow_matched FROM pieces WHERE id = ?')
+				.get(pieceId) as { pageflow_matched: number };
+			expect(row.pageflow_matched).toBe(0);
+		});
 	});
 });

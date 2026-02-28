@@ -22,8 +22,12 @@ export function assignReviewer(
 	db: DatabaseSync,
 	pieceId: string,
 	reviewerId: string,
+	pdfUrl: string,
+	pageflowMatched: boolean | undefined,
 	user: User
 ): AssignReviewerResult {
+	if (!pdfUrl) return { error: 'pdf_url is required', status: 400 };
+
 	const piece = db
 		.prepare('SELECT typesetter_id, status FROM pieces WHERE id = ?')
 		.get(pieceId) as unknown as PieceStatusRow | undefined;
@@ -39,8 +43,8 @@ export function assignReviewer(
 	if (!reviewer) return { error: 'Reviewer not found', status: 400 };
 
 	db.prepare(
-		`UPDATE pieces SET reviewer_id = ?, status = 'korrektuuris', updated_at = datetime('now') WHERE id = ?`
-	).run(reviewerId, pieceId);
+		`UPDATE pieces SET reviewer_id = ?, pdf_url = ?, pageflow_matched = ?, status = 'korrektuuris', updated_at = datetime('now') WHERE id = ?`
+	).run(reviewerId, pdfUrl, pageflowMatched ? 1 : 0, pieceId);
 
 	return { ok: true };
 }
@@ -50,8 +54,12 @@ export async function assignReviewerD1(
 	db: D1Db,
 	pieceId: string,
 	reviewerId: string,
+	pdfUrl: string,
+	pageflowMatched: boolean | undefined,
 	user: User
 ): Promise<AssignReviewerResult> {
+	if (!pdfUrl) return { error: 'pdf_url is required', status: 400 };
+
 	const piece = await db
 		.prepare('SELECT typesetter_id, status FROM pieces WHERE id = ?')
 		.bind(pieceId)
@@ -70,9 +78,9 @@ export async function assignReviewerD1(
 
 	await db
 		.prepare(
-			`UPDATE pieces SET reviewer_id = ?, status = 'korrektuuris', updated_at = datetime('now') WHERE id = ?`
+			`UPDATE pieces SET reviewer_id = ?, pdf_url = ?, pageflow_matched = ?, status = 'korrektuuris', updated_at = datetime('now') WHERE id = ?`
 		)
-		.bind(reviewerId, pieceId)
+		.bind(reviewerId, pdfUrl, pageflowMatched ? 1 : 0, pieceId)
 		.run();
 
 	return { ok: true };

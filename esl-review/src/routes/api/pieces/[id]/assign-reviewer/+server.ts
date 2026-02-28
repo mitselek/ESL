@@ -19,7 +19,14 @@ export const PUT: RequestHandler = async ({ params, locals, platform, request })
 		return json({ error: 'reviewer_id is required' }, { status: 400 });
 	}
 
-	const result = await assignReviewerD1(db, params.id, reviewer_id, locals.user);
+	const pdf_url = body?.pdf_url;
+	if (!pdf_url || typeof pdf_url !== 'string') {
+		return json({ error: 'pdf_url is required' }, { status: 400 });
+	}
+
+	const pageflow_matched = body?.pageflow_matched === true;
+
+	const result = await assignReviewerD1(db, params.id, reviewer_id, pdf_url, pageflow_matched, locals.user);
 	if ('error' in result) return json({ error: result.error }, { status: result.status });
 
 	return json({ ok: true });
