@@ -96,10 +96,12 @@
 							</button>
 						{/if}
 
-						<!-- Staatus -->
-						<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: {STATUS_COLORS[piece.status] ?? '#ccc'}; white-space: nowrap;" class="hidden md:block">
-							{piece.status}
-						</span>
+						<!-- Staatus (peida "teos") -->
+						{#if piece.status !== 'teos'}
+							<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: {STATUS_COLORS[piece.status] ?? '#ccc'}; white-space: nowrap;" class="hidden md:block">
+								{piece.status}
+							</span>
+						{/if}
 					</a>
 				{/each}
 			</div>
