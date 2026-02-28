@@ -321,25 +321,35 @@
 	{/if}
 
 	{#if isTypesetter && piece.status === 'kontrollitud'}
-		<button onclick={() => setStatus('paranduses')} style="background: #E76F51; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+		<button onclick={() => setStatus('paranduses')}
+			title="Korrektori märkused vajavad parandamist. Noot läheb tagasi küljendamisele."
+			style="background: #E76F51; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Parandan
 		</button>
-		<button onclick={() => setStatus('kinnitatud')} style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+		<button onclick={() => setStatus('kinnitatud')}
+			title="Noot vastab nõuetele. Kinnitan ilma parandusteta."
+			style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Kinnita
 		</button>
 	{/if}
 
 	{#if isReviewer && piece.status === 'paranduses'}
-		<button onclick={() => setStatus('korrektuuris')} style="background: #E9C46A; color: #2C2416; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+		<button onclick={() => setStatus('korrektuuris')}
+			title="Parandused on tehtud, aga vajavad uut ülelugemist."
+			style="background: #E9C46A; color: #2C2416; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Tagasi korrektuuris
 		</button>
-		<button onclick={() => setStatus('kinnitatud')} style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+		<button onclick={() => setStatus('kinnitatud')}
+			title="Parandused on korrektsed. Kinnitan noodi."
+			style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Kinnita
 		</button>
 	{/if}
 
 	{#if isTypesetter && piece.status === 'kinnitatud'}
-		<button onclick={() => setStatus('publitseeritud')} style="background: #2D6A4F; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+		<button onclick={() => setStatus('publitseeritud')}
+			title="Noot on valmis avaldamiseks."
+			style="background: #2D6A4F; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
 			Publitseeri
 		</button>
 	{/if}
