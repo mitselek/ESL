@@ -59,7 +59,7 @@
 			</h2>
 			<div class="space-y-2">
 				{#each group.pieces as piece}
-					<a href="/pieces/{piece.id}" style="background: white; border: 1px solid #E8DDD0; border-radius: 6px; text-decoration: none; color: inherit; transition: border-color 0.15s;" class="p-3 flex items-center gap-3 hover:border-[#C9A96E]">
+					<a href="/pieces/{piece.id}" style="border: 1px solid #E8DDD0; border-radius: 6px; text-decoration: none; color: inherit; transition: border-color 0.15s, background 0.15s;" class="p-3 flex items-center gap-3 bg-white hover:border-[#C9A96E] hover:bg-[#FAF6F0]">
 						<!-- Staatuse punkt -->
 						<span style="width: 10px; height: 10px; border-radius: 50%; background: {STATUS_COLORS[piece.status] ?? '#ccc'}; flex-shrink: 0; display: inline-block;"></span>
 

@@ -308,12 +308,17 @@
 				: 'calc(100vh - 12rem)'
 	);
 
+	// Active panel for keyboard nav in dual view
+	let activeSide = $state<'left' | 'right'>('left');
+
 	// Mobile tabs for dual view
 	let mobileTab: 'draft' | 'source' = $state('draft');
 </script>
 
 <svelte:window onkeydown={e => {
 	if (e.key === 'Escape') expanded = !expanded;
+	if (hasDualPdf && e.key === 'ArrowLeft') activeSide = 'left';
+	if (hasDualPdf && e.key === 'ArrowRight') activeSide = 'right';
 }} />
 
 {#if !expanded}
@@ -556,7 +561,7 @@
 
 	<!-- Desktop dual PDF row -->
 	<div class="dual-pdf-row">
-		<div class="dual-pdf-left" style="flex: 1; min-width: 0;">
+		<div class="dual-pdf-left" style="flex: 1; min-width: 0; border-top: 3px solid {activeSide === 'left' ? '#C9A96E' : 'transparent'}; transition: border-color 0.15s; padding-top: 4px;">
 			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
 				{#if swapped}
 					Algnoot
@@ -571,6 +576,8 @@
 				height={splitPdfHeight}
 				syncRatio={scrollLinked ? rightRatio : undefined}
 				onScroll={onLeftScroll}
+				active={activeSide === 'left'}
+				onActivate={() => { activeSide = 'left'; }}
 			/>
 		</div>
 
@@ -594,7 +601,7 @@
 			</button>
 		</div>
 
-		<div class="dual-pdf-right" style="flex: 1; min-width: 0;">
+		<div class="dual-pdf-right" style="flex: 1; min-width: 0; border-top: 3px solid {activeSide === 'right' ? '#C9A96E' : 'transparent'}; transition: border-color 0.15s; padding-top: 4px;">
 			<div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
 				{#if !swapped}
 					Algnoot
@@ -609,6 +616,8 @@
 				height={splitPdfHeight}
 				syncRatio={scrollLinked ? leftRatio : undefined}
 				onScroll={onRightScroll}
+				active={activeSide === 'right'}
+				onActivate={() => { activeSide = 'right'; }}
 			/>
 		</div>
 	</div>
