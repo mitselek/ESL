@@ -8,6 +8,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
+		"postinstall": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs static/pdf.worker.min.mjs",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
@@ -42,5 +43,8 @@
 		"vite": "^7.3.1",
 		"vitest": "^4.0.18",
 		"wrangler": "^4.69.0"
+	},
+	"dependencies": {
+		"pdfjs-dist": "^5.4.624"
 	}
 }

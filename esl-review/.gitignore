@@ -23,3 +23,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 # Playwright
 test-results
+
+# PDF.js worker (copied by postinstall)
+static/pdf.worker.min.mjs

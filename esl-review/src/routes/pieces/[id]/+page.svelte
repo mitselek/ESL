@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
 	import type { ReviewEntry } from '$lib/server/api/review-get';
+	import PdfViewer from '$lib/components/PdfViewer.svelte';
 
 	let { data } = $props();
 	const piece = $derived(data.piece);
@@ -236,34 +237,25 @@
 	const rightUrl = $derived(swapped ? activeRedactionUrl : piece.source_pdf_url);
 
 	let scrollLinked = $state(data.piece.pageflow_matched === 1);
-	let leftIframe: HTMLIFrameElement | undefined = $state(undefined);
-	let rightIframe: HTMLIFrameElement | undefined = $state(undefined);
-	let scrolling = false;
+	let leftPage = $state(1);
+	let rightPage = $state(1);
+	let syncing = $state(false);
 
-	function syncScroll(source: HTMLIFrameElement | undefined, target: HTMLIFrameElement | undefined) {
-		if (!scrollLinked || scrolling || !source || !target) return;
-		try {
-			const srcDoc = source.contentWindow?.document?.documentElement;
-			const tgtDoc = target.contentWindow?.document?.documentElement;
-			if (!srcDoc || !tgtDoc) return;
-
-			scrolling = true;
-			const ratio = srcDoc.scrollTop / (srcDoc.scrollHeight - srcDoc.clientHeight || 1);
-			tgtDoc.scrollTop = ratio * (tgtDoc.scrollHeight - tgtDoc.clientHeight);
-			requestAnimationFrame(() => { scrolling = false; });
-		} catch {
-			// Cross-origin — disable scroll link
-			scrollLinked = false;
+	function onLeftPageChange(page: number) {
+		leftPage = page;
+		if (scrollLinked && !syncing) {
+			syncing = true;
+			rightPage = page;
+			requestAnimationFrame(() => { syncing = false; });
 		}
 	}
 
-	function attachScrollListeners() {
-		try {
-			leftIframe?.contentWindow?.document?.addEventListener('scroll', () => syncScroll(leftIframe, rightIframe));
-			rightIframe?.contentWindow?.document?.addEventListener('scroll', () => syncScroll(rightIframe, leftIframe));
-		} catch {
-			// Cross-origin — cannot attach
-			scrollLinked = false;
+	function onRightPageChange(page: number) {
+		rightPage = page;
+		if (scrollLinked && !syncing) {
+			syncing = true;
+			leftPage = page;
+			requestAnimationFrame(() => { syncing = false; });
 		}
 	}
 
@@ -549,13 +541,12 @@
 					K&uuml;ljendus
 				{/if}
 			</div>
-			<iframe
-				bind:this={leftIframe}
-				src={leftUrl}
-				onload={attachScrollListeners}
-				style="width: 100%; height: 60vh; border: 1px solid #E8DDD0; border-radius: 6px;"
-				title={swapped ? 'Algnoot' : 'Küljendus'}
-			></iframe>
+			<PdfViewer
+				url={leftUrl}
+				height="60vh"
+				syncToPage={scrollLinked ? rightPage : undefined}
+				onPageChange={onLeftPageChange}
+			/>
 		</div>
 
 		<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 4px; align-self: center;">
@@ -564,6 +555,13 @@
 				style="background: #E8DDD0; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">
 				&#x21C4;
 			</button>
+			{#if piece.pageflow_matched === 1}
+				<button onclick={() => { scrollLinked = !scrollLinked; }}
+					title={scrollLinked ? 'Lülita scroll-link välja' : 'Lülita scroll-link sisse'}
+					style="background: {scrollLinked ? '#2C2416' : '#E8DDD0'}; color: {scrollLinked ? 'white' : '#2C2416'}; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;">
+					&#x1F517;
+				</button>
+			{/if}
 		</div>
 
 		<div class="dual-pdf-right" style="flex: 1; min-width: 0;">
@@ -576,13 +574,12 @@
 					K&uuml;ljendus
 				{/if}
 			</div>
-			<iframe
-				bind:this={rightIframe}
-				src={rightUrl}
-				onload={attachScrollListeners}
-				style="width: 100%; height: 60vh; border: 1px solid #E8DDD0; border-radius: 6px;"
-				title={swapped ? 'Küljendus' : 'Algnoot'}
-			></iframe>
+			<PdfViewer
+				url={rightUrl}
+				height="60vh"
+				syncToPage={scrollLinked ? leftPage : undefined}
+				onPageChange={onRightPageChange}
+			/>
 		</div>
 	</div>
 
@@ -594,17 +591,9 @@
 					{@render redactionPicker()}
 				</div>
 			{/if}
-			<iframe
-				src={activeRedactionUrl}
-				style="width: 100%; height: 60vh; border: 1px solid #E8DDD0; border-radius: 6px;"
-				title="Küljendus"
-			></iframe>
+			<PdfViewer url={activeRedactionUrl} height="60vh" />
 		{:else}
-			<iframe
-				src={piece.source_pdf_url}
-				style="width: 100%; height: 60vh; border: 1px solid #E8DDD0; border-radius: 6px;"
-				title="Algnoot"
-			></iframe>
+			<PdfViewer url={piece.source_pdf_url} height="60vh" />
 		{/if}
 	</div>
 
@@ -633,17 +622,9 @@
 		<!-- Vasak: PDF -->
 		<div style="flex: 1; min-width: 300px;">
 			{#if piece.pdf_url}
-				<iframe
-					src={piece.pdf_url}
-					style="width: 100%; height: 70vh; border: 1px solid #E8DDD0; border-radius: 6px;"
-					title="PDF"
-				></iframe>
+				<PdfViewer url={piece.pdf_url} height="70vh" />
 			{:else if piece.source_pdf_url}
-				<iframe
-					src={piece.source_pdf_url}
-					style="width: 100%; height: 70vh; border: 1px solid #E8DDD0; border-radius: 6px;"
-					title="Algnoot"
-				></iframe>
+				<PdfViewer url={piece.source_pdf_url} height="70vh" />
 				<p style="font-size: 0.75rem; color: #888; margin-top: 4px; text-align: center;">Algnoot (k&uuml;ljenduse PDF puudub)</p>
 			{:else}
 				<div style="border: 2px dashed #E8DDD0; border-radius: 6px; height: 200px; display: flex; align-items: center; justify-content: center; color: #aaa;">
