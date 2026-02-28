@@ -66,3 +66,8 @@ INSERT INTO param_templates (id, name, scope, sort_order, is_default) VALUES
   (lower(hex(randomblob(8))), 'Tempo, dünaamika jm tähised loo sees',    'whole_piece', 5, 1),
   (lower(hex(randomblob(8))), 'Täpsustavad tekstid loo sees',            'whole_piece', 6, 1),
   (lower(hex(randomblob(8))), 'Täpsustavad tekstid noodi all',           'whole_piece', 7, 1);
+
+-- piece_params: igale noodile kõik param_templates
+INSERT INTO piece_params (id, piece_id, template_id, sort_order, is_active)
+SELECT lower(hex(randomblob(8))), p.id, t.id, t.sort_order, 1
+FROM pieces p, param_templates t;
