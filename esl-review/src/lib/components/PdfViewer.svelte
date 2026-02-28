@@ -182,6 +182,8 @@
 	// Keyboard navigation — snap to page top/bottom
 	let hovered = $state(false);
 
+	const NAV_KEYS = new Set(['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End']);
+
 	function navigateSnap(direction: 'ArrowDown' | 'ArrowUp') {
 		if (!containerEl || totalPages === 0) return;
 
@@ -216,19 +218,59 @@
 		}
 	}
 
+	function navigatePage(direction: 'PageDown' | 'PageUp') {
+		if (!containerEl || totalPages === 0) return;
+
+		const scrollTop = containerEl.scrollTop;
+		const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
+		const threshold = 5;
+
+		// Find page wrapper whose top is nearest to current scrollTop
+		const wrappers = containerEl.querySelectorAll<HTMLElement>('[data-page]');
+		let currentIdx = 0;
+		for (let i = 0; i < wrappers.length; i++) {
+			if (wrappers[i].offsetTop <= scrollTop + threshold) currentIdx = i;
+			else break;
+		}
+
+		const targetIdx = direction === 'PageDown'
+			? Math.min(currentIdx + 1, wrappers.length - 1)
+			: Math.max(currentIdx - 1, 0);
+
+		const target = wrappers[targetIdx].offsetTop;
+		if (Math.abs(target - scrollTop) < threshold && direction === 'PageDown' && targetIdx < wrappers.length - 1) {
+			// Already at this page top — skip to next
+			containerEl.scrollTo({ top: Math.min(wrappers[targetIdx + 1].offsetTop, maxScroll), behavior: 'smooth' });
+		} else {
+			containerEl.scrollTo({ top: Math.min(target, maxScroll), behavior: 'smooth' });
+		}
+	}
+
+	function navigateEdge(edge: 'Home' | 'End') {
+		if (!containerEl) return;
+		const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
+		containerEl.scrollTo({ top: edge === 'Home' ? 0 : maxScroll, behavior: 'smooth' });
+	}
+
+	function dispatchKey(key: string) {
+		if (key === 'ArrowDown' || key === 'ArrowUp') navigateSnap(key);
+		else if (key === 'PageDown' || key === 'PageUp') navigatePage(key);
+		else if (key === 'Home' || key === 'End') navigateEdge(key);
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+		if (!NAV_KEYS.has(e.key)) return;
 		e.preventDefault();
-		navigateSnap(e.key);
+		dispatchKey(e.key);
 	}
 
 	// Window-level keydown — works when hovering without click-focus
 	$effect(() => {
 		if (!browser || !hovered) return;
 		function onWindowKey(e: KeyboardEvent) {
-			if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+			if (!NAV_KEYS.has(e.key)) return;
 			e.preventDefault();
-			navigateSnap(e.key);
+			dispatchKey(e.key);
 		}
 		window.addEventListener('keydown', onWindowKey);
 		return () => window.removeEventListener('keydown', onWindowKey);
