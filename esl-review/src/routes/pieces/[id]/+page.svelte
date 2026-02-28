@@ -237,24 +237,24 @@
 	const rightUrl = $derived(swapped ? activeRedactionUrl : piece.source_pdf_url);
 
 	let scrollLinked = $state(data.piece.pageflow_matched === 1);
-	let leftPage = $state(1);
-	let rightPage = $state(1);
+	let leftRatio = $state(0);
+	let rightRatio = $state(0);
 	let syncing = $state(false);
 
-	function onLeftPageChange(page: number) {
-		leftPage = page;
+	function onLeftScroll(ratio: number) {
+		leftRatio = ratio;
 		if (scrollLinked && !syncing) {
 			syncing = true;
-			rightPage = page;
+			rightRatio = ratio;
 			requestAnimationFrame(() => { syncing = false; });
 		}
 	}
 
-	function onRightPageChange(page: number) {
-		rightPage = page;
+	function onRightScroll(ratio: number) {
+		rightRatio = ratio;
 		if (scrollLinked && !syncing) {
 			syncing = true;
-			leftPage = page;
+			leftRatio = ratio;
 			requestAnimationFrame(() => { syncing = false; });
 		}
 	}
@@ -288,6 +288,16 @@
 		if (res.ok) await invalidateAll();
 		else statusMsg = (await res.json()).error;
 	}
+
+	// Does split-view have review content below?
+	const showsReviewBelowSplit = $derived(
+		hasDualPdf && (
+			(!isLatestRedaction && !!selectedRedactionReview) ||
+			(!!activeReviewId && actingAsReviewer && isLatestRedaction) ||
+			(isLatestRedaction && !!selectedRedactionReview)
+		)
+	);
+	const splitPdfHeight = $derived(showsReviewBelowSplit ? '60vh' : 'calc(100vh - 12rem)');
 
 	// Mobile tabs for dual view
 	let mobileTab: 'draft' | 'source' = $state('draft');
@@ -543,9 +553,9 @@
 			</div>
 			<PdfViewer
 				url={leftUrl}
-				height="60vh"
-				syncToPage={scrollLinked ? rightPage : undefined}
-				onPageChange={onLeftPageChange}
+				height={splitPdfHeight}
+				syncRatio={scrollLinked ? rightRatio : undefined}
+				onScroll={onLeftScroll}
 			/>
 		</div>
 
@@ -576,9 +586,9 @@
 			</div>
 			<PdfViewer
 				url={rightUrl}
-				height="60vh"
-				syncToPage={scrollLinked ? leftPage : undefined}
-				onPageChange={onRightPageChange}
+				height={splitPdfHeight}
+				syncRatio={scrollLinked ? leftRatio : undefined}
+				onScroll={onRightScroll}
 			/>
 		</div>
 	</div>
@@ -591,9 +601,9 @@
 					{@render redactionPicker()}
 				</div>
 			{/if}
-			<PdfViewer url={activeRedactionUrl} height="60vh" />
+			<PdfViewer url={activeRedactionUrl} height={splitPdfHeight} />
 		{:else}
-			<PdfViewer url={piece.source_pdf_url} height="60vh" />
+			<PdfViewer url={piece.source_pdf_url} height={splitPdfHeight} />
 		{/if}
 	</div>
 

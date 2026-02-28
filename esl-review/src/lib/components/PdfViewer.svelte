@@ -6,24 +6,24 @@
 	let {
 		url,
 		height = '60vh',
-		syncToPage = undefined,
-		onPageChange = undefined,
+		syncRatio = undefined,
+		onScroll = undefined,
 	}: {
 		url: string;
 		height?: string;
-		syncToPage?: number | undefined;
-		onPageChange?: ((page: number) => void) | undefined;
+		syncRatio?: number | undefined;
+		onScroll?: ((ratio: number) => void) | undefined;
 	} = $props();
 
 	let pdfjsLib: typeof import('pdfjs-dist') | null = $state(null);
 	let pdfDoc: import('pdfjs-dist').PDFDocumentProxy | null = $state(null);
 	let totalPages = $state(0);
-	let currentPage = $state(1);
 	let scale = $state(1);
 	let loading = $state(true);
 	let errorMsg = $state('');
 	let containerEl: HTMLDivElement | undefined = $state(undefined);
 	let generation = 0;
+	let nativeViewportWidth = $state(0); // unscaled page width from PDF
 
 	// Track rendered pages to avoid re-rendering
 	const renderedPages = new Set<number>();
@@ -46,7 +46,6 @@
 		errorMsg = '';
 		pdfDoc = null;
 		totalPages = 0;
-		currentPage = 1;
 		renderedPages.clear();
 		renderingPages.clear();
 
@@ -61,9 +60,11 @@
 				pdfDoc = doc;
 				totalPages = doc.numPages;
 
-				// Calculate fit-width scale from first page
+				// Store native viewport width for resize recalculation
 				const page1 = await doc.getPage(1);
 				const vp = page1.getViewport({ scale: 1 });
+				nativeViewportWidth = vp.width;
+
 				if (containerEl) {
 					scale = calcFitScale(vp.width, containerEl.clientWidth - 16);
 				}
@@ -79,6 +80,26 @@
 		return () => {
 			controller.abort();
 		};
+	});
+
+	// ResizeObserver — recalculate fit-width on container resize
+	$effect(() => {
+		if (!containerEl || !browser) return;
+		const el = containerEl;
+
+		const ro = new ResizeObserver(() => {
+			if (nativeViewportWidth > 0) {
+				const newScale = calcFitScale(nativeViewportWidth, el.clientWidth - 16);
+				if (Math.abs(newScale - scale) > 0.01) {
+					renderedPages.clear();
+					renderingPages.clear();
+					scale = newScale;
+				}
+			}
+		});
+
+		ro.observe(el);
+		return () => ro.disconnect();
 	});
 
 	// Set up IntersectionObserver after pages are rendered
@@ -102,9 +123,6 @@
 						}
 					}
 				}
-
-				// Update current page (topmost visible)
-				updateCurrentPage();
 			},
 			{
 				root: containerEl,
@@ -119,32 +137,30 @@
 		return () => observer.disconnect();
 	});
 
-	function updateCurrentPage() {
-		if (!containerEl) return;
-		const wrappers = containerEl.querySelectorAll('[data-page]');
-		const containerRect = containerEl.getBoundingClientRect();
-		const containerMid = containerRect.top + containerRect.height / 2;
+	// Scroll handler — emit ratio
+	let ignoreNextScroll = false;
 
-		let best = 1;
-		for (const wrapper of wrappers) {
-			const rect = wrapper.getBoundingClientRect();
-			if (rect.top <= containerMid && rect.bottom > containerRect.top) {
-				best = Number(wrapper.getAttribute('data-page'));
-			}
+	function handleScroll() {
+		if (!containerEl || ignoreNextScroll) {
+			ignoreNextScroll = false;
+			return;
 		}
-
-		if (best !== currentPage) {
-			currentPage = best;
-			onPageChange?.(best);
-		}
+		const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
+		if (maxScroll <= 0) return;
+		const ratio = containerEl.scrollTop / maxScroll;
+		onScroll?.(ratio);
 	}
 
-	// React to syncToPage changes
+	// React to syncRatio changes — set scrollTop proportionally
 	$effect(() => {
-		if (syncToPage == null || syncToPage === currentPage || !containerEl) return;
-		const target = containerEl.querySelector(`[data-page="${syncToPage}"]`);
-		if (target) {
-			target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		if (syncRatio == null || !containerEl) return;
+		const r = syncRatio;
+		const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
+		if (maxScroll <= 0) return;
+		const targetTop = r * maxScroll;
+		if (Math.abs(containerEl.scrollTop - targetTop) > 2) {
+			ignoreNextScroll = true;
+			containerEl.scrollTop = targetTop;
 		}
 	});
 
@@ -163,33 +179,83 @@
 		});
 	});
 
+	// Keyboard navigation — snap to page top/bottom
+	let hovered = $state(false);
+
+	function navigateSnap(direction: 'ArrowDown' | 'ArrowUp') {
+		if (!containerEl || totalPages === 0) return;
+
+		const vh = containerEl.clientHeight;
+		const scrollTop = containerEl.scrollTop;
+		const maxScroll = containerEl.scrollHeight - vh;
+		const threshold = 5;
+
+		const wrappers = containerEl.querySelectorAll<HTMLElement>('[data-page]');
+		const snaps: number[] = [];
+
+		for (const el of wrappers) {
+			snaps.push(el.offsetTop);
+			const bottomSnap = el.offsetTop + el.offsetHeight - vh;
+			if (bottomSnap > el.offsetTop + threshold) {
+				snaps.push(bottomSnap);
+			}
+		}
+
+		if (direction === 'ArrowDown') {
+			const target = snaps.find((s) => s > scrollTop + threshold);
+			if (target != null) {
+				containerEl.scrollTo({ top: Math.min(target, maxScroll), behavior: 'smooth' });
+			}
+		} else {
+			for (let i = snaps.length - 1; i >= 0; i--) {
+				if (snaps[i] < scrollTop - threshold) {
+					containerEl.scrollTo({ top: Math.max(snaps[i], 0), behavior: 'smooth' });
+					break;
+				}
+			}
+		}
+	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+		e.preventDefault();
+		navigateSnap(e.key);
+	}
+
+	// Window-level keydown — works when hovering without click-focus
+	$effect(() => {
+		if (!browser || !hovered) return;
+		function onWindowKey(e: KeyboardEvent) {
+			if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+			e.preventDefault();
+			navigateSnap(e.key);
+		}
+		window.addEventListener('keydown', onWindowKey);
+		return () => window.removeEventListener('keydown', onWindowKey);
+	});
+
 	const pages = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
 </script>
 
-{#if !browser}
-	<div
-		style="height: {height}; border: 1px solid #E8DDD0; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #f5f0e8; color: #888; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;"
-	>
-		Laen PDF-i&hellip;
-	</div>
-{:else if loading}
-	<div
-		style="height: {height}; border: 1px solid #E8DDD0; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #f5f0e8; color: #888; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;"
-	>
-		Laen PDF-i&hellip;
-	</div>
-{:else if errorMsg}
-	<div
-		style="height: {height}; border: 1px solid #E8DDD0; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #f5f0e8; color: #E76F51; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;"
-	>
-		{errorMsg}
-	</div>
-{:else}
-	<div
-		bind:this={containerEl}
-		style="height: {height}; overflow-y: auto; border: 1px solid #E8DDD0; border-radius: 6px; background: #f5f0e8;"
-		onscroll={updateCurrentPage}
-	>
+<div
+	bind:this={containerEl}
+	tabindex="0"
+	class="pdf-container"
+	style="height: {height};"
+	onscroll={handleScroll}
+	onkeydown={handleKeydown}
+	onmouseenter={() => { hovered = true; }}
+	onmouseleave={() => { hovered = false; }}
+>
+	{#if !browser || loading}
+		<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #888; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">
+			Laen PDF-i&hellip;
+		</div>
+	{:else if errorMsg}
+		<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #E76F51; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">
+			{errorMsg}
+		</div>
+	{:else}
 		{#each pages as pageNum}
 			<div
 				data-page={pageNum}
@@ -198,5 +264,19 @@
 				<canvas></canvas>
 			</div>
 		{/each}
-	</div>
-{/if}
+	{/if}
+</div>
+
+<style>
+	.pdf-container {
+		overflow-y: auto;
+		border: 1px solid #E8DDD0;
+		border-radius: 6px;
+		background: #f5f0e8;
+		position: relative;
+		outline: none;
+	}
+	.pdf-container:focus-visible {
+		border-color: #C9A96E;
+	}
+</style>
