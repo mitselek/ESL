@@ -316,9 +316,13 @@
 </script>
 
 <svelte:window onkeydown={e => {
+	const tag = (e.target as HTMLElement)?.tagName;
+	const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
 	if (e.key === 'Escape') expanded = !expanded;
 	if (hasDualPdf && e.key === 'ArrowLeft') activeSide = 'left';
 	if (hasDualPdf && e.key === 'ArrowRight') activeSide = 'right';
+	if (!inInput && hasDualPdf && e.key === 'x') swapped = !swapped;
+	if (!inInput && hasDualPdf && e.key === 's' && piece.pageflow_matched === 1) scrollLinked = !scrollLinked;
 }} />
 
 {#if !expanded}
@@ -583,19 +587,19 @@
 
 		<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 4px; align-self: center;">
 			<button onclick={() => { swapped = !swapped; }}
-				title="Vaheta pooled"
+				title="Vaheta pooled (X)"
 				style="background: #E8DDD0; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">
 				&#x21C4;
 			</button>
 			{#if piece.pageflow_matched === 1}
 				<button onclick={() => { scrollLinked = !scrollLinked; }}
-					title={scrollLinked ? 'Lülita scroll-link välja' : 'Lülita scroll-link sisse'}
+					title={scrollLinked ? 'Lülita scroll-link välja (S)' : 'Lülita scroll-link sisse (S)'}
 					style="background: {scrollLinked ? '#2C2416' : '#E8DDD0'}; color: {scrollLinked ? 'white' : '#2C2416'}; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;">
 					&#x1F517;
 				</button>
 			{/if}
 			<button onclick={() => { expanded = !expanded; }}
-				title={expanded ? 'Näita päist (Esc)' : 'Laienda vaade (Esc)'}
+				title={expanded ? 'Näita päist (Esc)' : 'Laienda (Esc)'}
 				style="background: {expanded ? '#2C2416' : '#E8DDD0'}; color: {expanded ? 'white' : '#2C2416'}; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;">
 				{#if expanded}&#x2715;{:else}&#x26F6;{/if}
 			</button>
@@ -648,6 +652,12 @@
 			<div style="margin-top: 1rem; max-height: 60vh; overflow-y: auto;">
 				{@render reviewForm()}
 			</div>
+			{#if selectedRedactionReview}
+				<!-- Eelmise korrektuuri referents -->
+				<div style="margin-top: 1rem;">
+					{@render readonlyReview(selectedRedactionReview)}
+				</div>
+			{/if}
 		{:else if isLatestRedaction && selectedRedactionReview}
 			<!-- Viimase redaktsiooni completed review (kontrollitud/paranduses) -->
 			<div style="margin-top: 1rem;">
@@ -756,15 +766,26 @@
 			{#if problems.length === 0}
 				<p style="color: #52B788; font-size: 0.875rem;">&#10003; K&otilde;ik parameetrid korras</p>
 			{:else}
-				{#each review.entries as e}
-					{@const paramName = piece.piece_params.find(p => p.id === e.param_id)?.param_name ?? e.param_id}
-					{@const vpName = e.voice_part_id ? piece.voice_parts.find(v => v.id === e.voice_part_id)?.name : null}
-					<div style="margin-bottom: 6px; font-size: 0.8rem;">
-						<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 1px 5px; border-radius: 3px; background: {e.verdict === 'viga' ? '#E76F51' : e.verdict === 'ettepanek' ? '#E9C46A' : '#52B788'}; color: {e.verdict === 'viga' ? 'white' : e.verdict === 'ettepanek' ? '#2C2416' : 'white'}; margin-right: 4px;">{e.verdict}</span>
-						{paramName}{vpName ? ` (${vpName})` : ''}
-						{#if e.remarks}
-							<span style="color: #666; margin-left: 4px;">&mdash; {Array.isArray(e.remarks) ? e.remarks.map((r: { text: string }) => r.text).join('; ') : e.remarks}</span>
-						{/if}
+				{@const grouped = problems.reduce((acc: Map<string, ReviewEntry[]>, e: ReviewEntry) => {
+					const key = e.param_id;
+					if (!acc.has(key)) acc.set(key, []);
+					acc.get(key)!.push(e);
+					return acc;
+				}, new Map<string, ReviewEntry[]>())}
+				{#each [...grouped] as [paramId, entries]}
+					{@const paramName = piece.piece_params.find(p => p.id === paramId)?.param_name ?? paramId}
+					<div style="margin-bottom: 10px;">
+						<div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">{paramName}</div>
+						{#each entries as e}
+							{@const vpName = e.voice_part_id ? piece.voice_parts.find(v => v.id === e.voice_part_id)?.name : null}
+							<div style="margin-bottom: 4px; font-size: 0.8rem; padding-left: 8px;">
+								<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 1px 5px; border-radius: 3px; background: {e.verdict === 'viga' ? '#E76F51' : '#E9C46A'}; color: {e.verdict === 'viga' ? 'white' : '#2C2416'}; margin-right: 4px;">{e.verdict}</span>
+								{#if vpName}<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #888;">{vpName}</span>{/if}
+								{#if e.remarks}
+									<span style="color: #666; margin-left: 4px;">&mdash; {Array.isArray(e.remarks) ? e.remarks.map((r: { text: string }) => r.text).join('; ') : e.remarks}</span>
+								{/if}
+							</div>
+						{/each}
 					</div>
 				{/each}
 			{/if}
