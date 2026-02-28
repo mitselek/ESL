@@ -20,6 +20,7 @@ function openSeededDb(): DatabaseSync {
 	db.exec(readFileSync(SCHEMA_PATH, 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0003_piece_redactions.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0004_review_redaction.sql'), 'utf-8'));
 	db.exec(readFileSync(SEED_PATH, 'utf-8'));
 	return db;
 }

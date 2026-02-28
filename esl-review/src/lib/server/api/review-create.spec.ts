@@ -42,6 +42,7 @@ function openSeededDb(): DatabaseSync {
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0003_piece_redactions.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0004_review_redaction.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, 'seed.sql'), 'utf-8'));
 	db.prepare('INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)').run(
 		TYPESETTER_USER.id, TYPESETTER_USER.email, TYPESETTER_USER.name, TYPESETTER_USER.picture
@@ -134,5 +135,26 @@ describe('POST /api/reviews', () => {
 			.prepare('SELECT pdf_url FROM reviews WHERE id = ?')
 			.get(result.id) as { pdf_url: string } | undefined;
 		expect(row!.pdf_url).toBe(TEST_PDF_URL);
+	});
+
+	it('seob review viimasele redaktsioonile', () => {
+		setupPiece(db, pieceId);
+
+		// Lisa 2 redaktsiooni — vanem ja uuem
+		db.prepare(
+			"INSERT INTO piece_redactions (id, piece_id, url, label, created_at) VALUES (?, ?, ?, ?, ?)"
+		).run('redaction-old', pieceId, 'https://example.com/v1.pdf', 'v1', '2025-01-01T00:00:00');
+		db.prepare(
+			"INSERT INTO piece_redactions (id, piece_id, url, label, created_at) VALUES (?, ?, ?, ?, ?)"
+		).run('redaction-new', pieceId, 'https://example.com/v2.pdf', 'v2', '2025-06-01T00:00:00');
+
+		const result = createReview(db, pieceId, REVIEWER_USER) as { ok: true; id: string };
+
+		const row = db
+			.prepare('SELECT redaction_id FROM reviews WHERE id = ?')
+			.get(result.id) as { redaction_id: string | null } | undefined;
+
+		expect(row).toBeTruthy();
+		expect(row!.redaction_id).toBe('redaction-new');
 	});
 });

@@ -26,6 +26,7 @@ function openDb(): DatabaseSync {
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0001_initial.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0002_source_pdf.sql'), 'utf-8'));
 	db.exec(readFileSync(join(MIGRATIONS_DIR, '0003_piece_redactions.sql'), 'utf-8'));
+	db.exec(readFileSync(join(MIGRATIONS_DIR, '0004_review_redaction.sql'), 'utf-8'));
 
 	// Kasutaja
 	db.prepare('INSERT INTO users (id, email, name) VALUES (?, ?, ?)').run(
@@ -125,5 +126,22 @@ describe('GET /api/reviews/[id]', () => {
 		).run(PIECE_ID, REVIEWER_ID);
 		const result = getReview(db, 'review-empty')!;
 		expect(result.entries).toEqual([]);
+	});
+
+	it('tagastab redaction_id', () => {
+		// Lisa redaktsioon noodile
+		const redactionId = 'redaction-test-001';
+		db.prepare(
+			"INSERT INTO piece_redactions (id, piece_id, url, label) VALUES (?, ?, ?, ?)"
+		).run(redactionId, PIECE_ID, 'https://example.com/v1.pdf', 'v1');
+
+		// Loo review mis on seotud redaktsiooniga
+		db.prepare(
+			"INSERT INTO reviews (id, piece_id, reviewer, status, pdf_url, redaction_id) VALUES (?, ?, ?, 'in_progress', 'https://example.com/v1.pdf', ?)"
+		).run('review-with-redaction', PIECE_ID, REVIEWER_ID, redactionId);
+
+		const result = getReview(db, 'review-with-redaction')!;
+		expect(result).not.toBeNull();
+		expect(result).toHaveProperty('redaction_id', redactionId);
 	});
 });

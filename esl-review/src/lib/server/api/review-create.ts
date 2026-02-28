@@ -37,9 +37,13 @@ export function createReview(db: DatabaseSync, pieceId: string, user: User): Cre
 
 	const id = crypto.randomUUID();
 
+	const latestRedaction = db
+		.prepare('SELECT id FROM piece_redactions WHERE piece_id = ? ORDER BY created_at DESC LIMIT 1')
+		.get(pieceId) as unknown as { id: string } | undefined;
+
 	db.prepare(
-		'INSERT INTO reviews (id, piece_id, reviewer, status, pdf_url) VALUES (?, ?, ?, ?, ?)'
-	).run(id, pieceId, user.id, 'in_progress', piece.pdf_url ?? null);
+		'INSERT INTO reviews (id, piece_id, reviewer, status, pdf_url, redaction_id) VALUES (?, ?, ?, ?, ?, ?)'
+	).run(id, pieceId, user.id, 'in_progress', piece.pdf_url ?? null, latestRedaction?.id ?? null);
 
 	return { ok: true, id };
 }
@@ -69,11 +73,16 @@ export async function createReviewD1(
 
 	const id = crypto.randomUUID();
 
+	const latestRedaction = await db
+		.prepare('SELECT id FROM piece_redactions WHERE piece_id = ? ORDER BY created_at DESC LIMIT 1')
+		.bind(pieceId)
+		.first<{ id: string }>();
+
 	await db
 		.prepare(
-			'INSERT INTO reviews (id, piece_id, reviewer, status, pdf_url) VALUES (?, ?, ?, ?, ?)'
+			'INSERT INTO reviews (id, piece_id, reviewer, status, pdf_url, redaction_id) VALUES (?, ?, ?, ?, ?, ?)'
 		)
-		.bind(id, pieceId, user.id, 'in_progress', piece.pdf_url ?? null)
+		.bind(id, pieceId, user.id, 'in_progress', piece.pdf_url ?? null, latestRedaction?.id ?? null)
 		.run();
 
 	return { ok: true, id };

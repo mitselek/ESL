@@ -14,6 +14,7 @@ export interface ReviewDetail {
 	reviewer: string;
 	status: string;
 	pdf_url: string;
+	redaction_id: string | null;
 	created_at: string;
 	entries: ReviewEntry[];
 }
@@ -24,6 +25,7 @@ interface ReviewRow {
 	reviewer: string;
 	status: string;
 	pdf_url: string;
+	redaction_id: string | null;
 	created_at: string;
 }
 
@@ -57,7 +59,7 @@ function parseEntries(rows: ReviewEntryRow[]): ReviewEntry[] {
 // node:sqlite (sünkroonne) — kasutatakse unit testides
 export function getReview(db: DatabaseSync, reviewId: string): ReviewDetail | null {
 	const review = db
-		.prepare('SELECT id, piece_id, reviewer, status, pdf_url, created_at FROM reviews WHERE id = ?')
+		.prepare('SELECT id, piece_id, reviewer, status, pdf_url, redaction_id, created_at FROM reviews WHERE id = ?')
 		.get(reviewId) as unknown as ReviewRow | undefined;
 
 	if (!review) return null;
@@ -74,7 +76,7 @@ export function getReview(db: DatabaseSync, reviewId: string): ReviewDetail | nu
 // D1Database (asünkroonne) — kasutatakse SvelteKit route'is
 export async function getReviewD1(db: D1Db, reviewId: string): Promise<ReviewDetail | null> {
 	const review = await db
-		.prepare('SELECT id, piece_id, reviewer, status, pdf_url, created_at FROM reviews WHERE id = ?')
+		.prepare('SELECT id, piece_id, reviewer, status, pdf_url, redaction_id, created_at FROM reviews WHERE id = ?')
 		.bind(reviewId)
 		.first<ReviewRow>();
 
