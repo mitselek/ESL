@@ -422,10 +422,21 @@
 	{/if}
 
 	{#if actingAsTypesetter && piece.status === 'kinnitatud'}
+		{@render dropZone('Lae üles publitseerimise PDF (valikuline)', async (file) => {
+			const url = await uploadFile(file);
+			if (!url) return;
+			const res = await fetch(`/api/pieces/${piece.id}/status`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status: 'publitseeritud', pdf_url: url }),
+			});
+			if (res.ok) window.location.reload();
+			else statusMsg = (await res.json()).error;
+		})}
 		<button onclick={() => setStatus('publitseeritud')}
-			title="Noot on valmis avaldamiseks."
+			title="Avalda viimase korrektuurist tulnud redaktsiooniga."
 			style="background: #2D6A4F; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
-			Publitseeri
+			Publitseeri nii nagu on
 		</button>
 	{/if}
 </div>

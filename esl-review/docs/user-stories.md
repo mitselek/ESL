@@ -39,6 +39,8 @@ teos → lähtefail → küljenduses → korrektuuris → kontrollitud → kinni
     - [Graafik: uue redaktsiooni üleslaadimine](#graafik-uue-redaktsiooni-üleslaadimine)
     - [Korrektor: readonly split-view koos ettepanekutega](#korrektor-readonly-split-view-koos-ettepanekutega)
   - [Kinnitatud](#kinnitatud)
+    - [Graafik: publitseeri viimase redaktsiooniga](#graafik-publitseeri-viimase-redaktsiooniga)
+    - [Graafik: publitseeri uue failiga](#graafik-publitseeri-uue-failiga)
   - [Publitseeritud](#publitseeritud)
 
 ---
@@ -116,6 +118,20 @@ _Graafik parandab korrektori poolt leitud vigu._
 ## Kinnitatud
 
 _Noot on heaks kiidetud. Ootab avaldamist._
+
+### Graafik: publitseeri viimase redaktsiooniga
+
+**Kes:** graafik
+**Millal:** noot on `kinnitatud` staatuses
+**Tahan:** avaldada noodi viimase korrektuurist tulnud redaktsiooniga ilma uut faili laadimata
+**Tulemus:** noot läheb `publitseeritud` staatusesse, pdf_url jääb samaks
+
+### Graafik: publitseeri uue failiga
+
+**Kes:** graafik
+**Millal:** noot on `kinnitatud` staatuses, viimane redaktsioon vajab trükieelset viimistlust
+**Tahan:** laadida üles publitseerimiseks mõeldud PDF ja avaldada sellega
+**Tulemus:** uus redaktsioon salvestatakse, noot läheb `publitseeritud` staatusesse
 
 ## Publitseeritud
 
