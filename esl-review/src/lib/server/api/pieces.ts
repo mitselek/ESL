@@ -17,6 +17,8 @@ export interface Piece {
 	section: string;
 	status: string;
 	pdf_url: string | null;
+	source_pdf_url: string | null;
+	pageflow_matched: number;
 	notes: string | null;
 	typesetter: { id: string; name: string | null } | null;
 	reviewer: { id: string; name: string | null } | null;
@@ -37,6 +39,8 @@ export interface PieceRow {
 	section: string;
 	status: string;
 	pdf_url: string | null;
+	source_pdf_url: string | null;
+	pageflow_matched: number;
 	notes: string | null;
 	typesetter_id: string | null;
 	typesetter_name: string | null;
@@ -50,7 +54,7 @@ const SECTION_ORDER = ['I', 'II', 'III', 'IV'];
 
 export const PIECES_SQL = `
   SELECT p.id, p.title, p.composer, p.origin, p.section, p.status,
-         p.pdf_url, p.notes, p.created_at, p.updated_at,
+         p.pdf_url, p.source_pdf_url, p.pageflow_matched, p.notes, p.created_at, p.updated_at,
          t.id   AS typesetter_id,   t.name AS typesetter_name,
          r.id   AS reviewer_id,     r.name AS reviewer_name
   FROM pieces p
@@ -74,6 +78,8 @@ export function mapPieceRows(rows: PieceRow[]): Piece[] {
 		section: row.section,
 		status: row.status,
 		pdf_url: row.pdf_url,
+		source_pdf_url: row.source_pdf_url,
+		pageflow_matched: row.pageflow_matched,
 		notes: row.notes,
 		typesetter: row.typesetter_id ? { id: row.typesetter_id, name: row.typesetter_name } : null,
 		reviewer: row.reviewer_id ? { id: row.reviewer_id, name: row.reviewer_name } : null,
