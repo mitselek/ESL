@@ -379,14 +379,16 @@
 	{/if}
 
 	{#if actingAsTypesetter && piece.status === 'kontrollitud'}
-		<button onclick={() => setStatus('paranduses')}
-			title="Korrektori märkused vajavad parandamist. Noot läheb tagasi küljendamisele."
-			style="background: #E76F51; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
-			Parandan
-		</button>
+		{#if hasProblems}
+			<button onclick={() => setStatus('paranduses')}
+				title="Korrektori märkused vajavad parandamist. Noot läheb tagasi küljendamisele."
+				style="background: #E76F51; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+				Parandan
+			</button>
+		{/if}
 		<button onclick={() => setStatus('kinnitatud')}
 			disabled={hasProblems}
-			title={hasProblems ? 'Korrektuuris on vigasid või ettepanekuid — enne kinnitamist paranda.' : 'Noot vastab nõuetele. Kinnitan ilma parandusteta.'}
+			title={hasProblems ? 'Korrektuuris on vigasid või ettepanekuid — enne kinnitamist paranda.' : 'Korrektor kinnitas: noot on korras.'}
 			style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: {hasProblems ? 'not-allowed' : 'pointer'}; opacity: {hasProblems ? 0.4 : 1};">
 			Kinnita
 		</button>
