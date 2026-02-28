@@ -509,7 +509,15 @@
 
 <style>
 	/* Desktop: show dual row, hide mobile tabs/view */
-	.dual-pdf-row { display: flex; gap: 8px; align-items: flex-start; }
+	.dual-pdf-row {
+		display: flex;
+		gap: 8px;
+		align-items: flex-start;
+		margin-left: calc(50% - 50vw);
+		width: 100vw;
+		padding: 0 1rem;
+		box-sizing: border-box;
+	}
 	.dual-mobile-tabs { display: none; }
 	.dual-mobile-view { display: none; }
 

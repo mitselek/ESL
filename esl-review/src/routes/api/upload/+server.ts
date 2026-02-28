@@ -29,13 +29,12 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		return json({ error: 'File too large (max 20MB)' }, { status: 400 });
 	}
 
-	const sanitized = encodeURIComponent(file.name);
-	const key = `${Date.now()}-${sanitized}`;
+	const key = `${Date.now()}-${file.name}`;
 	const arrayBuffer = await file.arrayBuffer();
 
 	await bucket.put(key, arrayBuffer, {
 		httpMetadata: { contentType: 'application/pdf' }
 	});
 
-	return json({ url: '/pdf/' + key });
+	return json({ url: '/pdf/' + encodeURIComponent(key) });
 };
