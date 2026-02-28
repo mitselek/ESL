@@ -7,3 +7,7 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 binding = "DB"
 database_name = "esl-review"
 database_id = "7184c3c6-7ebd-48d3-8358-932123e6c038"
+
+[[r2_buckets]]
+binding = "PDF_BUCKET"
+bucket_name = "esl-pdfs"

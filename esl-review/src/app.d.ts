@@ -13,6 +13,7 @@ declare global {
 		interface Platform {
 			env: {
 				DB: D1Database;
+				PDF_BUCKET: R2Bucket;
 			};
 			context: ExecutionContext;
 			caches: CacheStorage & { default: Cache };
