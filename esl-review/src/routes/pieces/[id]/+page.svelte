@@ -461,17 +461,7 @@
 				{#if swapped}
 					Algnoot
 				{:else if redactions.length > 1}
-					<select
-						value={selectedRedactionIdx < 0 ? String(redactions.length - 1) : String(selectedRedactionIdx)}
-						onchange={e => { selectedRedactionIdx = Number((e.target as HTMLSelectElement).value); }}
-						style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border: 1px solid #E8DDD0; border-radius: 4px; padding: 1px 4px; background: white; color: #888; text-transform: uppercase;"
-					>
-						{#each redactions as r, i}
-							<option value={String(i)}>
-								{r.label ?? `v${i + 1}`} — {new Date(r.created_at).toLocaleDateString('et-EE')}
-							</option>
-						{/each}
-					</select>
+					{@render redactionPicker()}
 				{:else}
 					K&uuml;ljendus
 				{/if}
@@ -498,17 +488,7 @@
 				{#if !swapped}
 					Algnoot
 				{:else if redactions.length > 1}
-					<select
-						value={selectedRedactionIdx < 0 ? String(redactions.length - 1) : String(selectedRedactionIdx)}
-						onchange={e => { selectedRedactionIdx = Number((e.target as HTMLSelectElement).value); }}
-						style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border: 1px solid #E8DDD0; border-radius: 4px; padding: 1px 4px; background: white; color: #888; text-transform: uppercase;"
-					>
-						{#each redactions as r, i}
-							<option value={String(i)}>
-								{r.label ?? `v${i + 1}`} — {new Date(r.created_at).toLocaleDateString('et-EE')}
-							</option>
-						{/each}
-					</select>
+					{@render redactionPicker()}
 				{:else}
 					K&uuml;ljendus
 				{/if}
@@ -527,18 +507,8 @@
 	<div class="dual-mobile-view">
 		{#if mobileTab === 'draft'}
 			{#if redactions.length > 1}
-				<div style="margin-bottom: 6px;">
-					<select
-						value={selectedRedactionIdx < 0 ? String(redactions.length - 1) : String(selectedRedactionIdx)}
-						onchange={e => { selectedRedactionIdx = Number((e.target as HTMLSelectElement).value); }}
-						style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; border: 1px solid #E8DDD0; border-radius: 4px; padding: 4px 6px; background: white; width: 100%;"
-					>
-						{#each redactions as r, i}
-							<option value={String(i)}>
-								{r.label ?? `v${i + 1}`} — {new Date(r.created_at).toLocaleDateString('et-EE')}
-							</option>
-						{/each}
-					</select>
+				<div style="margin-bottom: 6px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; display: flex; gap: 6px; align-items: center; text-transform: uppercase;">
+					{@render redactionPicker()}
 				</div>
 			{/if}
 			<iframe
@@ -636,6 +606,36 @@
 			<div style="font-size: 0.7rem; color: #bbb; margin-top: 4px;">Lohista PDF siia v&otilde;i kl&otilde;psa</div>
 		{/if}
 	</div>
+{/snippet}
+
+{#snippet redactionPicker()}
+	{@const actualIdx = selectedRedactionIdx < 0 ? redactions.length - 1 : selectedRedactionIdx}
+	{#if redactions.length === 2}
+		<!-- 2 redaktsiooni: nupud nagu rollivalik -->
+		{#each redactions as r, i}
+			{#if i === actualIdx}
+				<span style="font-weight: 600; color: #2C2416;">{r.label ?? `v${i + 1}`}</span>
+			{:else}
+				<button onclick={() => { selectedRedactionIdx = i; }}
+					style="border: 1px solid #E8DDD0; background: #FAF6F0; border-radius: 4px; padding: 0 6px; cursor: pointer; font-size: inherit; font-family: inherit; color: #888; text-transform: uppercase;">
+					{r.label ?? `v${i + 1}`}
+				</button>
+			{/if}
+		{/each}
+	{:else}
+		<!-- 3+ redaktsiooni: dropdown -->
+		<select
+			value={String(actualIdx)}
+			onchange={e => { selectedRedactionIdx = Number((e.target as HTMLSelectElement).value); }}
+			style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border: 1px solid #E8DDD0; border-radius: 4px; padding: 1px 4px; background: white; color: #888; text-transform: uppercase;"
+		>
+			{#each redactions as r, i}
+				<option value={String(i)}>
+					{r.label ?? `v${i + 1}`} — {new Date(r.created_at).toLocaleDateString('et-EE')}
+				</option>
+			{/each}
+		</select>
+	{/if}
 {/snippet}
 
 {#snippet readonlyReview(review: { entries: ReviewEntry[] })}
