@@ -112,27 +112,6 @@
 		}
 	}
 
-	// --- 1. Lisa lähtefail (teos status) ---
-	let sourceFile: File | null = $state(null);
-
-	function onSourceFileChange(e: Event) {
-		const input = e.target as HTMLInputElement;
-		sourceFile = input.files?.[0] ?? null;
-	}
-
-	async function uploadSourcePdf() {
-		if (!sourceFile) return;
-		const url = await uploadFile(sourceFile);
-		if (!url) return;
-		const res = await fetch(`/api/pieces/${piece.id}/source-pdf`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ source_pdf_url: url }),
-		});
-		if (res.ok) window.location.reload();
-		else statusMsg = (await res.json()).error;
-	}
-
 	// --- 2. Määra korrektor (küljenduses) ---
 	let draftFile: File | null = $state(null);
 	let pageflowMatched = $state(false);
@@ -186,6 +165,16 @@
 
 	async function claim() {
 		const res = await fetch(`/api/pieces/${piece.id}/claim`, { method: 'PUT' });
+		if (res.ok) window.location.reload();
+		else statusMsg = (await res.json()).error;
+	}
+
+	async function setStatus(status: string) {
+		const res = await fetch(`/api/pieces/${piece.id}/status`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ status }),
+		});
 		if (res.ok) window.location.reload();
 		else statusMsg = (await res.json()).error;
 	}
@@ -276,12 +265,24 @@
 				Lisa l&auml;htefail
 			</span>
 			<div class="flex gap-2 items-center">
-				<input type="file" accept=".pdf" onchange={onSourceFileChange}
-					style="font-size: 0.8rem; max-width: 220px;" />
-				<button onclick={uploadSourcePdf} disabled={!sourceFile || uploading}
-					style="background: #2C2416; color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 0.85rem; opacity: {!sourceFile || uploading ? 0.5 : 1};">
-					{uploading ? 'Laen...' : 'Lae \u00fcles'}
-				</button>
+				<input type="file" accept=".pdf"
+					onchange={async (e: Event) => {
+						const file = (e.target as HTMLInputElement).files?.[0];
+						if (!file) return;
+						const url = await uploadFile(file);
+						if (!url) return;
+						const res = await fetch(`/api/pieces/${piece.id}/source-pdf`, {
+							method: 'PUT',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ source_pdf_url: url }),
+						});
+						if (res.ok) window.location.reload();
+						else statusMsg = (await res.json()).error;
+					}}
+					disabled={uploading}
+					style="font-size: 0.8rem; max-width: 220px; cursor: pointer; opacity: {uploading ? 0.5 : 1};"
+				/>
+				{#if uploading}<span style="font-size: 0.75rem; color: #888;">Laen &uuml;les...</span>{/if}
 			</div>
 		</div>
 	{/if}
@@ -318,7 +319,53 @@
 			Alusta &uuml;lelugemist
 		</button>
 	{/if}
+
+	{#if isTypesetter && piece.status === 'kontrollitud'}
+		<button onclick={() => setStatus('paranduses')} style="background: #E76F51; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+			Parandan
+		</button>
+		<button onclick={() => setStatus('kinnitatud')} style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+			Kinnita
+		</button>
+	{/if}
+
+	{#if isReviewer && piece.status === 'paranduses'}
+		<button onclick={() => setStatus('korrektuuris')} style="background: #E9C46A; color: #2C2416; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+			Tagasi korrektuuris
+		</button>
+		<button onclick={() => setStatus('kinnitatud')} style="background: #52B788; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+			Kinnita
+		</button>
+	{/if}
+
+	{#if isTypesetter && piece.status === 'kinnitatud'}
+		<button onclick={() => setStatus('publitseeritud')} style="background: #2D6A4F; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+			Publitseeri
+		</button>
+	{/if}
 </div>
+
+{#if piece.status === 'kontrollitud' && data.activeReview?.entries?.length}
+	{@const problems = data.activeReview.entries.filter((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')}
+	<div style="background: #FAF6F0; border: 1px solid #E8DDD0; border-radius: 6px; padding: 12px; margin-bottom: 1rem;">
+		<h3 style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #C9A96E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Korrektori m&auml;rkused</h3>
+		{#if problems.length === 0}
+			<p style="color: #52B788; font-size: 0.875rem;">&#10003; K&otilde;ik parameetrid korras</p>
+		{:else}
+			{#each problems as e}
+				{@const paramName = piece.piece_params.find(p => p.id === e.param_id)?.param_name ?? e.param_id}
+				{@const vpName = e.voice_part_id ? piece.voice_parts.find(v => v.id === e.voice_part_id)?.name : null}
+				<div style="margin-bottom: 6px; font-size: 0.8rem;">
+					<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 1px 5px; border-radius: 3px; background: {e.verdict === 'viga' ? '#E76F51' : '#E9C46A'}; color: {e.verdict === 'viga' ? 'white' : '#2C2416'}; margin-right: 4px;">{e.verdict}</span>
+					{paramName}{vpName ? ` (${vpName})` : ''}
+					{#if e.remarks}
+						<span style="color: #666; margin-left: 4px;">&mdash; {Array.isArray(e.remarks) ? e.remarks.map((r: { text: string }) => r.text).join('; ') : e.remarks}</span>
+					{/if}
+				</div>
+			{/each}
+		{/if}
+	</div>
+{/if}
 
 <!-- Split-vaade -->
 {#if hasDualPdf}
@@ -411,6 +458,13 @@
 					style="width: 100%; height: 70vh; border: 1px solid #E8DDD0; border-radius: 6px;"
 					title="PDF"
 				></iframe>
+			{:else if piece.source_pdf_url}
+				<iframe
+					src={piece.source_pdf_url}
+					style="width: 100%; height: 70vh; border: 1px solid #E8DDD0; border-radius: 6px;"
+					title="Algnoot"
+				></iframe>
+				<p style="font-size: 0.75rem; color: #888; margin-top: 4px; text-align: center;">Algnoot (k&uuml;ljenduse PDF puudub)</p>
 			{:else}
 				<div style="border: 2px dashed #E8DDD0; border-radius: 6px; height: 200px; display: flex; align-items: center; justify-content: center; color: #aaa;">
 					PDF puudub

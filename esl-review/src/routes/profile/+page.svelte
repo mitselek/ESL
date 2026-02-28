@@ -3,20 +3,27 @@
 	const user = $derived(data.user);
 
 	let name = $state(user?.name ?? '');
+	const savedName = user?.name ?? '';
 	let saving = $state(false);
-	let msg = $state('');
+	let saved = $state(false);
+
+	const dirty = $derived(name !== savedName && !saving);
+	const btnLabel = $derived(saving ? 'Salvestan...' : saved ? 'Salvestatud' : 'Salvesta');
 
 	async function save() {
+		if (!dirty) return;
 		saving = true;
-		msg = '';
+		saved = false;
 		const res = await fetch('/api/me', {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ name }),
 		});
 		saving = false;
-		if (res.ok) { msg = 'Salvestatud.'; }
-		else { msg = (await res.json()).error; }
+		if (res.ok) {
+			saved = true;
+			setTimeout(() => { saved = false; }, 2500);
+		}
 	}
 </script>
 
@@ -39,15 +46,11 @@
 		/>
 	</div>
 
-	{#if msg}
-		<p style="font-size: 0.875rem; color: {msg === 'Salvestatud.' ? '#52B788' : '#E76F51'}; margin-bottom: 0.75rem;">{msg}</p>
-	{/if}
-
 	<button
 		onclick={save}
-		disabled={saving}
-		style="background: #2C2416; color: white; border: none; border-radius: 6px; padding: 8px 20px; cursor: pointer; opacity: {saving ? 0.5 : 1};"
+		disabled={!dirty}
+		style="background: {saved ? '#52B788' : '#2C2416'}; color: white; border: none; border-radius: 6px; padding: 8px 20px; cursor: {dirty ? 'pointer' : 'default'}; opacity: {dirty ? 1 : 0.4}; transition: background 0.2s, opacity 0.2s;"
 	>
-		{saving ? 'Salvestab...' : 'Salvesta'}
+		{btnLabel}
 	</button>
 </div>

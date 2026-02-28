@@ -15,11 +15,17 @@ export const load: PageServerLoad = async ({ params, platform, locals }) => {
 	const isTypesetter = user && piece.typesetter?.id === user.id;
 	const isReviewer = user && piece.reviewer?.id === user.id;
 
-	// Aktiivne review korrektori jaoks
+	// Aktiivne review korrektori jaoks (in_progress) või viimane lõpetatud review (kontrollitud staatuses)
 	let activeReview = null;
 	if (isReviewer && piece.status === 'korrektuuris') {
 		const row = await db
 			.prepare("SELECT id FROM reviews WHERE piece_id = ? AND status = 'in_progress' LIMIT 1")
+			.bind(params.id)
+			.first<{ id: string }>();
+		if (row) activeReview = await getReviewD1(db, row.id);
+	} else if (piece.status === 'kontrollitud') {
+		const row = await db
+			.prepare("SELECT id FROM reviews WHERE piece_id = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1")
 			.bind(params.id)
 			.first<{ id: string }>();
 		if (row) activeReview = await getReviewD1(db, row.id);
