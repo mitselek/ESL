@@ -482,8 +482,8 @@
 		{/if}
 	</div>
 
-	<!-- Review form — full width below PDFs -->
-	{#if activeReviewId}
+	<!-- Review form — full width below PDFs (ainult korrektorile) -->
+	{#if activeReviewId && actingAsReviewer}
 		<div style="margin-top: 1rem; max-height: 60vh; overflow-y: auto;">
 			{@render reviewForm()}
 		</div>
@@ -515,8 +515,8 @@
 			{/if}
 		</div>
 
-		<!-- Parem: Review vorm -->
-		{#if activeReviewId}
+		<!-- Parem: Review vorm (ainult korrektorile) -->
+		{#if activeReviewId && actingAsReviewer}
 			<div style="flex: 1; min-width: 320px; max-height: 70vh; overflow-y: auto;">
 				{@render reviewForm()}
 			</div>
