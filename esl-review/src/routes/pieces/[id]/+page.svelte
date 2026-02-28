@@ -194,8 +194,13 @@
 		else statusMsg = (await res.json()).error;
 	}
 
+	const latestCompletedReview = $derived(
+		(data.completedReviews ?? []).length > 0
+			? (data.completedReviews ?? [])[(data.completedReviews ?? []).length - 1]
+			: null
+	);
 	const hasProblems = $derived(
-		(data.activeReview?.entries ?? []).some((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')
+		(latestCompletedReview?.entries ?? data.activeReview?.entries ?? []).some((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')
 	);
 
 	// --- 3. Dual split-view (korrektuuris / paranduses) ---
@@ -207,11 +212,23 @@
 
 	// Redaktsioonide vahetamine — vaikimisi viimane
 	const redactions = $derived(piece.redactions ?? []);
+	const completedReviews = $derived(data.completedReviews ?? []);
 	let selectedRedactionIdx = $state(-1); // -1 = viimane
-	const activeRedactionUrl = $derived(
+	const selectedRedaction = $derived(
 		redactions.length > 0
-			? redactions[selectedRedactionIdx < 0 ? redactions.length - 1 : selectedRedactionIdx]?.url ?? piece.pdf_url
-			: piece.pdf_url
+			? redactions[selectedRedactionIdx < 0 ? redactions.length - 1 : selectedRedactionIdx]
+			: null
+	);
+	const activeRedactionUrl = $derived(selectedRedaction?.url ?? piece.pdf_url);
+	const isLatestRedaction = $derived(
+		!selectedRedaction || selectedRedaction === redactions[redactions.length - 1]
+	);
+
+	// Review seotud valitud redaktsiooniga
+	const selectedRedactionReview = $derived(
+		selectedRedaction
+			? completedReviews.find((r: { redaction_id: string | null }) => r.redaction_id === selectedRedaction.id) ?? null
+			: null
 	);
 
 	const leftUrl = $derived(swapped ? piece.source_pdf_url : activeRedactionUrl);
@@ -411,25 +428,11 @@
 	{/if}
 </div>
 
-{#if ['kontrollitud', 'paranduses'].includes(piece.status) && data.activeReview?.entries?.length}
-	{@const problems = data.activeReview.entries.filter((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')}
-	<div style="background: #FAF6F0; border: 1px solid #E8DDD0; border-radius: 6px; padding: 12px; margin-bottom: 1rem;">
-		<h3 style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #C9A96E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Korrektori m&auml;rkused</h3>
-		{#if problems.length === 0}
-			<p style="color: #52B788; font-size: 0.875rem;">&#10003; K&otilde;ik parameetrid korras</p>
-		{:else}
-			{#each problems as e}
-				{@const paramName = piece.piece_params.find(p => p.id === e.param_id)?.param_name ?? e.param_id}
-				{@const vpName = e.voice_part_id ? piece.voice_parts.find(v => v.id === e.voice_part_id)?.name : null}
-				<div style="margin-bottom: 6px; font-size: 0.8rem;">
-					<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 1px 5px; border-radius: 3px; background: {e.verdict === 'viga' ? '#E76F51' : '#E9C46A'}; color: {e.verdict === 'viga' ? 'white' : '#2C2416'}; margin-right: 4px;">{e.verdict}</span>
-					{paramName}{vpName ? ` (${vpName})` : ''}
-					{#if e.remarks}
-						<span style="color: #666; margin-left: 4px;">&mdash; {Array.isArray(e.remarks) ? e.remarks.map((r: { text: string }) => r.text).join('; ') : e.remarks}</span>
-					{/if}
-				</div>
-			{/each}
-		{/if}
+<!-- Korrektori märkused (kontrollitud/paranduses, väljaspool split-view) -->
+{#if ['kontrollitud', 'paranduses'].includes(piece.status) && !hasDualPdf && completedReviews.length > 0}
+	{@const latestReview = completedReviews[completedReviews.length - 1]}
+	<div style="margin-bottom: 1rem;">
+		{@render readonlyReview(latestReview)}
 	</div>
 {/if}
 
@@ -552,10 +555,21 @@
 		{/if}
 	</div>
 
-	<!-- Review form — full width below PDFs (ainult korrektorile) -->
-	{#if activeReviewId && actingAsReviewer}
+	<!-- Review: editable vorm praegusele redaktsioonile, readonly vanemale -->
+	{#if !isLatestRedaction && selectedRedactionReview}
+		<!-- Vanema redaktsiooni readonly review -->
+		<div style="margin-top: 1rem;">
+			{@render readonlyReview(selectedRedactionReview)}
+		</div>
+	{:else if activeReviewId && actingAsReviewer && isLatestRedaction}
+		<!-- Praeguse redaktsiooni editable vorm -->
 		<div style="margin-top: 1rem; max-height: 60vh; overflow-y: auto;">
 			{@render reviewForm()}
+		</div>
+	{:else if isLatestRedaction && selectedRedactionReview}
+		<!-- Viimase redaktsiooni completed review (kontrollitud/paranduses) -->
+		<div style="margin-top: 1rem;">
+			{@render readonlyReview(selectedRedactionReview)}
 		</div>
 	{/if}
 
@@ -620,6 +634,32 @@
 		</div>
 		{#if !uploading}
 			<div style="font-size: 0.7rem; color: #bbb; margin-top: 4px;">Lohista PDF siia v&otilde;i kl&otilde;psa</div>
+		{/if}
+	</div>
+{/snippet}
+
+{#snippet readonlyReview(review: { entries: ReviewEntry[] })}
+	<div style="background: #FAF6F0; border: 1px solid #E8DDD0; border-radius: 6px; padding: 12px;">
+		<h3 style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #C9A96E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Korrektori m&auml;rkused</h3>
+		{#if !review.entries.length}
+			<p style="color: #888; font-size: 0.8rem;">M&auml;rkused puuduvad</p>
+		{:else}
+			{@const problems = review.entries.filter((e: ReviewEntry) => e.verdict === 'viga' || e.verdict === 'ettepanek')}
+			{#if problems.length === 0}
+				<p style="color: #52B788; font-size: 0.875rem;">&#10003; K&otilde;ik parameetrid korras</p>
+			{:else}
+				{#each review.entries as e}
+					{@const paramName = piece.piece_params.find(p => p.id === e.param_id)?.param_name ?? e.param_id}
+					{@const vpName = e.voice_part_id ? piece.voice_parts.find(v => v.id === e.voice_part_id)?.name : null}
+					<div style="margin-bottom: 6px; font-size: 0.8rem;">
+						<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 1px 5px; border-radius: 3px; background: {e.verdict === 'viga' ? '#E76F51' : e.verdict === 'ettepanek' ? '#E9C46A' : '#52B788'}; color: {e.verdict === 'viga' ? 'white' : e.verdict === 'ettepanek' ? '#2C2416' : 'white'}; margin-right: 4px;">{e.verdict}</span>
+						{paramName}{vpName ? ` (${vpName})` : ''}
+						{#if e.remarks}
+							<span style="color: #666; margin-left: 4px;">&mdash; {Array.isArray(e.remarks) ? e.remarks.map((r: { text: string }) => r.text).join('; ') : e.remarks}</span>
+						{/if}
+					</div>
+				{/each}
+			{/if}
 		{/if}
 	</div>
 {/snippet}

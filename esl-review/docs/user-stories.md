@@ -65,10 +65,16 @@ _Graafik on draft PDF üles laadinud ja korrektor loeb üle._
 
 **Tehniline:**
 
-- Uus tabel `piece_redactions (id, piece_id, url, label, created_at)`
-- Iga PDF upload (assign-reviewer, paranduses resubmit) lisab rea
-- `pieces.pdf_url` jääb viitama viimasele (tagasiühilduvus)
-- Frontend: dropdown redaktsioonide vahetamiseks küljenduse iframe kohal
+- Tabel `piece_redactions (id, piece_id, url, label, created_at)` — iga PDF upload lisab rea
+- `reviews.redaction_id` → iga korrektuur on seotud konkreetse redaktsiooniga
+- Frontend: dropdown redaktsioonide vahetamiseks + vanema redaktsiooni juures readonly märkused
+
+### Korrektor: redaktsiooniga seotud märkused
+
+**Kes:** korrektor
+**Millal:** vahetab redaktsiooni dropdownist
+**Tahan:** näha selle redaktsiooniga seotud korrektuurimärkusi — vanematel readonly, praegusel täidetav vorm
+**Tulemus:** saan jälgida, milliseid vigu iga versioon sisaldas ja kuidas parandused on edenenud
 
 ## Kontrollitud
 
