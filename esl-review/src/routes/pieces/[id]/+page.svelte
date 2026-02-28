@@ -246,30 +246,24 @@
 		{/if}
 		<div class="flex gap-4 mt-2 text-sm flex-wrap items-center">
 			{#if piece.typesetter}
-				<span>Graafik: <strong>{piece.typesetter.name ?? piece.typesetter.email}</strong>
-					{#if isTypesetter && !isBothRoles}<span style="font-size: 0.65rem; background: #C9A96E; color: white; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">sina</span>{/if}
-					{#if isBothRoles}<span style="font-size: 0.65rem; background: {activeRole === 'typesetter' ? '#C9A96E' : '#E8DDD0'}; color: {activeRole === 'typesetter' ? 'white' : '#888'}; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">{activeRole === 'typesetter' ? 'sina (aktiivne)' : 'sina'}</span>{/if}
-				</span>
+				{#if isBothRoles}
+					<button onclick={() => activeRole = 'typesetter'}
+						style="border: none; background: none; padding: 0; cursor: pointer; font-size: inherit; text-decoration: {activeRole !== 'typesetter' ? 'underline' : 'none'}; color: {activeRole === 'typesetter' ? 'inherit' : '#888'};">
+						Graafik: <strong style="font-weight: {activeRole === 'typesetter' ? '700' : '400'};">{piece.typesetter.name ?? piece.typesetter.email}</strong>
+					</button>
+				{:else}
+					<span>Graafik: <strong>{piece.typesetter.name ?? piece.typesetter.email}</strong></span>
+				{/if}
 			{/if}
 			{#if piece.reviewer}
-				<span>Korrektor: <strong>{piece.reviewer.name ?? piece.reviewer.email}</strong>
-					{#if isReviewer && !isBothRoles}<span style="font-size: 0.65rem; background: #C9A96E; color: white; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">sina</span>{/if}
-					{#if isBothRoles}<span style="font-size: 0.65rem; background: {activeRole === 'reviewer' ? '#C9A96E' : '#E8DDD0'}; color: {activeRole === 'reviewer' ? 'white' : '#888'}; border-radius: 3px; padding: 1px 5px; margin-left: 3px;">{activeRole === 'reviewer' ? 'sina (aktiivne)' : 'sina'}</span>{/if}
-				</span>
-			{/if}
-			{#if isBothRoles}
-				<div style="display: flex; gap: 2px; border: 1px solid #E8DDD0; border-radius: 6px; padding: 2px; font-size: 0.75rem;">
-					<button onclick={() => activeRole = 'typesetter'}
-						title="Tegutse graafikuna"
-						style="padding: 3px 10px; border: none; border-radius: 4px; cursor: pointer; background: {activeRole === 'typesetter' ? '#2C2416' : 'transparent'}; color: {activeRole === 'typesetter' ? 'white' : '#666'};">
-						Graafik
-					</button>
+				{#if isBothRoles}
 					<button onclick={() => activeRole = 'reviewer'}
-						title="Tegutse korrektorina"
-						style="padding: 3px 10px; border: none; border-radius: 4px; cursor: pointer; background: {activeRole === 'reviewer' ? '#2C2416' : 'transparent'}; color: {activeRole === 'reviewer' ? 'white' : '#666'};">
-						Korrektor
+						style="border: none; background: none; padding: 0; cursor: pointer; font-size: inherit; text-decoration: {activeRole !== 'reviewer' ? 'underline' : 'none'}; color: {activeRole === 'reviewer' ? 'inherit' : '#888'};">
+						Korrektor: <strong style="font-weight: {activeRole === 'reviewer' ? '700' : '400'};">{piece.reviewer.name ?? piece.reviewer.email}</strong>
 					</button>
-				</div>
+				{:else}
+					<span>Korrektor: <strong>{piece.reviewer.name ?? piece.reviewer.email}</strong></span>
+				{/if}
 			{/if}
 		</div>
 	</div>
