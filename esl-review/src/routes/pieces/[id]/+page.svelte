@@ -288,17 +288,24 @@
 		else statusMsg = (await res.json()).error;
 	}
 
-	// Expanded view — hides header, maximises PDF area
-	let expanded = $state(false);
+	// View modes: 'normal' (header + review), 'compact' (no header), 'full' (no header + no review)
+	type ViewMode = 'normal' | 'compact' | 'full';
+	const VIEW_CYCLE: ViewMode[] = ['normal', 'compact', 'full'];
+	let viewMode = $state<ViewMode>('normal');
 	let savedReviewScroll = 0;
 	let reviewPanelEl: HTMLDivElement | undefined = $state(undefined);
 
-	function toggleExpanded() {
-		if (!expanded && reviewPanelEl) {
+	// Backward-compat: header hidden in compact and full
+	const expanded = $derived(viewMode !== 'normal');
+
+	function cycleViewMode() {
+		if (viewMode === 'normal' && reviewPanelEl) {
 			savedReviewScroll = reviewPanelEl.scrollTop;
 		}
-		expanded = !expanded;
-		if (!expanded) {
+		const idx = VIEW_CYCLE.indexOf(viewMode);
+		viewMode = VIEW_CYCLE[(idx + 1) % VIEW_CYCLE.length];
+
+		if (viewMode === 'normal') {
 			requestAnimationFrame(() => {
 				if (reviewPanelEl) reviewPanelEl.scrollTop = savedReviewScroll;
 			});
@@ -307,18 +314,20 @@
 
 	// Does split-view have review content below?
 	const showsReviewBelowSplit = $derived(
-		hasDualPdf && !expanded && (
+		hasDualPdf && viewMode !== 'full' && (
 			(!isLatestRedaction && !!selectedRedactionReview) ||
 			(!!activeReviewId && actingAsReviewer && isLatestRedaction) ||
 			(isLatestRedaction && !!selectedRedactionReview)
 		)
 	);
 	const splitPdfHeight = $derived(
-		expanded
+		viewMode === 'full'
 			? 'calc(100vh - 3rem)'
-			: showsReviewBelowSplit
-				? '60vh'
-				: 'calc(100vh - 12rem)'
+			: viewMode === 'compact'
+				? (showsReviewBelowSplit ? '60vh' : 'calc(100vh - 5rem)')
+				: showsReviewBelowSplit
+					? '60vh'
+					: 'calc(100vh - 12rem)'
 	);
 
 	// Active panel for keyboard nav in dual view
@@ -331,7 +340,7 @@
 <svelte:window onkeydown={e => {
 	const tag = (e.target as HTMLElement)?.tagName;
 	const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-	if (e.key === 'Escape') toggleExpanded();
+	if (e.key === 'Escape') cycleViewMode();
 	if (hasDualPdf && e.key === 'ArrowLeft') activeSide = 'left';
 	if (hasDualPdf && e.key === 'ArrowRight') activeSide = 'right';
 	if (!inInput && hasDualPdf && e.key === 'x') swapped = !swapped;
@@ -604,7 +613,7 @@
 			</div>
 		</div>
 
-		<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 4px; align-self: center;">
+		<div class="floating-controls">
 			<button onclick={() => { swapped = !swapped; }}
 				title="Vaheta pooled (X)"
 				style="background: #E8DDD0; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">
@@ -617,10 +626,10 @@
 					&#x1F517;
 				</button>
 			{/if}
-			<button onclick={() => { toggleExpanded(); }}
-				title={expanded ? 'Näita päist (Esc)' : 'Laienda (Esc)'}
-				style="background: {expanded ? '#2C2416' : '#E8DDD0'}; color: {expanded ? 'white' : '#2C2416'}; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;">
-				{#if expanded}&#x2715;{:else}&#x26F6;{/if}
+			<button onclick={() => { cycleViewMode(); }}
+				title={viewMode === 'normal' ? 'Peida päis (Esc)' : viewMode === 'compact' ? 'Täisvaade (Esc)' : 'Normaalvaade (Esc)'}
+				style="background: {viewMode !== 'normal' ? '#2C2416' : '#E8DDD0'}; color: {viewMode !== 'normal' ? 'white' : '#2C2416'}; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;">
+				{#if viewMode === 'full'}&#x2715;{:else if viewMode === 'compact'}&#x26F6;{:else}&#x25B3;{/if}
 			</button>
 		</div>
 
@@ -662,7 +671,7 @@
 	</div>
 
 	<!-- Review: editable vorm praegusele redaktsioonile, readonly vanemale -->
-	{#if !expanded}
+	{#if viewMode !== 'full'}
 		<div class="review-panel" bind:this={reviewPanelEl}>
 		{#if !isLatestRedaction && selectedRedactionReview}
 			<!-- Vanema redaktsiooni readonly review -->
@@ -685,7 +694,7 @@
 
 {:else}
 	<!-- SINGLE PDF + REVIEW (original layout) -->
-	{@const singlePdfHeight = expanded ? 'calc(100vh - 3rem)' : '70vh'}
+	{@const singlePdfHeight = viewMode === 'full' ? 'calc(100vh - 3rem)' : viewMode === 'compact' ? 'calc(100vh - 5rem)' : '70vh'}
 	<div class="flex gap-6" style="align-items: flex-start; flex-wrap: wrap;">
 
 		<!-- Vasak: PDF -->
@@ -694,7 +703,7 @@
 				<PdfViewer url={piece.pdf_url} height={singlePdfHeight} />
 			{:else if piece.source_pdf_url}
 				<PdfViewer url={piece.source_pdf_url} height={singlePdfHeight} />
-				{#if !expanded}
+				{#if viewMode === 'normal'}
 					<p style="font-size: 0.75rem; color: #888; margin-top: 4px; text-align: center;">Algnoot (k&uuml;ljenduse PDF puudub)</p>
 				{/if}
 			{:else}
@@ -705,7 +714,7 @@
 		</div>
 
 		<!-- Parem: Review vorm (ainult korrektorile) -->
-		{#if !expanded && activeReviewId && actingAsReviewer}
+		{#if viewMode !== 'full' && activeReviewId && actingAsReviewer}
 			<div style="flex: 1; min-width: 320px; max-height: 70vh; overflow-y: auto;">
 				{@render reviewForm()}
 			</div>
@@ -928,6 +937,24 @@
 	}
 	.dual-mobile-tabs { display: none; }
 	.dual-mobile-view { display: none; }
+
+	.floating-controls {
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 6px;
+		z-index: 20;
+		opacity: 0.5;
+		transition: opacity 0.15s;
+	}
+
+	.floating-controls:hover {
+		opacity: 1;
+	}
 
 	/* Mobile (<640px): hide dual row, show tabs + single view */
 	@media (max-width: 639px) {
