@@ -91,7 +91,22 @@
 									<span class="text-sm opacity-60 ml-2">{piece.composer}</span>
 								{/if}
 								{#if piece.source_pdf_url}
-									<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: #ADB5BD; margin-left: 6px;" title="Lähtefail olemas">&#x25A0; pdf</span>
+									<a
+									href={piece.source_pdf_url}
+									download
+									onclick={(e: MouseEvent) => e.stopPropagation()}
+									class="pdf-link"
+									title="Lae alla lähtefail"
+								>&#x25A0; algnoot</a>
+								{/if}
+								{#if piece.status === 'publitseeritud' && piece.pdf_url}
+									<a
+									href={piece.pdf_url}
+									download
+									onclick={(e: MouseEvent) => e.stopPropagation()}
+									class="pdf-link pdf-link-final"
+									title="Lae alla lõplik noot"
+								>&#x25A0; noot</a>
 								{/if}
 							</div>
 
@@ -165,5 +180,25 @@
 	.claim-btn:hover {
 		background: #C9A96E !important;
 		color: white !important;
+	}
+
+	.pdf-link {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		color: #ADB5BD;
+		margin-left: 6px;
+		text-decoration: none;
+	}
+
+	.pdf-link:hover {
+		color: #C9A96E;
+	}
+
+	.pdf-link-final {
+		color: #2D6A4F;
+	}
+
+	.pdf-link-final:hover {
+		color: #52B788;
 	}
 </style>
