@@ -28,6 +28,7 @@
 	let containerEl: HTMLDivElement | undefined = $state(undefined);
 	let generation = 0;
 	let nativeViewportWidth = $state(0); // unscaled page width from PDF
+	let containerHeight = $state(0); // track container resize for syncRatio re-trigger
 
 	// Track rendered pages to avoid re-rendering
 	const renderedPages = new Set<number>();
@@ -50,6 +51,8 @@
 		errorMsg = '';
 		pdfDoc = null;
 		totalPages = 0;
+		pageWidth = 0;
+		pageHeight = 0;
 		renderedPages.clear();
 		renderingPages.clear();
 
@@ -92,6 +95,7 @@
 		const el = containerEl;
 
 		const ro = new ResizeObserver(() => {
+			containerHeight = el.clientHeight;
 			if (nativeViewportWidth > 0) {
 				const newScale = calcFitScale(nativeViewportWidth, el.clientWidth - 16);
 				if (Math.abs(newScale - scale) > 0.01) {
@@ -156,16 +160,25 @@
 	}
 
 	// React to syncRatio changes — set scrollTop proportionally
+	// Re-triggers on: syncRatio change, new PDF loaded (pageHeight), container resize (containerHeight)
 	$effect(() => {
-		if (syncRatio == null || !containerEl) return;
+		if (syncRatio == null || !containerEl || totalPages === 0 || pageHeight === 0) return;
 		const r = syncRatio;
-		const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
-		if (maxScroll <= 0) return;
-		const targetTop = r * maxScroll;
-		if (Math.abs(containerEl.scrollTop - targetTop) > 2) {
-			ignoreNextScroll = true;
-			containerEl.scrollTop = targetTop;
-		}
+		const _ph = pageHeight; // track: re-trigger after new PDF dimensions are ready
+		const _ch = containerHeight; // track: re-trigger when container resizes (review panel appears/disappears)
+		// Double RAF: wait for DOM to fully stabilize after layout changes
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				if (!containerEl) return;
+				const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
+				if (maxScroll <= 0) return;
+				const targetTop = r * maxScroll;
+				if (Math.abs(containerEl.scrollTop - targetTop) > 2) {
+					ignoreNextScroll = true;
+					containerEl.scrollTop = targetTop;
+				}
+			});
+		});
 	});
 
 	// Page dimensions (from first page, applied to all)
