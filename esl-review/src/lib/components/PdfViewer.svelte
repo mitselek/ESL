@@ -10,6 +10,7 @@
 		onScroll = undefined,
 		active = undefined,
 		onActivate = undefined,
+		singlePage = false,
 	}: {
 		url: string;
 		height?: string;
@@ -17,6 +18,7 @@
 		onScroll?: ((ratio: number) => void) | undefined;
 		active?: boolean | undefined;
 		onActivate?: (() => void) | undefined;
+		singlePage?: boolean;
 	} = $props();
 
 	let pdfjsLib: typeof import('pdfjs-dist') | null = $state(null);
@@ -293,12 +295,39 @@
 	});
 
 	const pages = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
+
+	// Single-page mode
+	let currentPage = $state(1);
+
+	// Reset to page 1 when URL changes
+	$effect(() => {
+		if (url) currentPage = 1;
+	});
+
+	// Render the current page in single-page mode
+	$effect(() => {
+		if (!singlePage || !pdfDoc || !containerEl || scale <= 0) return;
+		const doc = pdfDoc;
+		const pg = currentPage;
+		const s = scale;
+
+		const wrapper = containerEl.querySelector<HTMLElement>(`[data-page="${pg}"]`);
+		const canvas = wrapper?.querySelector('canvas');
+		if (canvas) renderPage(doc, pg, canvas, s);
+	});
+
+	function prevPage() {
+		if (currentPage > 1) currentPage--;
+	}
+	function nextPage() {
+		if (currentPage < totalPages) currentPage++;
+	}
 </script>
 
 <div
 	bind:this={containerEl}
 	tabindex="0"
-	class="pdf-container"
+	class="pdf-container {singlePage ? 'single-page' : ''}"
 	style="height: {height};"
 	onscroll={handleScroll}
 	onkeydown={handleKeydown}
@@ -313,6 +342,20 @@
 		<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #E76F51; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">
 			{errorMsg}
 		</div>
+	{:else if singlePage}
+		<div
+			data-page={currentPage}
+			style="width: {pageWidth}px; height: {pageHeight}px; margin: 0 auto; background: white;"
+		>
+			<canvas></canvas>
+		</div>
+		{#if totalPages > 1}
+			<div class="page-nav">
+				<button onclick={prevPage} disabled={currentPage <= 1}>&lsaquo;</button>
+				<span class="page-indicator">{currentPage}/{totalPages}</span>
+				<button onclick={nextPage} disabled={currentPage >= totalPages}>&rsaquo;</button>
+			</div>
+		{/if}
 	{:else}
 		{#each pages as pageNum}
 			<div
@@ -334,7 +377,40 @@
 		position: relative;
 		outline: none;
 	}
+	.pdf-container.single-page {
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
 	.pdf-container:focus-visible {
 		border-color: #C9A96E;
+	}
+	.page-nav {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 8px;
+		padding: 4px 0;
+	}
+	.page-nav button {
+		background: none;
+		border: none;
+		font-size: 1.1rem;
+		color: #888;
+		cursor: pointer;
+		padding: 0 6px;
+		line-height: 1;
+	}
+	.page-nav button:hover:not(:disabled) {
+		color: #2C2416;
+	}
+	.page-nav button:disabled {
+		opacity: 0.3;
+		cursor: default;
+	}
+	.page-indicator {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.65rem;
+		color: #888;
 	}
 </style>

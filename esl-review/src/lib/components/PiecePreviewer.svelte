@@ -182,7 +182,7 @@
 			: hoveredPiece.source_pdf_url}
 		{#if previewUrl}
 			<div class="thumbnail">
-				<PdfViewer url={previewUrl} height="100%" />
+				<PdfViewer url={previewUrl} height="100%" singlePage />
 			</div>
 		{/if}
 
