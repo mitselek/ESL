@@ -3,7 +3,8 @@
 	import PiecePreviewer from '$lib/components/PiecePreviewer.svelte';
 
 	let { data } = $props();
-	const pieces: Piece[] = $derived(data.pieces);
+	let pieces: Piece[] = $state(data.pieces);
+	$effect(() => { pieces = data.pieces; });
 	const user = $derived(data.user);
 	const reviewProblems = $derived(data.reviewProblems ?? {});
 
@@ -147,7 +148,12 @@
 
 	<!-- Preview paneel -->
 	<div class="preview-panel">
-		<PiecePreviewer {hoveredPiece} problems={hoveredProblems} statusColors={STATUS_COLORS} />
+		<PiecePreviewer {hoveredPiece} problems={hoveredProblems} statusColors={STATUS_COLORS}
+			onComposerUpdate={(pieceId, composer) => {
+				const p = pieces.find(p => p.id === pieceId);
+				if (p) p.composer = composer;
+			}}
+		/>
 	</div>
 </div>
 

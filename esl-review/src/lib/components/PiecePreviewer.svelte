@@ -6,10 +6,12 @@
 		hoveredPiece = null,
 		problems = [],
 		statusColors = {},
+		onComposerUpdate = undefined,
 	}: {
 		hoveredPiece: Piece | null;
 		problems: { param_name: string; verdict: string; remarks: string | null; voice_name: string | null }[];
 		statusColors: Record<string, string>;
+		onComposerUpdate?: ((pieceId: string, composer: string) => void) | undefined;
 	} = $props();
 
 	const STATES = [
@@ -79,6 +81,18 @@
 
 	// Instant tooltip (no browser delay)
 	let tipText = $state('');
+
+	// Composer editing
+	let editingComposer = $state(false);
+
+	// Reset editing state when piece changes
+	$effect(() => {
+		if (hoveredPiece) editingComposer = false;
+	});
+
+	function autofocus(node: HTMLElement) {
+		node.focus();
+	}
 
 	// Actor name for current state
 	function stateActor(i: number): string | null {
@@ -188,8 +202,52 @@
 
 		<div class="piece-info">
 			<div class="piece-title">{hoveredPiece.title}</div>
-			{#if hoveredPiece.composer}
-				<div class="piece-composer">{hoveredPiece.composer}</div>
+			{#if editingComposer}
+				<input
+					class="composer-input"
+					value={hoveredPiece.composer ?? ''}
+					placeholder="Helilooja?"
+					onblur={async (e) => {
+						const val = (e.target as HTMLInputElement).value.trim();
+						editingComposer = false;
+						if (!val || !hoveredPiece || val === hoveredPiece.composer) return;
+						const res = await fetch(`/api/pieces/${hoveredPiece.id}`, {
+							method: 'PATCH',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ composer: val }),
+						});
+						if (res.ok) onComposerUpdate?.(hoveredPiece.id, val);
+					}}
+					onkeydown={(e) => {
+						if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+						if (e.key === 'Escape') { editingComposer = false; }
+					}}
+					use:autofocus
+				/>
+			{:else if hoveredPiece.composer}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="piece-composer editable" onclick={() => { editingComposer = true; }}>
+					{hoveredPiece.composer}
+				</div>
+			{:else}
+				<input
+					class="composer-input"
+					placeholder="Helilooja?"
+					onblur={async (e) => {
+						const val = (e.target as HTMLInputElement).value.trim();
+						if (!val || !hoveredPiece) return;
+						const res = await fetch(`/api/pieces/${hoveredPiece.id}`, {
+							method: 'PATCH',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ composer: val }),
+						});
+						if (res.ok) onComposerUpdate?.(hoveredPiece.id, val);
+					}}
+					onkeydown={(e) => {
+						if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+					}}
+				/>
 			{/if}
 			{#if hoveredPiece.typesetter}
 				<div class="piece-meta">Graafik: {hoveredPiece.typesetter.name ?? '—'}</div>
@@ -273,6 +331,28 @@
 	.piece-composer {
 		color: #888;
 		font-size: 0.85rem;
+	}
+
+	.piece-composer.editable {
+		cursor: pointer;
+	}
+	.piece-composer.editable:hover {
+		color: #C9A96E;
+	}
+
+	.composer-input {
+		font-size: 0.85rem;
+		color: #2C2416;
+		background: #fff;
+		border: 1px solid #E8DDD0;
+		border-radius: 4px;
+		padding: 2px 6px;
+		width: 100%;
+		outline: none;
+		font-family: inherit;
+	}
+	.composer-input:focus {
+		border-color: #C9A96E;
 	}
 
 	.piece-meta {
