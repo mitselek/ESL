@@ -166,18 +166,15 @@
 		const r = syncRatio;
 		const _ph = pageHeight; // track: re-trigger after new PDF dimensions are ready
 		const _ch = containerHeight; // track: re-trigger when container resizes (review panel appears/disappears)
-		// Double RAF: wait for DOM to fully stabilize after layout changes
 		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				if (!containerEl) return;
-				const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
-				if (maxScroll <= 0) return;
-				const targetTop = r * maxScroll;
-				if (Math.abs(containerEl.scrollTop - targetTop) > 2) {
-					ignoreNextScroll = true;
-					containerEl.scrollTop = targetTop;
-				}
-			});
+			if (!containerEl) return;
+			const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
+			if (maxScroll <= 0) return;
+			const targetTop = r * maxScroll;
+			if (Math.abs(containerEl.scrollTop - targetTop) > 2) {
+				ignoreNextScroll = true;
+				containerEl.scrollTop = targetTop;
+			}
 		});
 	});
 
