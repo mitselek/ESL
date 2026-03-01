@@ -177,9 +177,12 @@
 
 	<!-- Hovered piece details -->
 	{#if hoveredPiece}
-		{#if hoveredPiece.source_pdf_url}
+		{@const previewUrl = hoveredPiece.status === 'publitseeritud' && hoveredPiece.pdf_url
+			? hoveredPiece.pdf_url
+			: hoveredPiece.source_pdf_url}
+		{#if previewUrl}
 			<div class="thumbnail">
-				<PdfViewer url={hoveredPiece.source_pdf_url} height="200px" />
+				<PdfViewer url={previewUrl} height="200px" />
 			</div>
 		{/if}
 
