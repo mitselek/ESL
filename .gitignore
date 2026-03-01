@@ -1,2 +1,6 @@
 # Kirjavahetus (privaatne)
 **/kirjavahetus/
+
+# Wrangler ja temp
+.wrangler/
+**/temp/
