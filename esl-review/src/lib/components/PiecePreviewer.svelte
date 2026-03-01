@@ -96,7 +96,9 @@
 
 <div class="previewer">
 	<!-- SVG State Machine -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<svg width={SVG_W + SVG_PAD_L} height={SVG_H} viewBox="{-SVG_PAD_L} 0 {SVG_W + SVG_PAD_L} {SVG_H}"
+		role="img"
 		onmouseleave={() => { tipText = ''; }}
 	>
 		<!-- Visible transition lines -->
@@ -122,18 +124,22 @@
 		<!-- Transition hover areas (wide invisible lines, behind state groups) -->
 		{#each STATES as _, i}
 			{#if i < STATES.length - 1}
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<line
 					x1={CX} y1={circleY(i) + R}
 					x2={CX} y2={circleY(i + 1) - R}
 					stroke="transparent"
 					stroke-width="30"
+					role="presentation"
 					onmouseenter={() => { tipText = TRANSITION_TIPS[i]; }}
 				/>
 			{/if}
 		{/each}
 
 		<!-- Arc hover area -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<path d={arcPath} fill="none" stroke="transparent" stroke-width="30"
+			role="presentation"
 			onmouseenter={() => { tipText = 'Graafik laeb parandatud versiooni, noot läheb uuesti korrektuuri'; }}
 		/>
 
@@ -141,7 +147,8 @@
 		{#each STATES as state, i}
 			{@const cy = circleY(i)}
 			{@const actor = stateActor(i)}
-			<g onmouseenter={() => { tipText = state.tip; }}>
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<g role="presentation" onmouseenter={() => { tipText = state.tip; }}>
 				<!-- Invisible hover rect spanning circle + text -->
 				<rect x={CX - R - 2} y={cy - 10} width={SVG_W - CX + R + 2} height={20}
 					fill="transparent"
