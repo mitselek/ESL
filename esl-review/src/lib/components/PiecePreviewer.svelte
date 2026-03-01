@@ -182,7 +182,7 @@
 			: hoveredPiece.source_pdf_url}
 		{#if previewUrl}
 			<div class="thumbnail">
-				<PdfViewer url={previewUrl} height="200px" />
+				<PdfViewer url={previewUrl} height="100%" />
 			</div>
 		{/if}
 
@@ -257,6 +257,8 @@
 		border: 1px solid #E8DDD0;
 		border-radius: 4px;
 		overflow: hidden;
+		aspect-ratio: 1 / 1.4142;
+		width: 100%;
 	}
 
 	.piece-info {
