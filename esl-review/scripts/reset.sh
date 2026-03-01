@@ -16,8 +16,10 @@ for f in source-pdfs/*.pdf; do
 done
 
 echo ""
-echo "=== 3. p-07 review seed ==="
+echo "=== 3. Review seedid ==="
 npx wrangler d1 execute esl-review --remote --file=migrations/seed-review-p-07.sql
+npx wrangler d1 execute esl-review --remote --file=migrations/seed-review-p-08.sql
+npx wrangler d1 execute esl-review --remote --file=migrations/seed-review-p-11.sql
 
 echo ""
 echo "=== Valmis! ==="

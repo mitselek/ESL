@@ -207,8 +207,7 @@
 
 	// --- 3. Dual split-view (korrektuuris / paranduses) ---
 	const hasDualPdf = $derived(
-		!!piece.pdf_url && !!piece.source_pdf_url &&
-		(!!activeReviewId || ['kontrollitud', 'paranduses'].includes(piece.status))
+		!!piece.source_pdf_url && redactions.length > 0
 	);
 	let swapped = $state(false);
 

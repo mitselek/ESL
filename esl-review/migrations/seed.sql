@@ -52,7 +52,7 @@ INSERT INTO pieces (id, title, composer, section, status) VALUES
   ('p-19', 'Mu isamaa',                     'Gustav Ernesaks',           'IV', 'teos'),
   ('p-20', 'Siin meie seltsis selle aasta', 'Veljo Tormis',              'IV', 'teos');
 
--- param_templates: per_voice (16 tk)
+-- param_templates: per_voice (17 tk)
 INSERT INTO param_templates (id, name, scope, sort_order, is_default) VALUES
   ('t-pv01', 'Noodikõrgused',                           'per_voice', 1,  1),
   ('t-pv02', 'Pausid',                                  'per_voice', 2,  1),
@@ -69,9 +69,10 @@ INSERT INTO param_templates (id, name, scope, sort_order, is_default) VALUES
   ('t-pv13', 'Kordusmärgid sõnadega',                   'per_voice', 13, 1),
   ('t-pv14', 'Vormiosade tähised',                      'per_voice', 14, 1),
   ('t-pv15', 'Dünaamika tähised',                       'per_voice', 15, 1),
-  ('t-pv16', 'Dünaamika sõnadega',                      'per_voice', 16, 1);
+  ('t-pv16', 'Dünaamika sõnadega',                      'per_voice', 16, 1),
+  ('t-pv17', 'Muud märgid',                             'per_voice', 17, 1);
 
--- param_templates: whole_piece (7 tk)
+-- param_templates: whole_piece (9 tk)
 INSERT INTO param_templates (id, name, scope, sort_order, is_default) VALUES
   ('t-wp01', 'Pealkiri',                                'whole_piece', 1, 1),
   ('t-wp02', 'Helilooja',                               'whole_piece', 2, 1),
@@ -79,7 +80,9 @@ INSERT INTO param_templates (id, name, scope, sort_order, is_default) VALUES
   ('t-wp04', 'Tempo tähis loo alguses',                 'whole_piece', 4, 1),
   ('t-wp05', 'Tempo, dünaamika jm tähised loo sees',    'whole_piece', 5, 1),
   ('t-wp06', 'Täpsustavad tekstid loo sees',            'whole_piece', 6, 1),
-  ('t-wp07', 'Täpsustavad tekstid noodi all',           'whole_piece', 7, 1);
+  ('t-wp07', 'Täpsustavad tekstid noodi all',           'whole_piece', 7, 1),
+  ('t-wp08', 'Helistik',                                'whole_piece', 8, 1),
+  ('t-wp09', 'Taktimõõt',                               'whole_piece', 9, 1);
 
 -- piece_params: igale noodile kõik param_templates
 INSERT INTO piece_params (id, piece_id, template_id, sort_order, is_active)

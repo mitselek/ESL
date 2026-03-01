@@ -21,7 +21,8 @@ UPDATE pieces SET
   typesetter_id = 'u-mihkel',
   reviewer_id = 'u-liisa',
   pdf_url = '/pdf/millal-saame-sinna-maale-v2.pdf',
-  status = 'korrektuuris'
+  status = 'publitseeritud',
+  pageflow_matched = 1
 WHERE id = 'p-07';
 
 -- Review (seotud v1 redaktsiooniga, completed)
@@ -140,6 +141,3 @@ INSERT INTO review_entries (id, review_id, param_id, voice_part_id, verdict, rem
   VALUES ('re-p-07-mihkel-052', 'rev-p-07-mihkel', 'p-07-t-wp04', NULL, 'õige', NULL);
 INSERT INTO review_entries (id, review_id, param_id, voice_part_id, verdict, remarks)
   VALUES ('re-p-07-mihkel-053', 'rev-p-07-mihkel', 'p-07-t-wp05', NULL, 'õige', NULL);
-
--- Uuenda staatust
-UPDATE pieces SET status = 'korrektuuris', reviewer_id = 'u-mihkel' WHERE id = 'p-07';
