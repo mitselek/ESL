@@ -36,6 +36,23 @@
 		hoveredPiece ? (reviewProblems[hoveredPiece.id] ?? []) : []
 	);
 
+	// Lazy neighbour prefetch — warm browser cache for adjacent pieces' PDFs
+	const prefetched = new Set<string>();
+	$effect(() => {
+		if (!hoveredPiece) return;
+		const idx = pieces.indexOf(hoveredPiece);
+		if (idx < 0) return;
+		for (const offset of [-1, 1]) {
+			const neighbour = pieces[idx + offset];
+			if (!neighbour) continue;
+			const url = neighbour.source_pdf_url;
+			if (url && !prefetched.has(url)) {
+				prefetched.add(url);
+				fetch(url).catch(() => {});
+			}
+		}
+	});
+
 	async function claim(pieceId: string) {
 		const res = await fetch(`/api/pieces/${pieceId}/claim`, { method: 'PUT' });
 		if (res.ok) window.location.reload();
