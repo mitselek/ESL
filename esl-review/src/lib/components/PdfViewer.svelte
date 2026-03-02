@@ -305,15 +305,21 @@
 	});
 
 	// Render the current page in single-page mode
+	let singlePageRenderGen = 0;
 	$effect(() => {
-		if (!singlePage || !pdfDoc || !containerEl || scale <= 0) return;
+		if (!singlePage || !pdfDoc || !containerEl || scale <= 0 || pageHeight <= 0) return;
 		const doc = pdfDoc;
 		const pg = currentPage;
 		const s = scale;
+		const gen = ++singlePageRenderGen;
 
-		const wrapper = containerEl.querySelector<HTMLElement>(`[data-page="${pg}"]`);
-		const canvas = wrapper?.querySelector('canvas');
-		if (canvas) renderPage(doc, pg, canvas, s);
+		// Wait for DOM to settle, then render
+		requestAnimationFrame(() => {
+			if (gen !== singlePageRenderGen) return;
+			const wrapper = containerEl?.querySelector<HTMLElement>(`[data-page="${pg}"]`);
+			const canvas = wrapper?.querySelector('canvas');
+			if (canvas) renderPage(doc, pg, canvas, s);
+		});
 	});
 
 	function prevPage() {
