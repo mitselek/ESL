@@ -9,6 +9,10 @@
 	--selection: #E8D5B7;
 }
 
+html {
+	scrollbar-gutter: stable;
+}
+
 body {
 	background-color: var(--bg);
 	color: var(--text);

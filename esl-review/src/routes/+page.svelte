@@ -175,6 +175,8 @@
 		align-self: flex-start;
 		max-height: calc(100vh - 8rem);
 		overflow-y: auto;
+		overflow-x: hidden;
+		scrollbar-gutter: stable;
 	}
 
 	@media (max-width: 640px) {
