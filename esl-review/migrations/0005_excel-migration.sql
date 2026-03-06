@@ -6,7 +6,7 @@
 -- 1. param_templates: add Võtmed, change 5 templates to whole_piece scope
 -- =============================================================================
 
-INSERT INTO param_templates (id, name, scope, sort_order, is_default)
+INSERT OR IGNORE INTO param_templates (id, name, scope, sort_order, is_default)
 VALUES ('t-wp10', 'Võtmed', 'whole_piece', 10, 1);
 
 UPDATE param_templates SET scope = 'whole_piece', sort_order = 11 WHERE id = 't-pv10';
@@ -30,7 +30,7 @@ WHERE NOT EXISTS (
 -- 3. voice_parts: add S/A/T/B for all pieces missing them
 -- =============================================================================
 
-INSERT INTO voice_parts (id, piece_id, name, sort_order) VALUES
+INSERT OR IGNORE INTO voice_parts (id, piece_id, name, sort_order) VALUES
 ('vp-p-01-s', 'p-01', 'S', 1), ('vp-p-01-a', 'p-01', 'A', 2), ('vp-p-01-t', 'p-01', 'T', 3), ('vp-p-01-b', 'p-01', 'B', 4),
 ('vp-p-02-s', 'p-02', 'S', 1), ('vp-p-02-a', 'p-02', 'A', 2), ('vp-p-02-t', 'p-02', 'T', 3), ('vp-p-02-b', 'p-02', 'B', 4),
 ('vp-p-03-s', 'p-03', 'S', 1), ('vp-p-03-a', 'p-03', 'A', 2), ('vp-p-03-t', 'p-03', 'T', 3), ('vp-p-03-b', 'p-03', 'B', 4),
