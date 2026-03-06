@@ -46,12 +46,21 @@ interface D1Db {
 	};
 }
 
+function parseRemarks(raw: string | null): unknown {
+	if (!raw || raw === 'null') return null;
+	try {
+		return JSON.parse(raw);
+	} catch {
+		return raw;
+	}
+}
+
 function parseEntries(rows: ReviewEntryRow[]): ReviewEntry[] {
 	return rows.map((row) => ({
 		id: row.id,
 		param_id: row.param_id,
 		voice_part_id: row.voice_part_id,
-		remarks: JSON.parse(row.remarks ?? 'null'),
+		remarks: parseRemarks(row.remarks),
 		verdict: row.verdict
 	}));
 }

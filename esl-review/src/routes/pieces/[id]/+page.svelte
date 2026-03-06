@@ -43,7 +43,7 @@
 			const key = `${e.param_id}:${e.voice_part_id ?? 'whole'}`;
 			const remarks = Array.isArray(e.remarks)
 				? (e.remarks as { text: string }[]).map(r => r.text).join('\n')
-				: '';
+				: (typeof e.remarks === 'string' ? e.remarks : '');
 			map[key] = { verdict: e.verdict as Verdict, remarks };
 		}
 		entries = map;
