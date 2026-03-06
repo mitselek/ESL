@@ -17,12 +17,17 @@ interface ReviewProblemRow {
 }
 
 function parseRemarks(raw: string | null): string | null {
-	const parsed = JSON.parse(raw ?? 'null');
-	if (Array.isArray(parsed)) {
-		const texts = parsed.map((r: { text: string }) => r.text).filter(Boolean);
-		return texts.length > 0 ? texts.join('; ') : null;
+	if (!raw || raw === 'null') return null;
+	try {
+		const parsed = JSON.parse(raw);
+		if (Array.isArray(parsed)) {
+			const texts = parsed.map((r: { text: string }) => r.text).filter(Boolean);
+			return texts.length > 0 ? texts.join('; ') : null;
+		}
+		return parsed ? String(parsed) : null;
+	} catch {
+		return raw;
 	}
-	return parsed ? String(parsed) : null;
 }
 
 export const load: PageServerLoad = async ({ platform, locals }) => {

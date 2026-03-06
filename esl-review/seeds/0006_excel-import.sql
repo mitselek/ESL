@@ -159,7 +159,9 @@ Takt 13 "kus aga" sõnade vahe liiga väike, teksti halb lugeda.'),
 ('re-p-07-t-wp02', 'rev-p-07-mihkel', 'p-07-t-wp02', NULL, 'ettepanek', 'Puudu. Originaalnoodis ka ei ole, aga kuna tegemist on eraldi noodiga, mitte terve kogumikuga, siis võiks olla kirjas ka helilooja nimi'),
 ('re-p-07-t-wp03', 'rev-p-07-mihkel', 'p-07-t-wp03', NULL, 'õige', 'olemas (Tõstamaa)'),
 ('re-p-07-t-wp04', 'rev-p-07-mihkel', 'p-07-t-wp04', NULL, 'õige', NULL),
-('re-p-07-t-wp05', 'rev-p-07-mihkel', 'p-07-t-wp05', NULL, 'õige', NULL);DELETE FROM review_entries WHERE review_id = 'rev-p-08-liisa';
+('re-p-07-t-wp05', 'rev-p-07-mihkel', 'p-07-t-wp05', NULL, 'õige', NULL);
+
+DELETE FROM review_entries WHERE review_id = 'rev-p-08-liisa';
 INSERT INTO review_entries (id, review_id, param_id, voice_part_id, verdict, remarks) VALUES
 ('re-p-08-t-pv01-s', 'rev-p-08-liisa', 'p-08-t-pv01', 'vp-p-08-s', 'viga', 'Viga: takt 13, 1.löögi viimane 16-ndik on hetkel si-noot. Õige on  do-noot (c2).'),
 ('re-p-08-t-pv01-a', 'rev-p-08-liisa', 'p-08-t-pv01', 'vp-p-08-a', 'õige', NULL),
@@ -327,7 +329,9 @@ Ettepanek: takt 11, originaali järgi on siin punkt, aga peale värsirida tule v
 ('re-p-10-t-wp09', 'f7859b2b-eac3-46ba-a768-35b8c4424fc8', 'p-10-t-wp09', NULL, 'õige', NULL),
 ('re-p-10-t-pv10', 'f7859b2b-eac3-46ba-a768-35b8c4424fc8', 'p-10-t-pv10', NULL, 'ettepanek', 'Ettepanek: S ja A võiksid olla noteeritud ühele reale, sest siis saab nooti ka harmooniliselt lugeda. Hetkel on S raske jälgida seda, et nende ühe ja sama mel alla tekib kaks erinevat harmooniat (kord üks, siis teine).'),
 ('re-p-10-t-pv12', 'f7859b2b-eac3-46ba-a768-35b8c4424fc8', 'p-10-t-pv12', NULL, 'õige', 'õige, olemas'),
-('re-p-10-t-wp04', 'f7859b2b-eac3-46ba-a768-35b8c4424fc8', 'p-10-t-wp04', NULL, 'õige', NULL);DELETE FROM review_entries WHERE review_id = 'rev-p-11-liisa';
+('re-p-10-t-wp04', 'f7859b2b-eac3-46ba-a768-35b8c4424fc8', 'p-10-t-wp04', NULL, 'õige', NULL);
+
+DELETE FROM review_entries WHERE review_id = 'rev-p-11-liisa';
 INSERT INTO review_entries (id, review_id, param_id, voice_part_id, verdict, remarks) VALUES
 ('re-p-11-t-pv01-s', 'rev-p-11-liisa', 'p-11-t-pv01', 'vp-p-11-s', 'õige', NULL),
 ('re-p-11-t-pv01-a', 'rev-p-11-liisa', 'p-11-t-pv01', 'vp-p-11-a', 'õige', NULL),
