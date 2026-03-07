@@ -24,7 +24,7 @@
 | 1   | Millal meie sinna saame     | ✅ Kontrollitud |
 | 2   | Sööge langud (Kihnu)        | ✅ Kontrollitud |
 | 3   | Petis peiu                  | ✅ Kontrollitud |
-| 4   | Palju veini                 | ✅ Kontrollitud |
+| 4   | Palju veimi                 | ✅ Kontrollitud |
 | 5   | Ei või õnneta elada (Kihnu) | ✅ Kontrollitud |
 | 6   | Kohus koju minna            | ✅ Kontrollitud |
 

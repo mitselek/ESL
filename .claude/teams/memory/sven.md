@@ -65,6 +65,24 @@ pnpm remove @sveltejs/adapter-auto
 - PUT /api/reviews/[id] — `review-complete.ts` (sama fail kui GET)
 - PUT /api/reviews/[id]/entries — `review-entries.ts` + D1 batch
 
+## DB migratsioon (2026-03-06)
+
+[MUSTER] Remarks formaadi erinevus: vanad review_entries kasutavad JSON massiivi `[{"text":"..."}]`, Exceli import kasutab plain string. `parseRemarks()` peab käsitlema mõlemat (try/catch fallback). Parandatud: `+page.server.ts`, `review-get.ts`, `+page.svelte`.
+
+[MUSTER] Seed-failid on `seeds/` kaustas (prefikseeritud järjekorranumbriga 0001-0006), migratsioonid `migrations/` kaustas (ainult skeemimuudatused). DML-migratsioonid kuuluvad seeds'i.
+
+[MUSTER] `d1_migrations` tabelis on ainult skeemimigratsioonid (0001-0004). Käsitsi rakendatud DML-id märgitakse mitte.
+
+[MUSTER] piece_params ID formaat: `p-XX-t-pvYY` / `p-XX-t-wpYY`, AGA t-wp10 kasutab `pp-p-XX-t-wp10` (INSERT SELECT genereeris erineva prefiksi).
+
+[MUSTER] p-12 voice_parts omavad UUID-stiilis ID-sid (mitte `vp-p-12-x` formaati) — varasem seed lõi need nii.
+
+[MUSTER] Import skripti `scripts/import-excel.ts` väljund ei lisa trailing newline — `cat` liitmisel tekivad `');DELETE` vead. Kontrolli alati `grep ");DELETE"`.
+
+[MUSTER] Deploy käsitsi: `pnpm build && npx wrangler pages deploy .svelte-kit/cloudflare --project-name esl-review`
+
+[MUSTER] Drive kopeerimine: `rclone copy fail "mitselek:2026 Lihula laulupäev - NOODID" --drive-shared-with-me`
+
 ## Avatud küsimused
 
 [EDASI_LÜKATUD] 2026-02-27 — `wrangler.toml` database_id on placeholder. Kasutaja peab looma D1 andmebaasi CF dashboardis ja asendama.

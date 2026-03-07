@@ -4,7 +4,7 @@
 
 ### Andmemudel — 7 tabelit
 
-users (id, email, name, picture — ILMA globaalse rollita), pieces (+ typesetter_id FK, + reviewer_id FK, pdf_url=viimane versioon), voice_parts, param_templates, piece_params, reviews (pdf_url=konkreetne revision, ILMA share_token'ita), review_entries (remarks JSON).
+users (id, email, name, picture — ILMA globaalse rollita), pieces (+ typesetter_id FK, + reviewer_id FK, pdf_url=viimane versioon), voice_parts, param_templates, piece_params, reviews (pdf_url=konkreetne revision, ILMA share_token'ita), review_entries (remarks TEXT — nii JSON kui plain string).
 
 ### Rollimudel — noodi-põhine
 
@@ -18,41 +18,57 @@ users (id, email, name, picture — ILMA globaalse rollita), pieces (+ typesette
 
 `teos → lähtefail → küljendus → korrektuur → kontrollitud → parandatud → kinnitus → publitseeritud`
 Loop: `kinnitus → korrektuur` (ei kinnita). Otsetee: `kontrollitud → kinnitus` (0 viga).
-Iga ring = uus review. `kontrollitud` lisatud, sest korrektuur→parandatud jättis vahele "tagasiside olemas, aga pole veel parandatud" faasi.
 
 ### Auth ja juurdepääs
 
-- Cloudflare Access + Google IDP (login provider)
-- Cf Access: bypass kogu äpp (ei blokeeri)
+- Cloudflare Access + Google IDP — CF Access blokeerib unauthenticated (302 → login)
 - Auth kontroll APP-TASEMEL: GET = alati lubatud, POST/PUT = nõuab JWT-d
 - Kogu äpp on avalikult loetav (dashboard, noodid, ülelugemised — read-only)
-- Auth vajalik ainult kirjutamiseks
 
-### API pind (kehtiv)
+### DB seis pärast migratsiooni (2026-03-06)
 
-```text
-GET  /api/me                          — kasutaja andmed (null kui pole auth'd)
-GET  /api/pieces                      — dashboard (avalik)
-GET  /api/pieces/[id]                 — detailvaade (avalik)
-PUT  /api/pieces/[id]/claim           — typesetter'iks hakkamine (auth)
-PUT  /api/pieces/[id]/assign-reviewer — korrektori määramine (auth)
-PUT  /api/pieces/[id]/status          — staatuse muutmine (auth)
-GET  /api/users                       — kasutajate nimekiri (auth nõutav — KINNITATUD)
-POST /api/reviews                     — uus ülelugemine (auth)
-GET  /api/reviews/[id]                — review detailid (avalik)
-PUT  /api/reviews/[id]                — review staatuse uuendamine (auth)
-PUT  /api/reviews/[id]/entries        — bulk upsert / autosave (auth)
-```
+- **27 param_templates**: 12 per_voice + 15 whole_piece (t-wp10 Võtmed lisatud, t-pv10..14 scope muudetud)
+- **540 piece_params**: 20 nooti * 27 parameetrit
+- **85 voice_parts**: 20 nooti (p-05/06: 6, p-11: 5, ülejäänud: 4)
+- **310 review_entries**: 8 noodi peale (214 õige, 49 viga, 47 ettepanek)
+- **FK integrity**: PRAGMA foreign_keys=ON, NO CASCADE, 0 vigast viitet
+- **d1_migrations tabel on TÜHI** — kõik rakendatud `wrangler d1 execute` kaudu
 
-### Komponentide muster
+---
 
-Üks URL, mitu olekut. `/pieces/[id]` vaade sõltub auth'ist:
+## DB migratsioon 2026-03-06 — LÕPETATUD
 
-- user=null → readonly (PDF + tagasiside tabel)
-- user=typesetter → staatuse muutmine, korrektori määramine
-- user=reviewer → tagasiside vorm (interaktiivne)
+### Sammud (kõik GREEN)
 
-Komponentidel `readonly` prop, mis sõltub kasutaja kontekstist, mitte route'ist.
+1. param_templates: INSERT t-wp10 + UPDATE 5 scope muutust
+2. piece_params (t-wp10) + voice_parts (14 nooti S/A/T/B)
+3. Excel import (7 nooti DELETE+INSERT) + p-05 scope-fix
+
+### Leitud ja lahendatud probleemid
+
+- [GOTCHA] t-wp10 oli juba enne migratsiooni olemas (backup näitas) — issue #6 arvas, et uus
+- [GOTCHA] p-11 soolo voice_part oli juba olemas — duplikaadikontroll vajalik
+- [GOTCHA] p-05 scope-affected entries vajasid eraldi käsitlust (samm 4 ei puudutanud p-05)
+- [GOTCHA] Issue #8 (scope migration) oli ebavajalik — samm 4 asendas kogu sisu
+
+### [HOIATUS] Remarks formaadi muutus — 500 viga!
+
+Excel import kirjutas remarks'd **plain string**'ina, mitte JSON-massiivina `[{"text":"..."}]`.
+Kaks kohta crashivad `JSON.parse`'iga:
+
+1. `src/routes/+page.server.ts:20` — `parseRemarks()` dashboard
+2. `src/lib/server/api/review-get.ts:54` — `parseEntries()` detail API
+
+Üks kliendipoolne koht kaotab andmeid (ei crashi):
+3. `src/routes/pieces/[id]/+page.svelte:44-46` — fallback `''` plain stringile
+
+Fix: try/catch JSON.parse, fallback raw stringile.
+
+### [HOIATUS] 0005_excel-migration.sql — EI OLE idempotentne
+
+- Sektsioon 1 (param_templates) ja 3 (voice_parts) kasutavad puhast INSERT'd → PK duplikaadiviga
+- Fix: `INSERT OR IGNORE`
+- Sektsioon 5 `');DELETE` samal real — kosmeetiline, aga habras
 
 ---
 
@@ -62,45 +78,21 @@ Komponentidel `readonly` prop, mis sõltub kasutaja kontekstist, mitte route'ist
 
 1. **Eksport → v2.** CSV/XLSX pole v1 prioriteet.
 2. **Google Auth → v1.** Cloudflare Access + Google IDP.
-3. **State machine:** 8 staatust + loop + otsetee. `kontrollitud` lisatud korrektuur ja parandatud vahele.
+3. **State machine:** 8 staatust + loop + otsetee.
 4. **Rollimudel:** noodi-põhine (asendas globaalset admin/reviewer).
 5. **2 FK-d pieces tabelis** (asendas eraldi piece_assignments tabelit). YAGNI.
-6. **Remarks JSON:** `review_entries.remarks TEXT` — `[{"bars":"5-8","text":"..."}]`.
+6. **Remarks:** `review_entries.remarks TEXT` — nüüd mõlemad formaadid (JSON massiiv + plain string).
 7. **Share token KAOB.** Avalik read-only äpp asendab jagatud linke.
-8. **App-tasemel auth kontroll** (mitte Cf Access reeglid). Lihtsam konfig, testidega mockitav.
-9. **PDF revisionid:** `reviews.pdf_url` = konkreetne PDF versioon, `pieces.pdf_url` = viimane. Review = revision, eraldi tabelit pole vaja.
+8. **App-tasemel auth kontroll.**
+9. **PDF revisionid:** `reviews.pdf_url` = konkreetne PDF versioon.
 
-### REQUIREMENTS.md review — avatud leitud (parandamata)
-
-1. otsused.md: aegunud staatuse nimed "ülelugemises"→"parandused esitatud" (peaks olema korrektuur→parandatud)
-2. otsused.md: ekspordi viide süvavaate kirjelduses
-3. REQUIREMENTS.md: automaatse ülemineku reegel puudub (review completed → korrektuur→parandatud)
-4. REQUIREMENTS.md: state reegli sõnastus (kinnitus→publitseeritud/korrektuur, mitte parandatud→kinnitus)
-
-### CSV analüüsi mustrid (stabiilsed)
-
-- [MUSTER] CSV: per-voice (S/A/T/B) + whole-piece sektsioonid, 16+7 parameetrit
-- [MUSTER] Verdict: "õige"/"olemas"=ok, "Ettepanek:..."=suggestion, "Vead:..."=error, "-"=na
-- [MUSTER] Dashboard prototüüp: Crimson Pro + JetBrains Mono, soojad toonid (#FAF6F0, #C9A96E)
-
-### Implementatsioon — VALMIS (2026-02-27)
-
-Kõik 10 endpointi implementeeritud, üle vaadatud, 107/107 testi rohelised.
-
-**Süsteemsed YELLOW-d (lahendamata, ei blokeeri v1):**
+### Süsteemsed YELLOW-d (lahendamata)
 
 - `request.json()` ilma try/catch-ita kõigis PUT endpointides → vigane body → 500
-- Array elementide valideerimine `review-entries` endpointis puudub → latentne andmekorruptsioon
-- `review-complete.ts` kaks eraldi `await` → pole atomaarne (v2: `db.batch()`)
+- Array elementide valideerimine `review-entries` endpointis puudub
+- `review-complete.ts` kaks eraldi `await` → pole atomaarne
 
-**Arhitektuurilised mustrid:**
+### Arhitektuurilised mustrid
 
 - `piece-status.ts` TRANSITIONS tabel — parim muster staatuste haldamiseks
 - `review-entries.ts` `db.batch()` — ainus atomaarne kirjutusoperatsioon
-- `GET /api/reviews/[id]` avalik (auth eemaldatud ülevaatuse käigus)
-
-### Avatud küsimused (2026-02-26 sessiooni lõpp)
-
-1. REQUIREMENTS.md review 4 leidu — tõenäoliselt parandatud team-lead'i poolt, aga pole kinnitatud
-2. `kontrollitud` staatus — REQUIREMENTS.md-s uuendatud (kontrollitud 2026-02-27)
-3. ~~`GET /api/users` — avalik või auth?~~ **LAHENDATUD 2026-02-27: auth nõutav.**
