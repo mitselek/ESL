@@ -1,90 +1,74 @@
 # Lihula Laulupäev 2026 - Kava ja Noodid
 
-**Kuupäev:** 23. mai 2026  
-**Kunstiline juht:** Reeda Kreen  
+**Kuupäev:** 23. mai 2026
+**Kunstiline juht:** Reeda Kreen
 **Google Drive:** https://drive.google.com/drive/folders/1VCB2-BCqak1usLHb9rFo3RtZ9HXRAvzX
 
 ---
 
-## Olemasolevad küljendused
+## I OSA
 
-### I OSA
+| #   | Laul                              | Helilooja/Allikas       | Noodi staatus   |
+| --- | --------------------------------- | ----------------------- | --------------- |
+| 1   | Laulu võim (13 lüürilist, I laul) | Tormis                  | ✅ Kontrollitud |
+| 2   | Koit                              |                         | Algnoot olemas  |
+| 3   | Sind surmani                      | Kunileid                | ✅ Kontrollitud |
+| 4   | Mis need ohjad                    | Saar                    | Algnoot olemas  |
+| 5   | Valgust                           | Uusberg (Noorte LP '23) | ✅ Kontrollitud |
+| 6   | Sa oled ainus                     | Ehala                   | ✅ Kontrollitud |
 
-| #   | Laul                 | Staatus                          |
-| --- | -------------------- | -------------------------------- |
-| 5   | Valgust (P. Uusberg) | Ülelugemises – ootan tagasisidet |
+## II OSA – Läänemaa ja saarte pulmalaulud
 
-### II OSA – Pulmalaulud
-
-| #   | Laul                        | Staatus                          |
-| --- | --------------------------- | -------------------------------- |
-| 1   | Millal meie sinna saame     | Valmis                           |
-| 2   | Sööge langud (Kihnu)        | Ülelugemises – ootan tagasisidet |
-| 3   | Petis peiu                  | Ülelugemises – ootan tagasisidet |
-| 4   | Palju veini                 | Ülelugemises – ootan tagasisidet |
-| 5   | Ei või õnneta elada (Kihnu) | Valmis                           |
-| 6   | Kohus koju minna            | Ülelugemises – ootan tagasisidet |
-
-### IV OSA
-
-| #   | Laul                                   | Staatus                          |
-| --- | -------------------------------------- | -------------------------------- |
-| 1   | Mu süda, ärka üles (Kreek)             | Ülelugemises – ootan tagasisidet |
-| 2   | Siin meie seltsis selle aasta (Tormis) | Ülelugemises – ootan tagasisidet |
+| #   | Laul                        | Noodi staatus   |
+| --- | --------------------------- | --------------- |
+| 1   | Millal meie sinna saame     | ✅ Kontrollitud |
+| 2   | Sööge langud (Kihnu)        | ✅ Kontrollitud |
+| 3   | Petis peiu                  | ✅ Kontrollitud |
+| 4   | Palju veini                 | ✅ Kontrollitud |
+| 5   | Ei või õnneta elada (Kihnu) | ✅ Kontrollitud |
+| 6   | Kohus koju minna            | ✅ Kontrollitud |
 
 **Märkused:**
 
 - Ei võta Lihula "Sööge langud" varianti - kasutame **Kihnu versiooni**
 - Pulmalaulude failist jäävad välja: "Sööge langud Lihula" ja "Mõrsja väljakutsumise hakatus"
 
----
+## III OSA
 
-## Järgmised sammud
+| #   | Laul              | Helilooja | Noodi staatus                  |
+| --- | ----------------- | --------- | ------------------------------ |
+| 1   | Ilus Maa (tervik) | Rannap    | Arangeeritakse, algnoot puudub |
 
-### Prioriteet 1: Pulmalaulud (TÄHTAEG 23.01 õhtu)
+## IV OSA
 
-1. **Küljendada pulmalaulud** üle (skaneeringud olemas):
-   - ~~Millal meie sinna saame~~ (valmis)
-   - ~~Sööge langud (Kihnu)~~ (ülelugemises)
-   - ~~Petis peiu~~ (ülelugemises)
-   - ~~Palju veini~~ (ülelugemises)
-   - ✅ ~~Ei või õnneta elada~~ (valmis)
-   - ~~Kohus koju minna~~ (ülelugemises)
-2. **Välja jätta:**
-   - Sööge langud Lihula variant
-   - Mõrsja väljakutsumise hakatus
-3. **Üles laadida Google Drive'i** kooridele printimiseks
+| #   | Laul                          | Helilooja | Noodi staatus  |
+| --- | ----------------------------- | --------- | -------------- |
+| 1   | Mu süda, ärka üles            | Kreek     | Ülelugemises   |
+| 2   | Lenda üles kurbtusest         |           | Algnoot olemas |
+| 3   | Elukoor                       |           | Algnoot olemas |
+| 4   | Tuljak                        |           | Algnoot olemas |
+| 5   | Mesipuu                       |           | Algnoot olemas |
+| 6   | Mu isamaa                     | Ernesaks  | Algnoot olemas |
+| 7   | Siin meie seltsis selle aasta | Tormis    | Ülelugemises   |
 
-### Prioriteet 2: Ülejäänud noodid
+**Märkused:**
 
-1. **Kontrollida Google Drive kausta** sisu ja märkida ära, millised noodid on juba üleval
-2. **Lisada puuduvad noodid:**
-   - Mu süda (Kreek) - ootame Reedalt
-   - Sii meie seltsis selle aasta (Kihnu) - ootame Reedalt
-3. **Küsida autoriõigust:**
-   - "Valgust" (Uusberg) - kontakteeruda noorte laulupeoga
+- Linakatkuja jäetud kavast välja (jaanuar 2026)
 
 ---
 
 ## Kontaktid
 
-**Reeda Kreen** (Kunstiline juht)  
+**Reeda Kreen** (Kunstiline juht)
 E-post: reedakreen@gmail.com
 
-**Noodigraafika:** Ilusa Noodi Instituut (¡n!)  
-Mihkel Putrinš  
+**Noodigraafika:** Ilusa Noodi Instituut (¡n!)
+Mihkel Putrinš
 E-post: mitselek@gmail.com
 
-**Registreerimine:**  
+**Registreerimine:**
 https://forms.gle/CuEStNHhmTx8WEnT6
 
 ---
 
-**Märkused:**
-
-- Kõik noodid küljendatakse värskes graafikas (¡n! + Liisa Rahusoo)
-- Eesmärk: professionaalne, ühtne välimus kõigile nootidele
-
----
-
-**Viimati uuendatud:** 2026-02-26
+**Viimati uuendatud:** 2026-03-07
