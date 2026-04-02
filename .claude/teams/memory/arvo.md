@@ -60,7 +60,8 @@ Kaks kohta crashivad `JSON.parse`'iga:
 2. `src/lib/server/api/review-get.ts:54` — `parseEntries()` detail API
 
 Üks kliendipoolne koht kaotab andmeid (ei crashi):
-3. `src/routes/pieces/[id]/+page.svelte:44-46` — fallback `''` plain stringile
+
+1. `src/routes/pieces/[id]/+page.svelte:44-46` — fallback `''` plain stringile
 
 Fix: try/catch JSON.parse, fallback raw stringile.
 
